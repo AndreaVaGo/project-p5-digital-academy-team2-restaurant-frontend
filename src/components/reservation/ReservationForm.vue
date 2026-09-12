@@ -1,4 +1,12 @@
 <script setup>
+import { useReservation } from "../../composables/useReservation";
+
+const {
+  name,
+  phone,
+  email,
+  specialRequests,
+} = useReservation();
 </script>
 
 <template>
@@ -27,6 +35,7 @@
 
           <input
             id="name"
+            v-model="name"
             type="text"
             placeholder="Tu nombre"
             class="mt-2 w-full rounded-xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-lowest)] px-4 py-3 font-body text-sm outline-none placeholder:text-[var(--color-outline)]"
@@ -43,6 +52,7 @@
 
           <input
             id="phone"
+            v-model="phone"
             type="tel"
             placeholder="Tu teléfono"
             class="mt-2 w-full rounded-xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-lowest)] px-4 py-3 font-body text-sm outline-none placeholder:text-[var(--color-outline)]"
@@ -59,6 +69,7 @@
 
           <input
             id="email"
+            v-model="email"
             type="email"
             placeholder="tu@email.com"
             class="mt-2 w-full rounded-xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-lowest)] px-4 py-3 font-body text-sm outline-none placeholder:text-[var(--color-outline)]"
@@ -75,6 +86,7 @@
 
           <textarea
             id="specialRequests"
+            v-model="specialRequests"
             rows="4"
             placeholder="¿Necesitas indicarnos algo?"
             class="mt-2 w-full resize-none rounded-xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-lowest)] px-4 py-3 font-body text-sm outline-none placeholder:text-[var(--color-outline)]"

@@ -4,11 +4,20 @@ const selectedDate = ref(null);
 const selectedTime = ref(null);
 const guests = ref(2);
 
+const name = ref("");
+const phone = ref("");
+const email = ref("");
+const specialRequests = ref("");
+
 export function useReservation() {
   const reservation = computed(() => ({
     date: selectedDate.value,
     time: selectedTime.value,
     guests: guests.value,
+    name: name.value,
+    phone: phone.value,
+    email: email.value,
+    specialRequests: specialRequests.value,
   }));
 
   const increaseGuests = () => {
@@ -27,6 +36,10 @@ export function useReservation() {
     selectedDate,
     selectedTime,
     guests,
+    name,
+    phone,
+    email,
+    specialRequests,
     reservation,
     increaseGuests,
     decreaseGuests,
