@@ -1,12 +1,51 @@
 <script setup>
+import { ref } from "vue";
 import { useReservation } from "../../composables/useReservation";
 
 const {
+  selectedDate,
+  selectedTime,
   name,
   phone,
   email,
   specialRequests,
+  reservation,
 } = useReservation();
+
+const submitted = ref(false);
+const errors = ref({});
+
+const handleSubmit = () => {
+  submitted.value = true;
+
+  errors.value = {};
+
+  if (!selectedDate.value) {
+    errors.value.date = "Selecciona una fecha.";
+  }
+
+  if (!selectedTime.value) {
+    errors.value.time = "Selecciona una hora.";
+  }
+
+  if (!name.value.trim()) {
+    errors.value.name = "Introduce tu nombre.";
+  }
+
+  if (!phone.value.trim()) {
+    errors.value.phone = "Introduce tu teléfono.";
+  }
+
+  if (!email.value.trim()) {
+    errors.value.email = "Introduce tu email.";
+  }
+
+  if (Object.keys(errors.value).length > 0) {
+    return;
+  }
+
+  console.log("Reserva:", reservation.value);
+};
 </script>
 
 <template>
@@ -18,13 +57,11 @@ const {
         Tus datos
       </h2>
 
-      <p
-        class="mt-2 font-body text-sm text-[var(--color-on-surface-variant)]"
-      >
+      <p class="mt-2 font-body text-sm text-[var(--color-on-surface-variant)]">
         Necesitamos estos datos para confirmar tu reserva.
       </p>
 
-      <form class="mt-6 space-y-5">
+      <form @submit.prevent="handleSubmit" class="mt-6 space-y-5">
         <div>
           <label
             for="name"
@@ -40,6 +77,12 @@ const {
             placeholder="Tu nombre"
             class="mt-2 w-full rounded-xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-lowest)] px-4 py-3 font-body text-sm outline-none placeholder:text-[var(--color-outline)]"
           />
+          <p
+            v-if="submitted && errors.name"
+            class="font-ui text-xs text-[var(--color-error)]"
+          >
+            {{ errors.name }}
+          </p>
         </div>
 
         <div>
@@ -57,6 +100,12 @@ const {
             placeholder="Tu teléfono"
             class="mt-2 w-full rounded-xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-lowest)] px-4 py-3 font-body text-sm outline-none placeholder:text-[var(--color-outline)]"
           />
+          <p
+            v-if="submitted && errors.phone"
+            class="font-ui text-xs text-[var(--color-error)]"
+          >
+            {{ errors.phone }}
+          </p>
         </div>
 
         <div>
@@ -74,6 +123,12 @@ const {
             placeholder="tu@email.com"
             class="mt-2 w-full rounded-xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-lowest)] px-4 py-3 font-body text-sm outline-none placeholder:text-[var(--color-outline)]"
           />
+          <p
+            v-if="submitted && errors.email"
+            class="font-ui text-xs text-[var(--color-error)]"
+          >
+            {{ errors.email }}
+          </p>
         </div>
 
         <div>
@@ -104,5 +159,4 @@ const {
   </section>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
