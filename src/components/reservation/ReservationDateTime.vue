@@ -1,4 +1,40 @@
 <script setup>
+import { useReservation } from "../../composables/useReservation";
+
+const {
+  selectedDate,
+  selectedTime,
+} = useReservation();
+
+const dates = [
+  {
+    label: "Hoy",
+    value: "2026-09-13",
+    day: "13",
+  },
+  {
+    label: "Mañana",
+    value: "2026-09-14",
+    day: "14",
+  },
+];
+
+const times = [
+  "13:30",
+  "14:00",
+  "14:30",
+  "20:30",
+  "21:00",
+  "21:30",
+];
+
+const selectDate = (date) => {
+  selectedDate.value = date;
+};
+
+const selectTime = (time) => {
+  selectedTime.value = time;
+};
 </script>
 
 <template>
@@ -17,49 +53,25 @@
           Fecha
         </p>
 
-        <div class="mt-3 grid grid-cols-3 gap-3">
+        <div class="mt-3 grid grid-cols-2 gap-3">
           <button
+            v-for="date in dates"
+            :key="date.value"
             type="button"
-            class="rounded-xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-lowest)] px-3 py-4 text-center"
+            class="rounded-xl border px-3 py-4 text-center"
+            :class="
+              selectedDate === date.value
+                ? 'border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-on-primary)]'
+                : 'border-[var(--color-outline-variant)] bg-[var(--color-surface-container-lowest)] text-[var(--color-on-surface)]'
+            "
+            @click="selectDate(date.value)"
           >
             <span class="block font-ui text-xs uppercase">
-              Hoy
+              {{ date.label }}
             </span>
 
-            <span
-              class="mt-1 block font-headline text-2xl font-semibold"
-            >
-              15
-            </span>
-          </button>
-
-          <button
-            type="button"
-            class="rounded-xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-lowest)] px-3 py-4 text-center"
-          >
-            <span class="block font-ui text-xs uppercase">
-              Mañana
-            </span>
-
-            <span
-              class="mt-1 block font-headline text-2xl font-semibold"
-            >
-              16
-            </span>
-          </button>
-
-          <button
-            type="button"
-            class="rounded-xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-lowest)] px-3 py-4 text-center"
-          >
-            <span class="block font-ui text-xs uppercase">
-              Elegir
-            </span>
-
-            <span
-              class="mt-1 block font-headline text-2xl font-semibold"
-            >
-              📅
+            <span class="mt-1 block font-headline text-2xl font-semibold">
+              {{ date.day }}
             </span>
           </button>
         </div>
@@ -74,45 +86,18 @@
 
         <div class="mt-3 grid grid-cols-3 gap-3">
           <button
+            v-for="time in times"
+            :key="time"
             type="button"
-            class="rounded-xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-lowest)] px-3 py-3 font-ui text-sm"
+            class="rounded-xl border px-3 py-3 font-ui text-sm"
+            :class="
+              selectedTime === time
+                ? 'border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-on-primary)]'
+                : 'border-[var(--color-outline-variant)] bg-[var(--color-surface-container-lowest)] text-[var(--color-on-surface)]'
+            "
+            @click="selectTime(time)"
           >
-            13:30
-          </button>
-
-          <button
-            type="button"
-            class="rounded-xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-lowest)] px-3 py-3 font-ui text-sm"
-          >
-            14:00
-          </button>
-
-          <button
-            type="button"
-            class="rounded-xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-lowest)] px-3 py-3 font-ui text-sm"
-          >
-            14:30
-          </button>
-
-          <button
-            type="button"
-            class="rounded-xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-lowest)] px-3 py-3 font-ui text-sm"
-          >
-            20:30
-          </button>
-
-          <button
-            type="button"
-            class="rounded-xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-lowest)] px-3 py-3 font-ui text-sm"
-          >
-            21:00
-          </button>
-
-          <button
-            type="button"
-            class="rounded-xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-lowest)] px-3 py-3 font-ui text-sm"
-          >
-            21:30
+            {{ time }}
           </button>
         </div>
       </div>
