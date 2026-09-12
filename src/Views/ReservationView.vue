@@ -2,6 +2,7 @@
 import ReservationHero from "../components/reservation/ReservationHero.vue";
 import ReservationDateTime from "../components/reservation/ReservationDateTime.vue";
 import ReservationGuests from "../components/reservation/ReservationGuests.vue";
+import ReservationForm from "../components/reservation/ReservationForm.vue";
 </script>
 
 <template>
@@ -9,6 +10,7 @@ import ReservationGuests from "../components/reservation/ReservationGuests.vue";
     <ReservationHero />
     <ReservationDateTime />
     <ReservationGuests />
+    <ReservationForm />
 
   </main>
 </template>
