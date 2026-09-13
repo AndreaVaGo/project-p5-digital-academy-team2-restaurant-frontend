@@ -5,6 +5,9 @@ import RegisterView from '../Views/RegisterView.vue'
 import AdminWelcomeView from '../Views/AdminWelcomeView.vue'
 import AdminLayout from '../Views/AdminLayout.vue'
 import AdminDashboardView from '../Views/AdminDashboardView.vue'
+import AdminProductsView from '../Views/AdminProductsView.vue'
+import AdminOrdersView from '../Views/AdminOrdersView.vue'
+import AdminBillingView from '../Views/AdminBillingView.vue'
 
 const routes = [
   { path: '/', name: 'home', component: Home, alias: '/home' },
@@ -16,6 +19,9 @@ const routes = [
     component: AdminLayout,
     children: [
       { path: '', name: 'admin-dashboard', component: AdminDashboardView },
+      { path: 'productos', name: 'admin-products', component: AdminProductsView },
+      { path: 'pedidos', name: 'admin-orders', component: AdminOrdersView },
+      { path: 'facturacion', name: 'admin-billing', component: AdminBillingView },
     ],
   },
 ]
