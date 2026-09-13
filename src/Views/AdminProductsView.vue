@@ -2,7 +2,7 @@
 import { ref, computed } from "vue";
 import { Search } from "lucide-vue-next";
 import fabadaImg from "@/assets/images/menu/fabada.png";
-import cachopoImg from "@/assets/images/menu/cachopo-tradicional.png";
+import sidraImg from '@/assets/images/menu/sidra.png'
 import arrozImg from "@/assets/images/menu/arroz-con-leche.png";
 
 const categories = ["Todos", "Especialidades", "Bebidas", "Postres"];
@@ -27,7 +27,7 @@ const products = ref([
   },
   {
     id: 2,
-    image: cachopoImg,
+    image: sidraImg,
     name: "Sidra Natural DOP",
     description: "Selección especial de la casa, botella 70cl",
     category: "Bebidas",
