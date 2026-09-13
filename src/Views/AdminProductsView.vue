@@ -6,6 +6,12 @@ import cachopoImg from "@/assets/images/menu/cachopo-tradicional.png";
 import arrozImg from "@/assets/images/menu/arroz-con-leche.png";
 
 const categories = ["Todos", "Especialidades", "Bebidas", "Postres"];
+const categoryStyles = {
+  Todos: { bg: "bg-primary-container", text: "text-on-primary-container" },
+  Especialidades: { bg: "bg-secondary-container", text: "text-secondary" },
+  Bebidas: { bg: "bg-tertiary-container", text: "text-tertiary" },
+  Postres: { bg: "bg-highlight/20", text: "text-highlight" },
+};
 const activeCategory = ref("Todos");
 const searchQuery = ref("");
 
@@ -97,7 +103,7 @@ function toggleAvailability(productId) {
         class="font-ui font-semibold text-sm px-4 py-2 rounded-full whitespace-nowrap"
         :class="
           activeCategory === cat
-            ? 'bg-secondary-container text-on-secondary-container'
+            ? [categoryStyles[cat].bg, categoryStyles[cat].text]
             : 'bg-surface-container-low text-on-surface'
         "
       >
@@ -141,7 +147,11 @@ function toggleAvailability(productId) {
             </td>
             <td class="p-4">
               <span
-                class="bg-secondary-container text-on-secondary-container font-ui text-xs px-3 py-1 rounded-full"
+                class="font-ui text-xs px-3 py-1 rounded-full"
+                :class="[
+                  categoryStyles[p.category]?.bg || 'bg-secondary-container',
+                  categoryStyles[p.category]?.text || 'text-secondary',
+                ]"
               >
                 {{ p.category }}
               </span>
