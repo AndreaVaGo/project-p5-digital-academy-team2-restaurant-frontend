@@ -57,6 +57,20 @@ const maxSale = computed(() =>
   Math.max(...weeklySales.value.map((d) => d.value)),
 );
 
+const barColors = [
+  "bg-primary",
+  "bg-secondary",
+  "bg-tertiary-container",
+  "bg-outline-variant",
+  "bg-secondary-container",
+  "bg-primary-container",
+  "bg-outline",
+];
+
+function barColor(index) {
+  return barColors[index % barColors.length];
+}
+
 const orderStatus = ref([
   {
     label: "Pendientes",
@@ -110,30 +124,29 @@ const starProducts = ref([
 </script>
 
 <template>
-  <div>
-    <h1 class="font-headline text-4xl font-semibold text-on-surface">
+  <div class="h-full flex flex-col">
+    <h1 class="font-headline text-3xl font-semibold text-primary">
       Resumen del Negocio
     </h1>
-    <p class="font-body text-outline mt-2">
+    <p class="font-body text-white text-sm mt-1">
       Visión general del rendimiento de Goxu hoy.
     </p>
 
-    <div class="grid grid-cols-4 gap-4 mt-8">
+    <div class="grid grid-cols-4 gap-4 mt-4">
       <div
         v-for="stat in stats"
         :key="stat.label"
-        class="bg-surface-container-lowest rounded-xl p-5 relative"
+        class="bg-surface-container-lowest rounded-xl p-4 flex flex-col"
       >
-        <component
-          :is="stat.icon"
-          class="w-5 h-5 text-outline absolute top-5 right-5"
-        />
-        <p class="font-ui text-sm text-outline">{{ stat.label }}</p>
-        <p class="font-headline text-3xl font-semibold text-on-surface mt-2">
+        <div class="flex items-start justify-between">
+          <p class="font-ui text-sm text-outline">{{ stat.label }}</p>
+          <component :is="stat.icon" class="w-4 h-4 text-outline shrink-0" />
+        </div>
+        <p class="font-headline text-2xl font-semibold text-on-surface mt-1">
           {{ stat.value }}
         </p>
         <p
-          class="font-ui text-xs mt-2"
+          class="font-ui text-xs mt-1"
           :class="stat.up ? 'text-primary' : 'text-outline'"
         >
           {{ stat.change }}
@@ -141,61 +154,69 @@ const starProducts = ref([
       </div>
     </div>
 
-    <div class="grid grid-cols-[1fr_320px] gap-6 mt-6">
-      <div class="bg-surface-container-lowest rounded-xl p-6">
+    <div class="grid grid-cols-4 gap-4 mt-4">
+      <div class="bg-surface-container-lowest rounded-xl p-5 col-span-3">
         <div class="flex items-center justify-between">
-          <h2 class="font-headline text-xl text-on-surface">
+          <h2 class="font-headline text-lg text-on-surface">
             Tendencia de Ventas (Semana)
           </h2>
           <span
-            class="font-ui text-sm bg-surface-container-low px-3 py-1 rounded-full text-on-surface"
+            class="font-ui text-xs border border-outline-variant/40 px-3 py-1 rounded-md text-on-surface"
             >Esta Semana</span
           >
         </div>
-        <div class="flex items-end gap-4 mt-8 h-48">
+        <div class="flex gap-3 mt-4">
           <div
-            v-for="d in weeklySales"
-            :key="d.day"
-            class="flex-1 flex flex-col items-center gap-2 h-full justify-end"
+            class="flex flex-col justify-between h-40 font-ui text-xs text-outline"
           >
+            <span>3k</span>
+            <span>2k</span>
+            <span>1k</span>
+            <span>0</span>
+          </div>
+          <div class="flex-1 flex items-end gap-3 h-40">
             <div
-              class="w-full rounded-t"
-              :class="
-                d.value === maxSale ? 'bg-primary' : 'bg-secondary-container'
-              "
-              :style="{ height: (d.value / maxSale) * 100 + '%' }"
-            ></div>
-            <span class="font-ui text-xs text-outline">{{ d.day }}</span>
+              v-for="(d, index) in weeklySales"
+              :key="d.day"
+              class="flex-1 flex flex-col items-center gap-2 h-full justify-end"
+            >
+              <div
+                class="w-full rounded-t"
+                :class="barColor(index)"
+                :style="{ height: (d.value / maxSale) * 100 + '%' }"
+              ></div>
+              <span class="font-ui text-xs text-outline">{{ d.day }}</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="bg-surface-container-lowest rounded-xl p-6">
-        <h2 class="font-headline text-xl text-on-surface mb-4">
+      <div class="bg-surface-container-lowest rounded-xl p-4">
+        <h2 class="font-headline text-lg text-on-surface mb-3">
           Estado de Pedidos
         </h2>
-        <div class="flex flex-col gap-3">
+        <div class="flex flex-col gap-2">
           <div
             v-for="status in orderStatus"
             :key="status.label"
-            class="flex items-center justify-between rounded-lg p-4"
+            class="flex items-center justify-between rounded-lg p-3"
             :class="status.bg"
           >
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2">
               <component
                 :is="status.icon"
-                class="w-5 h-5"
+                class="w-4 h-4"
                 :class="status.text"
               />
               <div>
-                <p class="font-ui font-semibold text-on-surface">
+                <p class="font-ui text-sm font-semibold text-on-surface">
                   {{ status.label }}
                 </p>
                 <p class="font-ui text-xs text-outline">{{ status.sub }}</p>
               </div>
             </div>
             <span
-              class="font-headline text-2xl font-semibold"
+              class="font-headline text-xl font-semibold"
               :class="status.text"
               >{{ status.count }}</span
             >
@@ -204,9 +225,9 @@ const starProducts = ref([
       </div>
     </div>
 
-    <div class="bg-surface-container-lowest rounded-xl p-6 mt-6">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="font-headline text-xl text-on-surface">
+    <div class="bg-surface-container-lowest rounded-xl p-4 mt-4 flex-1">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-headline text-lg text-on-surface">
           Productos Estrella
         </h2>
         <RouterLink
@@ -218,7 +239,7 @@ const starProducts = ref([
       <table class="w-full">
         <thead>
           <tr
-            class="font-ui text-xs uppercase text-outline text-left border-b border-outline-variant/30"
+            class="font-ui text-xs text-outline text-left border-b border-outline-variant/30"
           >
             <th class="pb-2">Producto</th>
             <th class="pb-2">Categoría</th>
@@ -232,11 +253,11 @@ const starProducts = ref([
             :key="p.name"
             class="border-b border-outline-variant/20 last:border-0"
           >
-            <td class="py-3 flex items-center gap-3">
+            <td class="py-2 flex items-center gap-3">
               <img
                 :src="p.image"
                 alt=""
-                class="w-10 h-10 rounded-lg object-cover"
+                class="w-12 h-12 rounded-lg object-cover"
               />
               <span class="font-ui font-semibold text-on-surface">{{
                 p.name
