@@ -15,6 +15,9 @@ const {
 const submitted = ref(false);
 const errors = ref({});
 
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const phonePattern = /^[0-9+\s()-]{9,}$/;
+
 const handleSubmit = () => {
   submitted.value = true;
 
@@ -30,14 +33,20 @@ const handleSubmit = () => {
 
   if (!name.value.trim()) {
     errors.value.name = "Introduce tu nombre.";
+  } else if (name.value.trim().length < 2) {
+    errors.value.name = "El nombre debe tener al menos 2 caracteres.";
   }
 
   if (!phone.value.trim()) {
     errors.value.phone = "Introduce tu teléfono.";
+  } else if (!phonePattern.test(phone.value.trim())) {
+    errors.value.phone = "Introduce un teléfono válido.";
   }
 
   if (!email.value.trim()) {
     errors.value.email = "Introduce tu email.";
+  } else if (!emailPattern.test(email.value.trim())) {
+    errors.value.email = "Introduce un email válido.";
   }
 
   if (Object.keys(errors.value).length > 0) {
