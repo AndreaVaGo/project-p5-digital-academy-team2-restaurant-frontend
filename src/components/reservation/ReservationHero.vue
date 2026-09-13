@@ -1,5 +1,4 @@
-<script setup>
-</script>
+<script setup></script>
 
 <template>
   <section>
@@ -12,14 +11,15 @@
     </div>
 
     <div class="bg-[var(--color-surface)] px-6 py-7">
-      <h1
-        class="font-headline text-4xl font-semibold text-[var(--color-on-surface)]"
-      >
-        Reserva tu experiencia
-      </h1>
+      <div class="mx-auto max-w-2xl">
+        <h1
+          class="font-headline text-4xl font-semibold text-[var(--color-on-surface)]"
+        >
+          Reserva tu experiencia
+        </h1>
+      </div>
     </div>
   </section>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
