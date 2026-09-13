@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted } from "vue";
+import { ref } from "vue";
 import CartItem from "../components/cart/CartItem.vue";
 import CartSummary from "../components/cart/CartSummary.vue";
 import CartEmpty from "../components/cart/CartEmpty.vue";
@@ -36,6 +37,12 @@ const demoProducts = [
     image: tablaQuesosImage,
   },
 ];
+
+const orderType = ref("restaurant");
+
+const updateOrderType = (type) => {
+  orderType.value = type;
+};
 
 // Añade productos de prueba mientras no tengamos la API
 onMounted(() => {
@@ -87,7 +94,12 @@ onMounted(() => {
         </section>
 
         <!-- Resumen -->
-        <CartSummary :subtotal="subtotal" :tax="tax" :total="total" />
+        <CartSummary
+          :subtotal="subtotal"
+          :tax="tax"
+          :total="total"
+          @update-order-type="updateOrderType"
+        />
       </div>
     </section>
   </main>

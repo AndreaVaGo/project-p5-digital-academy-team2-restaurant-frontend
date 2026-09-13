@@ -1,4 +1,5 @@
 <script setup>
+
 import OrderOptions from './OrderOptions.vue';
 
 defineProps({
@@ -15,6 +16,8 @@ defineProps({
     required: true,
   },
 });
+
+const emit = defineEmits(["update-order-type"]);
 </script>
 
 <template>
@@ -28,44 +31,35 @@ defineProps({
     </h2>
 
     <div class="mt-6 space-y-5">
-
-      <OrderOptions />
-      
+      <OrderOptions
+       @update-order-type="emit('update-order-type', $event)" />
     </div>
 
-
-    <div
-      class="my-6 border-t border-[var(--color-outline-variant)]"
-    ></div>
+    <div class="my-6 border-t border-[var(--color-outline-variant)]"></div>
 
     <!-- Resumen -->
     <div class="space-y-3">
-
       <div class="flex items-center justify-between gap-4">
-        <span
-          class="font-body text-sm text-[var(--color-on-surface-variant)]"
-        >
+        <span class="font-body text-sm text-[var(--color-on-surface-variant)]">
           Subtotal
         </span>
 
         <span
           class="shrink-0 font-ui text-sm font-semibold text-[var(--color-on-surface)]"
         >
-       {{ subtotal.toFixed(2) }}
+          {{ subtotal.toFixed(2) }}
         </span>
       </div>
 
       <div class="flex items-center justify-between gap-4">
-        <span
-          class="font-body text-sm text-[var(--color-on-surface-variant)]"
-        >
+        <span class="font-body text-sm text-[var(--color-on-surface-variant)]">
           Impuestos (IVA 10%)
         </span>
 
         <span
           class="shrink-0 font-ui text-sm font-semibold text-[var(--color-on-surface)]"
         >
-      €{{ tax.toFixed(2) }}
+          €{{ tax.toFixed(2) }}
         </span>
       </div>
 
@@ -79,10 +73,9 @@ defineProps({
         <span
           class="shrink-0 font-ui text-xl font-semibold text-[var(--color-primary)]"
         >
-        €{{ total.toFixed(2) }}
+          €{{ total.toFixed(2) }}
         </span>
       </div>
-
     </div>
 
     <!-- Continuar -->
@@ -94,13 +87,10 @@ defineProps({
       <span aria-hidden="true">→</span>
     </button>
 
-    <p
-      class="mt-4 text-center font-ui text-xs text-[var(--color-outline)]"
-    >
-       Pago seguro y cifrado
+    <p class="mt-4 text-center font-ui text-xs text-[var(--color-outline)]">
+      Pago seguro y cifrado
     </p>
   </aside>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
