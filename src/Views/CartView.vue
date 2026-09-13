@@ -1,6 +1,5 @@
 <script setup>
-import { onMounted } from "vue";
-import { ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import CartItem from "../components/cart/CartItem.vue";
 import CartSummary from "../components/cart/CartSummary.vue";
 import CartEmpty from "../components/cart/CartEmpty.vue";
@@ -49,6 +48,21 @@ const updateOrderType = (type) => {
 const updateScheduledOrder = (value) => {
   scheduledOrder.value = value;
 };
+
+const orderItems = computed(() => {
+  return cartItems.value.map((item) => ({
+    productId: item.product.id,
+    quantity: item.quantity,
+  }));
+});
+
+const order = computed(() => {
+  return {
+    type: orderType.value,
+    scheduledAt: scheduledOrder.value || null,
+    items: orderItems.value,
+  };
+});
 
 // Añade productos de prueba mientras no tengamos la API
 onMounted(() => {
