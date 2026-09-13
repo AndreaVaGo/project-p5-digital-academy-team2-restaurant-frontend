@@ -154,7 +154,7 @@ function downloadReport() {
                 <td class="p-4 font-body text-sm text-outline">
                   {{ inv.date }}
                 </td>
-                <td class="p-4 font-headline text-lg text-primary">
+                <td class="p-4 font-headline text-2xl text-primary">
                   {{ formatCurrency(inv.amount) }}
                 </td>
                 <td class="p-4 font-body text-sm text-outline">
