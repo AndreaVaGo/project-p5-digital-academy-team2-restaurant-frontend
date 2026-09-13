@@ -1,4 +1,18 @@
 <script setup>
+defineProps({
+  subtotal: {
+    type: Number,
+    required: true,
+  },
+  tax: {
+    type: Number,
+    required: true,
+  },
+  total: {
+    type: Number,
+    required: true,
+  },
+});
 </script>
 
 <template>
@@ -73,7 +87,7 @@
         <span
           class="shrink-0 font-ui text-sm font-semibold text-[var(--color-on-surface)]"
         >
-          €48.00
+       {{ subtotal.toFixed(2) }}
         </span>
       </div>
 
@@ -87,7 +101,7 @@
         <span
           class="shrink-0 font-ui text-sm font-semibold text-[var(--color-on-surface)]"
         >
-          €4.80
+      €{{ tax.toFixed(2) }}
         </span>
       </div>
 
@@ -101,7 +115,7 @@
         <span
           class="shrink-0 font-ui text-xl font-semibold text-[var(--color-primary)]"
         >
-          €52.80
+        €{{ total.toFixed(2) }}
         </span>
       </div>
 

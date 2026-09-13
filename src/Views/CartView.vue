@@ -1,6 +1,48 @@
 <script setup>
+import { onMounted } from "vue";
 import CartItem from "../components/cart/CartItem.vue";
 import CartSummary from "../components/cart/CartSummary.vue";
+import { useCart } from "../composables/useCart";
+
+import cachopoImage from "../assets/images/menu/cachopo-tradicional.png";
+import tablaQuesosImage from "../assets/images/eventos/chosco-evento.png"; //imagenes luego se cambian con la Api externa
+
+const {
+  cartItems,
+  subtotal,
+  tax,
+  total,
+  addItem,
+  removeItem,
+  increaseQuantity,
+  decreaseQuantity,
+} = useCart();
+
+// Productos temporales para probar el carrito
+const demoProducts = [
+  {
+    id: 1,
+    name: "Cachopo Tradicional",
+    description: "Con jamón ibérico y queso cabrales.",
+    price: 24,
+    image: cachopoImage,
+  },
+  {
+    id: 2,
+    name: "Tabla de quesos asturianos",
+    description: "Selección de quesos asturianos.",
+    price: 18,
+    image: tablaQuesosImage,
+  },
+];
+
+// Añade productos de prueba mientras no tengamos la API
+onMounted(() => {
+  if (cartItems.value.length === 0) {
+    addItem(demoProducts[0]);
+    addItem(demoProducts[1]);
+  }
+});
 </script>
 
 <template>
@@ -28,18 +70,26 @@ import CartSummary from "../components/cart/CartSummary.vue";
       <div
         class="grid grid-cols-1 gap-8 md:grid-cols-[minmax(0,1fr)_360px] lg:gap-10"
       >
-
         <!-- Productos -->
         <section class="min-w-0">
           <div class="space-y-6">
-            <CartItem />
-            <CartItem />
+            <CartItem
+              v-for="item in cartItems"
+              :key="item.product.id"
+              :item="item"
+              @increase="increaseQuantity"
+              @decrease="decreaseQuantity"
+              @remove="removeItem"
+            />
           </div>
         </section>
 
         <!-- Resumen -->
-        <CartSummary />
-
+        <CartSummary
+          :subtotal="subtotal"
+          :tax="tax"
+          :total="total"
+        />
       </div>
     </section>
   </main>
