@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from "vue";
+import BaseModal from "../BaseModal.vue";
 import { useReservation } from "../../composables/useReservation";
 
 const {
@@ -14,13 +15,16 @@ const {
 
 const submitted = ref(false);
 const errors = ref({});
+const showErrorModal = ref(false);
+const reservationSent = ref(false);
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phonePattern = /^[0-9+\s()-]{9,}$/;
 
 const handleSubmit = () => {
   submitted.value = true;
-
+  reservationSent.value = false;
+  showErrorModal.value = false;
   errors.value = {};
 
   if (!selectedDate.value) {
@@ -50,8 +54,11 @@ const handleSubmit = () => {
   }
 
   if (Object.keys(errors.value).length > 0) {
+    showErrorModal.value = true;
     return;
   }
+
+  reservationSent.value = true;
 
   console.log("Reserva:", reservation.value);
 };
@@ -164,6 +171,24 @@ const handleSubmit = () => {
           Confirmar reserva
         </button>
       </form>
+
+      <BaseModal
+        :open="showErrorModal"
+        title="Revisa tu reserva"
+        message="Hay algunos datos que necesitan tu atención."
+        confirm-text="Revisar datos"
+        @close="showErrorModal = false"
+        @confirm="showErrorModal = false"
+      />
+
+      <BaseModal
+        :open="reservationSent"
+        title="¡Reserva recibida!"
+        message="Hemos recibido correctamente los datos de tu reserva."
+        confirm-text="Aceptar"
+        @close="reservationSent = false"
+        @confirm="reservationSent = false"
+      />
     </div>
   </section>
 </template>
