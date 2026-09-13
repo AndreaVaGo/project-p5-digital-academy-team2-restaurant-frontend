@@ -1,16 +1,18 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { Wheat, Milk, Egg } from 'lucide-vue-next'
-import fabadaImg from '../assets/fabada.png'
+import fabadaImg from '@/assets/images/menu/fabada.png'
+import trigoIcon from '@/assets/images/icon-alegernos/trigo.png'
+import lacteosIcon from '@/assets/images/icon-alegernos/productos-lacteos.png'
+import huevosIcon from '@/assets/images/icon-alegernos/huevos.png'
 
 const route = useRoute()
 const productId = route.params.id
 
 const allergenIcons = {
-  Gluten: Wheat,
-  'Lácteos': Milk,
-  Huevo: Egg,
+  Gluten: trigoIcon,
+  'Lácteos': lacteosIcon,
+  Huevo: huevosIcon,
 }
 
 const product = ref({
@@ -52,7 +54,7 @@ function addToOrder() {
 
 <template>
   <div class="page text-left">
-    <div class="max-w-[1280px] mx-auto grid grid-cols-1 md:grid-cols-[662px_466px] gap-8 md:gap-6 p-6 md:p-16 items-start">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-[662px_466px] gap-8 md:gap-6 p-6 md:p-16 items-start">
       <!-- Columna izquierda: 662px -->
       <div class="flex flex-col gap-8">
         <img
@@ -62,7 +64,7 @@ function addToOrder() {
         />
 
         <div>
-          <h1 class="!text-white font-headline text-[32px] leading-[40px] md:text-[48px] md:leading-[56px] font-semibold">
+          <h1 class="text-white! font-headline text-[32px] leading-10 md:text-[48px] md:leading-14 font-semibold">
             {{ product.name }}
           </h1>
           <p class="font-headline text-headline-md font-medium text-highlight mt-2">
@@ -70,7 +72,7 @@ function addToOrder() {
           </p>
         </div>
 
-        <p class="font-body text-[16px] leading-[26px] font-normal text-white">
+        <p class="font-body text-[16px] leading-6.5 font-normal text-white">
           {{ product.description }}
         </p>
 
@@ -95,7 +97,7 @@ function addToOrder() {
               :key="allergen"
               class="flex items-center gap-1 font-ui text-label-caps tracking-caps text-white"
             >
-              <component :is="allergenIcons[allergen]" class="w-4 h-4 text-tertiary" />
+              <img :src="allergenIcons[allergen]" class="w-4 h-4" alt="" />
               {{ allergen }}
             </span>
           </div>
@@ -103,7 +105,7 @@ function addToOrder() {
       </div>
 
       <!-- Columna derecha: 466px x 732px -->
-      <div class="bg-surface-container-low border border-outline-variant/20 rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] p-6 md:p-8 md:h-[732px]">
+      <div class="bg-surface-container-low border border-outline-variant/20 rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] p-6 md:p-8 md:h-183">
         <p class="font-ui text-label-caps tracking-caps uppercase font-semibold text-on-surface">
           ¿Quieres añadir alguna indicación?
         </p>
@@ -129,7 +131,7 @@ function addToOrder() {
         </div>
 
         <div class="mt-6 w-full bg-surface border border-outline-variant/20 rounded-lg p-6">
-          <h3 class="!text-on-surface font-headline text-xl font-semibold mb-3">Resumen</h3>
+          <h3 class="text-on-surface! font-headline text-xl font-semibold mb-3">Resumen</h3>
           <div class="flex justify-between gap-4 font-body text-body-md">
             <span class="shrink-0">Producto:</span>
             <span class="text-right">{{ product.name }}</span>
@@ -146,8 +148,8 @@ function addToOrder() {
           <hr class="my-3 border-outline-variant/30" />
 
           <div class="flex justify-between items-center font-semibold">
-            <span class="font-ui !text-on-surface">TOTAL</span>
-            <span class="font-headline text-[28px] leading-[24px] font-medium text-primary">{{ total }} €</span>
+            <span class="font-ui text-on-surface!">TOTAL</span>
+            <span class="font-headline text-[28px] leading-6 font-medium text-primary">{{ total }} €</span>
           </div>
         </div>
 
