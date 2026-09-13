@@ -11,10 +11,10 @@ const {
     email,
     specialRequests,
     reservation,
+    errors,
 } = useReservation();
 
 const submitted = ref(false);
-const errors = ref({});
 const showErrorModal = ref(false);
 const reservationSent = ref(false);
 
