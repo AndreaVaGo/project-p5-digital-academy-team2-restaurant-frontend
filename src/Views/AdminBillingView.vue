@@ -1,6 +1,7 @@
 <script setup>
-import { ref } from "vue";
-import { Filter, FileText, Download } from "lucide-vue-next";
+import { ref, computed } from "vue";
+import { Search, FileText, Download } from "lucide-vue-next";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 const invoices = ref([
   {
@@ -45,9 +46,29 @@ const invoices = ref([
   },
 ]);
 
+const statusTabs = ["Todas", "Pagado", "Pendiente"];
+const statusTabStyles = {
+  Todas: { bg: "bg-primary-container", text: "text-on-primary-container" },
+  Pagado: { bg: "bg-highlight/20", text: "text-highlight" },
+  Pendiente: { bg: "bg-secondary-container", text: "text-secondary" },
+};
+const activeStatus = ref("Todas");
+const searchQuery = ref("");
+
+const filteredInvoices = computed(() =>
+  invoices.value.filter((inv) => {
+    const matchesStatus =
+      activeStatus.value === "Todas" || inv.status === activeStatus.value;
+    const matchesSearch =
+      inv.customer.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      inv.id.toLowerCase().includes(searchQuery.value.toLowerCase());
+    return matchesStatus && matchesSearch;
+  }),
+);
+
 function statusClass(status) {
   return status === "Pagado"
-    ? "bg-secondary-container text-on-secondary-container"
+    ? "bg-secondary-container text-secondary"
     : "bg-error-container text-error";
 }
 
@@ -58,33 +79,57 @@ function downloadReport() {
 
 <template>
   <div>
-    <h1 class="font-headline text-4xl font-semibold text-on-surface">
+    <h1 class="font-headline text-3xl font-semibold text-primary">
       Facturación e Informes
     </h1>
-    <p class="font-body text-outline mt-2">
+    <p class="font-body text-white text-sm mt-1">
       Gestión centralizada de facturas, transacciones y reportes de rendimiento.
       Auditoría rigurosa y exportación documental.
     </p>
 
-    <div class="grid grid-cols-[1fr_360px] gap-6 mt-8">
+    <div class="grid grid-cols-[1fr_320px] gap-4 mt-4">
       <div>
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="font-headline text-2xl text-on-surface">
-            Últimas Facturas
-          </h2>
-          <button
-            class="flex items-center gap-2 font-ui font-semibold bg-surface-container-lowest px-4 py-2 rounded-lg"
+        <h2 class="font-headline text-xl text-on-surface mb-3">
+          Últimas Facturas
+        </h2>
+
+        <div
+          class="bg-surface-container-lowest rounded-xl p-4 flex items-center gap-4"
+        >
+          <div
+            class="flex-1 flex items-center gap-2 bg-surface-container-low rounded-lg px-4 py-2"
           >
-            <Filter class="w-4 h-4" />
-            Filtrar
+            <Search class="w-4 h-4 text-outline" />
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Buscar por cliente o nº de pedido..."
+              class="bg-transparent w-full font-body text-on-surface outline-none"
+            />
+          </div>
+          <button
+            v-for="tab in statusTabs"
+            :key="tab"
+            type="button"
+            @click="activeStatus = tab"
+            class="font-ui font-semibold text-sm px-4 py-2 rounded-full whitespace-nowrap"
+            :class="
+              activeStatus === tab
+                ? [statusTabStyles[tab].bg, statusTabStyles[tab].text]
+                : 'bg-surface-container-low text-on-surface'
+            "
+          >
+            {{ tab }}
           </button>
         </div>
 
-        <div class="bg-surface-container-lowest rounded-xl overflow-hidden">
+        <div
+          class="bg-surface-container-lowest rounded-xl mt-3 overflow-hidden"
+        >
           <table class="w-full">
             <thead>
               <tr
-                class="font-ui text-sm font-semibold text-on-surface text-left border-b border-outline-variant/30"
+                class="font-ui text-sm font-semibold text-outline text-left border-b border-outline-variant/30"
               >
                 <th class="p-4">Nº Pedido</th>
                 <th class="p-4">Cliente</th>
@@ -96,21 +141,25 @@ function downloadReport() {
             </thead>
             <tbody>
               <tr
-                v-for="inv in invoices"
+                v-for="inv in filteredInvoices"
                 :key="inv.id"
                 class="border-b border-outline-variant/20 last:border-0"
               >
-                <td class="p-4 font-ui font-semibold text-on-surface">
+                <td class="p-4 font-ui font-semibold text-primary">
                   {{ inv.id }}
                 </td>
                 <td class="p-4 font-body text-on-surface">
                   {{ inv.customer }}
                 </td>
-                <td class="p-4 font-body text-outline">{{ inv.date }}</td>
-                <td class="p-4 font-ui font-semibold">
-                  {{ inv.amount.toFixed(2) }} €
+                <td class="p-4 font-body text-sm text-outline">
+                  {{ inv.date }}
                 </td>
-                <td class="p-4 font-body text-outline">{{ inv.method }}</td>
+                <td class="p-4 font-headline text-lg text-primary">
+                  {{ formatCurrency(inv.amount) }}
+                </td>
+                <td class="p-4 font-body text-sm text-outline">
+                  {{ inv.method }}
+                </td>
                 <td class="p-4">
                   <span
                     class="font-ui text-sm font-semibold px-3 py-1 rounded-full"
@@ -122,18 +171,37 @@ function downloadReport() {
               </tr>
             </tbody>
           </table>
-          <p class="p-4 font-ui text-sm text-outline">
-            Mostrando {{ invoices.length }} de 142 registros
-          </p>
+          <div
+            class="flex items-center justify-between p-4 font-ui text-sm text-outline"
+          >
+            <span
+              >Mostrando {{ filteredInvoices.length }} de 142 registros</span
+            >
+            <div class="flex items-center gap-2">
+              <button
+                type="button"
+                class="border border-outline-variant rounded-lg px-3 py-1.5 font-ui text-sm text-on-surface"
+              >
+                Anterior
+              </button>
+              <span class="font-ui font-semibold text-on-surface px-2">1</span>
+              <button
+                type="button"
+                class="border border-outline-variant rounded-lg px-3 py-1.5 font-ui text-sm text-on-surface"
+              >
+                Siguiente
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
       <div>
-        <h2 class="font-headline text-2xl text-on-surface mb-4">
+        <h2 class="font-headline text-xl text-on-surface mb-3">
           Informes Generados
         </h2>
-        <div class="bg-surface-container-lowest rounded-xl p-6">
-          <h3 class="font-headline text-xl text-on-surface">
+        <div class="bg-surface-container-lowest rounded-xl p-5">
+          <h3 class="font-headline text-lg text-on-surface">
             Descargar informe PDF
           </h3>
           <div class="flex items-start gap-3 mt-3">
@@ -146,6 +214,7 @@ function downloadReport() {
             </p>
           </div>
           <button
+            type="button"
             @click="downloadReport"
             class="mt-5 w-full bg-primary-container text-white font-ui font-semibold py-3 rounded-xl flex items-center justify-center gap-2"
           >
