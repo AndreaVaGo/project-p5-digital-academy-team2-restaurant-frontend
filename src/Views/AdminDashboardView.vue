@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed } from "vue";
+import { formatCurrency } from "@/utils/formatCurrency";
 import {
   TrendingUp,
   Wallet,
@@ -16,24 +17,27 @@ import arrozImg from "@/assets/images/menu/arroz-con-leche.png";
 const stats = ref([
   {
     label: "Ventas Diario",
-    value: "€1,245.00",
+    value: 1245,
     change: "↑ 12% vs ayer",
     icon: Wallet,
     up: true,
+    isCurrency: true,
   },
   {
     label: "Ventas Mensual",
-    value: "€18,750.00",
+    value: 18750,
     change: "↑ 8.2% vs mes anterior",
     icon: TrendingUp,
     up: true,
+    isCurrency: true,
   },
   {
     label: "Ventas Trimestral",
-    value: "€34,500.00",
+    value: 34500,
     change: "↑ 5.4% vs trimestre anterior",
     icon: BarChart3,
     up: true,
+    isCurrency: true,
   },
   {
     label: "Ventas Anual",
@@ -41,6 +45,7 @@ const stats = ref([
     change: "En línea con proyección",
     icon: LineChart,
     up: false,
+    isCurrency: false,
   },
 ]);
 
@@ -143,7 +148,7 @@ const starProducts = ref([
           <component :is="stat.icon" class="w-4 h-4 text-outline shrink-0" />
         </div>
         <p class="font-headline text-2xl font-semibold text-on-surface mt-1">
-          {{ stat.value }}
+          {{ stat.isCurrency ? formatCurrency(stat.value) : stat.value }}
         </p>
         <p
           class="font-ui text-xs mt-1"
