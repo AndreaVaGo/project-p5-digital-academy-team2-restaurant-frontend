@@ -30,9 +30,9 @@ function logout() {
 </script>
 
 <template>
-  <div class="min-h-screen flex bg-surface-container">
+  <div class="min-h-screen flex bg-[#7c8874]">
     <aside
-      class="w-64 shrink-0 bg-surface-container-low flex flex-col justify-between p-6"
+      class="w-64 shrink-0 bg-surface-container-lowest flex flex-col justify-between p-6 border-r border-outline-variant/30"
     >
       <div>
         <h1 class="font-headline text-2xl text-primary leading-tight">
@@ -48,7 +48,7 @@ function logout() {
             :key="item.name"
             :to="{ name: item.name }"
             class="flex items-center gap-3 px-4 py-3 rounded-lg font-ui font-semibold text-on-surface-variant transition-colors"
-            active-class="bg-primary-container text-on-primary-container"
+            exact-active-class="bg-primary-container text-on-primary-container"
           >
             <component :is="item.icon" class="w-4 h-4" />
             {{ item.label }}
@@ -81,7 +81,7 @@ function logout() {
       </div>
     </aside>
 
-    <main class="flex-1 p-10 overflow-y-auto">
+    <main class="flex-1 p-8 overflow-hidden">
       <RouterView />
     </main>
   </div>
