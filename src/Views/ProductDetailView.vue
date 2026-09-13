@@ -104,8 +104,8 @@ function addToOrder() {
         </div>
       </div>
 
-      <!-- Columna derecha: 466px x 732px -->
-      <div class="bg-surface-container-low border border-outline-variant/20 rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] p-6 md:p-8 md:h-183">
+      <!-- Columna derecha: 466px, altura automática según contenido -->
+      <div class="bg-surface-container-low border border-outline-variant/20 rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] p-6 md:p-8">
         <p class="font-ui text-label-caps tracking-caps uppercase font-semibold text-on-surface">
           ¿Quieres añadir alguna indicación?
         </p>
@@ -113,7 +113,7 @@ function addToOrder() {
           v-model="notes"
           maxlength="250"
           placeholder="Ej: Sin cebolla, sin salsa, poco hecho..."
-          class="mt-2 w-full bg-surface border border-highlight rounded-md p-3 font-body text-body-md"
+          class="mt-2 w-full h-32 bg-surface border border-highlight rounded-md p-3 font-body text-body-md resize-none"
         ></textarea>
         <p class="text-right font-ui text-label-caps text-outline">{{ notes.length }} / 250</p>
 
@@ -130,33 +130,37 @@ function addToOrder() {
           </div>
         </div>
 
-        <div class="mt-6 w-full bg-surface border border-outline-variant/20 rounded-lg p-6">
+        <hr class="my-4 border-outline-variant/30" />
+
+        <div class="w-full bg-surface border border-outline-variant/20 rounded p-6">
           <h3 class="text-on-surface! font-headline text-xl font-semibold mb-3">Resumen</h3>
-          <div class="flex justify-between gap-4 font-body text-body-md">
-            <span class="shrink-0">Producto:</span>
-            <span class="text-right">{{ product.name }}</span>
-          </div>
-          <div class="flex justify-between gap-4 font-body text-body-md">
-            <span class="shrink-0">Cantidad:</span>
-            <span class="text-right">{{ quantity }}</span>
-          </div>
-          <div class="flex justify-between gap-4 font-body text-body-md">
-            <span class="shrink-0">Indicaciones:</span>
-            <span class="text-right">{{ notes || 'sin indicaciones especiales' }}</span>
-          </div>
+          <div class="flex flex-col gap-4">
+            <div class="flex justify-between gap-2 font-body text-sm">
+              <span class="shrink-0">Producto:</span>
+              <span class="text-right">{{ product.name }}</span>
+            </div>
+            <div class="flex justify-between gap-2 font-body text-sm">
+              <span class="shrink-0">Cantidad:</span>
+              <span class="text-right">{{ quantity }}</span>
+            </div>
+            <div class="flex justify-between gap-2 font-body text-sm">
+              <span class="shrink-0">Indicaciones:</span>
+              <span class="text-right">{{ notes || 'sin indicaciones especiales' }}</span>
+            </div>
 
-          <hr class="my-3 border-outline-variant/30" />
+            <hr class="border-outline-variant/30" />
 
-          <div class="flex justify-between items-center font-semibold">
-            <span class="font-ui text-on-surface!">TOTAL</span>
-            <span class="font-headline text-[28px] leading-6 font-medium text-primary">{{ total }} €</span>
+            <div class="flex justify-between items-center font-semibold">
+              <span class="font-ui text-on-surface!">TOTAL</span>
+              <span class="font-headline text-[28px] leading-6 font-medium text-primary">{{ total }} €</span>
+            </div>
           </div>
         </div>
 
         <button
           @click="addToOrder"
           :disabled="!product.available"
-          class="mt-6 w-full bg-primary-container text-white rounded-xl py-4 font-ui text-button font-semibold disabled:opacity-50"
+          class="mt-4 w-full bg-primary-container text-white rounded-xl py-4 font-ui text-button font-semibold disabled:opacity-50"
         >
           AÑADIR AL PEDIDO
         </button>
