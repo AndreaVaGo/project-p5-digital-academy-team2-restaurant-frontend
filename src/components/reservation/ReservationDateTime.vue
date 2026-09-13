@@ -1,10 +1,7 @@
 <script setup>
 import { useReservation } from "../../composables/useReservation";
 
-const {
-  selectedDate,
-  selectedTime,
-} = useReservation();
+const { selectedDate, selectedTime, errors } = useReservation();
 
 const dates = [
   {
@@ -19,14 +16,7 @@ const dates = [
   },
 ];
 
-const times = [
-  "13:30",
-  "14:00",
-  "14:30",
-  "20:30",
-  "21:00",
-  "21:30",
-];
+const times = ["13:30", "14:00", "14:30", "20:30", "21:00", "21:30"];
 
 const selectDate = (date) => {
   selectedDate.value = date;
@@ -47,12 +37,25 @@ const selectTime = (time) => {
       </h2>
 
       <div class="mt-6">
-        <p
-          class="font-ui text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-on-surface-variant)]"
-        >
-          Fecha
-        </p>
+        <div class="flex items-center justify-between">
+          <p
+            class="font-ui text-sm font-semibold uppercase tracking-[0.12em]"
+            :class="
+              errors.date
+                ? 'text-[var(--color-error)]'
+                : 'text-[var(--color-on-surface-variant)]'
+            "
+          >
+            Fecha
+          </p>
 
+          <span
+            v-if="errors.date"
+            class="font-ui text-xs text-[var(--color-error)]"
+          >
+            Selecciona una fecha
+          </span>
+        </div>
         <div class="mt-3 grid grid-cols-2 gap-3">
           <button
             v-for="date in dates"
@@ -62,7 +65,9 @@ const selectTime = (time) => {
             :class="
               selectedDate === date.value
                 ? 'border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-on-primary)]'
-                : 'border-[var(--color-outline-variant)] bg-[var(--color-surface-container-lowest)] text-[var(--color-on-surface)]'
+                : errors.date
+                  ? 'border-[var(--color-error)] bg-[var(--color-surface-container-lowest)] text-[var(--color-on-surface)]'
+                  : 'border-[var(--color-outline-variant)] bg-[var(--color-surface-container-lowest)] text-[var(--color-on-surface)]'
             "
             @click="selectDate(date.value)"
           >
@@ -78,11 +83,25 @@ const selectTime = (time) => {
       </div>
 
       <div class="mt-8">
-        <p
-          class="font-ui text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-on-surface-variant)]"
-        >
-          Hora
-        </p>
+        <div class="flex items-center justify-between">
+          <p
+            class="font-ui text-sm font-semibold uppercase tracking-[0.12em]"
+            :class="
+              errors.time
+                ? 'text-[var(--color-error)]'
+                : 'text-[var(--color-on-surface-variant)]'
+            "
+          >
+            Hora
+          </p>
+
+          <span
+            v-if="errors.time"
+            class="font-ui text-xs text-[var(--color-error)]"
+          >
+            Selecciona una hora
+          </span>
+        </div>
 
         <div class="mt-3 grid grid-cols-3 gap-3">
           <button
@@ -93,7 +112,9 @@ const selectTime = (time) => {
             :class="
               selectedTime === time
                 ? 'border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-on-primary)]'
-                : 'border-[var(--color-outline-variant)] bg-[var(--color-surface-container-lowest)] text-[var(--color-on-surface)]'
+                : errors.time
+                  ? 'border-[var(--color-error)] bg-[var(--color-surface-container-lowest)] text-[var(--color-on-surface)]'
+                  : 'border-[var(--color-outline-variant)] bg-[var(--color-surface-container-lowest)] text-[var(--color-on-surface)]'
             "
             @click="selectTime(time)"
           >
@@ -105,5 +126,4 @@ const selectTime = (time) => {
   </section>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
