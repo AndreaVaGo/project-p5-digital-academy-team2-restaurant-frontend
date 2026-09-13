@@ -2,8 +2,9 @@
 import { ref, computed } from "vue";
 import { Search } from "lucide-vue-next";
 import fabadaImg from "@/assets/images/menu/fabada.png";
-import sidraImg from '@/assets/images/menu/sidra.png'
+import sidraImg from "@/assets/images/menu/sidra.png";
 import arrozImg from "@/assets/images/menu/arroz-con-leche.png";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 const categories = ["Todos", "Especialidades", "Bebidas", "Postres"];
 const categoryStyles = {
@@ -157,7 +158,7 @@ function toggleAvailability(productId) {
               </span>
             </td>
             <td class="p-4 font-headline text-2xl text-primary">
-              {{ p.price.toFixed(2) }} €
+              {{ formatCurrency(p.price) }}
             </td>
             <td class="p-4">
               <button
