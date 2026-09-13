@@ -40,8 +40,14 @@ const demoProducts = [
 
 const orderType = ref("restaurant");
 
+const scheduledOrder = ref ("");
+
 const updateOrderType = (type) => {
   orderType.value = type;
+};
+
+const updateScheduledOrder = (value) => {
+  scheduledOrder.value = value;
 };
 
 // Añade productos de prueba mientras no tengamos la API
@@ -99,6 +105,7 @@ onMounted(() => {
           :tax="tax"
           :total="total"
           @update-order-type="updateOrderType"
+          @update-scheduled-order="updateScheduledOrder"
         />
       </div>
     </section>

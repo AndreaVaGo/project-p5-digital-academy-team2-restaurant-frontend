@@ -1,6 +1,5 @@
 <script setup>
-
-import OrderOptions from './OrderOptions.vue';
+import OrderOptions from "./OrderOptions.vue";
 
 defineProps({
   subtotal: {
@@ -17,7 +16,7 @@ defineProps({
   },
 });
 
-const emit = defineEmits(["update-order-type"]);
+const emit = defineEmits(["update-order-type", "update-scheduled-order"]);
 </script>
 
 <template>
@@ -32,7 +31,9 @@ const emit = defineEmits(["update-order-type"]);
 
     <div class="mt-6 space-y-5">
       <OrderOptions
-       @update-order-type="emit('update-order-type', $event)" />
+        @update-order-type="emit('update-order-type', $event)"
+        @update-scheduled-order="emit('update-scheduled-order', $event)"
+      />
     </div>
 
     <div class="my-6 border-t border-[var(--color-outline-variant)]"></div>

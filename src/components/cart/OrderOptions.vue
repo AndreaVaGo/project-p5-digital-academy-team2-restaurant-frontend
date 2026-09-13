@@ -3,7 +3,7 @@ import { ref } from "vue";
 
 const orderType = ref("restaurant");
 
-const emit = defineEmits(["update-order-type"]);
+const emit = defineEmits(["update-order-type", "update-scheduled-order"]);
 
 const selectOrderType = (type) => {
   orderType.value = type;
@@ -14,9 +14,7 @@ const selectOrderType = (type) => {
 <template>
   <div class="space-y-5">
     <div>
-      <p
-        class="font-ui text-sm font-semibold text-[var(--color-on-surface)]"
-      >
+      <p class="font-ui text-sm font-semibold text-[var(--color-on-surface)]">
         Tipo de pedido
       </p>
 
@@ -63,6 +61,7 @@ const selectOrderType = (type) => {
         type="text"
         placeholder="Ej: En media hora"
         class="mt-3 w-full rounded-2xl border border-[var(--color-outline-variant)] bg-[var(--color-surface)] px-4 py-3 font-body text-sm text-[var(--color-on-surface)] outline-none placeholder:text-[var(--color-outline)] focus:border-[var(--color-primary)]"
+        @input="emit('update-scheduled-order', scheduledOrder)"
       />
     </div>
   </div>
