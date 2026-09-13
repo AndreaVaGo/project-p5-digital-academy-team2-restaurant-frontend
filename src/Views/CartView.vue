@@ -2,6 +2,7 @@
 import { onMounted } from "vue";
 import CartItem from "../components/cart/CartItem.vue";
 import CartSummary from "../components/cart/CartSummary.vue";
+import CartEmpty from "../components/cart/CartEmpty.vue";
 import { useCart } from "../composables/useCart";
 
 import cachopoImage from "../assets/images/menu/cachopo-tradicional.png";
@@ -50,7 +51,6 @@ onMounted(() => {
     class="min-h-screen bg-[var(--color-surface)] px-4 py-10 sm:px-6 lg:px-8"
   >
     <section class="mx-auto w-full max-w-7xl">
-
       <!-- Cabecera -->
       <header class="mb-8">
         <h1
@@ -72,7 +72,7 @@ onMounted(() => {
       >
         <!-- Productos -->
         <section class="min-w-0">
-          <div class="space-y-6">
+          <div v-if="cartItems.length > 0" class="space-y-6">
             <CartItem
               v-for="item in cartItems"
               :key="item.product.id"
@@ -82,18 +82,15 @@ onMounted(() => {
               @remove="removeItem"
             />
           </div>
+
+          <CartEmpty v-else />
         </section>
 
         <!-- Resumen -->
-        <CartSummary
-          :subtotal="subtotal"
-          :tax="tax"
-          :total="total"
-        />
+        <CartSummary :subtotal="subtotal" :tax="tax" :total="total" />
       </div>
     </section>
   </main>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
