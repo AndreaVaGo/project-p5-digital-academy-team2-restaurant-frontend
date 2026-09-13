@@ -1,6 +1,14 @@
 <script setup>
 import { ref, computed } from "vue";
-import { Store, Bike, Eye } from "lucide-vue-next";
+import {
+  Store,
+  Bike,
+  Truck,
+  ChefHat,
+  CheckCircle2,
+  XCircle,
+  Eye,
+} from "lucide-vue-next";
 
 const tabs = [
   { key: "todos", label: "Todos" },
@@ -84,21 +92,34 @@ const statusMap = {
     label: "En cocina",
     bg: "bg-tertiary-container",
     text: "text-tertiary",
+    icon: ChefHat,
   },
   reparto: {
     label: "En reparto",
-    bg: "bg-secondary-container",
-    text: "text-secondary",
+    bg: "bg-highlight/20",
+    text: "text-highlight",
+    icon: Truck,
   },
   entregado: {
     label: "Entregado",
-    bg: "bg-secondary-container",
-    text: "text-secondary",
+    bg: "bg-primary-container",
+    text: "text-on-primary-container",
+    icon: CheckCircle2,
   },
   cancelado: {
     label: "Cancelado",
     bg: "bg-error-container",
     text: "text-error",
+    icon: XCircle,
+  },
+};
+
+const serviceMap = {
+  sala: { icon: Store, bg: "bg-secondary-container", text: "text-secondary" },
+  domicilio: {
+    icon: Bike,
+    bg: "bg-tertiary-container",
+    text: "text-tertiary",
   },
 };
 
@@ -130,21 +151,22 @@ const filteredOrders = computed(() => {
     >
       Gestión Operativa
     </span>
-    <h1 class="font-headline text-4xl font-semibold text-on-surface mt-3">
+    <h1 class="font-headline text-3xl font-semibold text-primary mt-3">
       Pedidos
     </h1>
-    <p class="font-body text-outline mt-2">
+    <p class="font-body text-white text-sm mt-1">
       Supervisión en tiempo real de pedidos de sala, entrega a domicilio y su
       estado actual.
     </p>
 
-    <div class="flex items-center justify-between mt-6">
+    <div class="flex items-center justify-between mt-4">
       <div class="flex gap-2">
         <button
           v-for="tab in tabs"
           :key="tab.key"
+          type="button"
           @click="activeTab = tab.key"
-          class="font-ui font-semibold px-4 py-2 rounded-full"
+          class="font-ui font-semibold text-sm px-4 py-2 rounded-full"
           :class="
             activeTab === tab.key
               ? 'bg-primary-container text-on-primary-container'
@@ -154,14 +176,19 @@ const filteredOrders = computed(() => {
           {{ tab.label }} ({{ counts[tab.key] }})
         </button>
       </div>
-      <span class="font-ui text-sm text-outline">● Actualizado hace 1 min</span>
+      <span
+        class="flex items-center gap-2 bg-secondary-container text-secondary font-ui text-sm font-semibold px-3 py-1.5 rounded-full"
+      >
+        <span class="w-2 h-2 rounded-full bg-secondary"></span>
+        Actualizado hace 1 min
+      </span>
     </div>
 
-    <div class="bg-surface-container-lowest rounded-xl mt-6 overflow-hidden">
+    <div class="bg-surface-container-lowest rounded-xl mt-4 overflow-hidden">
       <table class="w-full">
         <thead>
           <tr
-            class="font-ui text-xs uppercase text-outline text-left border-b border-outline-variant/30"
+            class="font-ui text-sm font-semibold text-outline text-left border-b border-outline-variant/30"
           >
             <th class="p-4">Nº Pedido</th>
             <th class="p-4">Cliente &amp; Teléfono</th>
@@ -181,17 +208,18 @@ const filteredOrders = computed(() => {
           >
             <td class="p-4 font-ui font-semibold text-primary">{{ o.id }}</td>
             <td class="p-4">
-              <p class="font-ui font-semibold text-on-surface">
+              <p class="font-headline text-base text-on-surface">
                 {{ o.customer }}
               </p>
               <p class="font-body text-sm text-outline">{{ o.phone }}</p>
             </td>
             <td class="p-4">
               <span
-                class="flex items-center gap-1.5 bg-secondary-container text-on-secondary-container font-ui text-sm px-3 py-1 rounded-full w-fit"
+                class="flex items-center gap-1.5 font-ui text-sm font-semibold px-3 py-1 rounded-full w-fit"
+                :class="[serviceMap[o.service].bg, serviceMap[o.service].text]"
               >
                 <component
-                  :is="o.service === 'domicilio' ? Bike : Store"
+                  :is="serviceMap[o.service].icon"
                   class="w-3.5 h-3.5"
                 />
                 {{ o.serviceLabel }}
@@ -200,20 +228,22 @@ const filteredOrders = computed(() => {
             <td class="p-4 font-body text-sm text-on-surface max-w-xs">
               {{ o.items }}
             </td>
-            <td class="p-4 text-right font-ui font-semibold">
+            <td class="p-4 text-right font-headline text-lg text-primary">
               {{ o.total.toFixed(2) }} €
             </td>
             <td class="p-4 font-body text-sm text-outline">{{ o.time }}</td>
             <td class="p-4">
               <span
-                class="font-ui text-sm font-semibold px-3 py-1 rounded-full"
+                class="flex items-center gap-1.5 font-ui text-sm font-semibold px-3 py-1 rounded-full w-fit"
                 :class="[statusMap[o.status].bg, statusMap[o.status].text]"
               >
+                <component :is="statusMap[o.status].icon" class="w-3.5 h-3.5" />
                 {{ statusMap[o.status].label }}
               </span>
             </td>
             <td class="p-4">
               <button
+                type="button"
                 class="flex items-center gap-1 font-ui text-sm font-semibold bg-surface-container-low px-3 py-2 rounded-lg"
               >
                 <Eye class="w-4 h-4" />
@@ -230,10 +260,20 @@ const filteredOrders = computed(() => {
           >Mostrando {{ filteredOrders.length }} de {{ orders.length }} pedidos
           registrados hoy</span
         >
-        <div class="flex items-center gap-3">
-          <button>Anterior</button>
-          <span class="font-semibold text-on-surface">1</span>
-          <button>Siguiente</button>
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            class="border border-outline-variant rounded-lg px-3 py-1.5 font-ui text-sm text-on-surface"
+          >
+            Anterior
+          </button>
+          <span class="font-ui font-semibold text-on-surface px-2">1</span>
+          <button
+            type="button"
+            class="border border-outline-variant rounded-lg px-3 py-1.5 font-ui text-sm text-on-surface"
+          >
+            Siguiente
+          </button>
         </div>
       </div>
     </div>
