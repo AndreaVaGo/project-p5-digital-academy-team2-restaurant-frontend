@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed } from "vue";
+import { formatCurrency } from "@/utils/formatCurrency";
 import {
   Store,
   Bike,
@@ -228,8 +229,8 @@ const filteredOrders = computed(() => {
             <td class="p-4 font-body text-sm text-on-surface max-w-xs">
               {{ o.items }}
             </td>
-            <td class="p-4 text-right font-headline text-lg text-primary">
-              {{ o.total.toFixed(2) }} €
+            <td class="p-4 text-right font-headline text-2xl text-primary">
+              {{ formatCurrency(o.total) }}
             </td>
             <td class="p-4 font-body text-sm text-outline">{{ o.time }}</td>
             <td class="p-4">
