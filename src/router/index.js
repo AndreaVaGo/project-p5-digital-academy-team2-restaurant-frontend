@@ -58,6 +58,7 @@ const routes = [
     name: "kitchen-dashboard",
     component: KitchenDashboardView,
   },
+  { path: "/reservation", name: "reservation", component: ReservationView, alias: "/reservation"},
 ];
 
 export default createRouter({
