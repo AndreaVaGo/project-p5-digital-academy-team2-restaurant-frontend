@@ -1,5 +1,13 @@
 <script setup>
 import { ref, computed } from "vue";
+import {
+    Clock,
+    Store,
+    Bike,
+    AlertTriangle,
+    CheckSquare,
+    Square,
+} from "lucide-vue-next";
 
 const columns = [
     { key: "nuevos", label: "Nuevos" },
@@ -61,6 +69,7 @@ const orders = ref([
         type: "mesa",
         locationLabel: "Local - Mesa 4",
         deliveredNote: "Entregado a camarero",
+        agoLabel: "Hace 2 min",
         status: "listos",
     },
     {
@@ -68,6 +77,7 @@ const orders = ref([
         type: "domicilio",
         locationLabel: "Domicilio",
         deliveredNote: "Recogido por repartidor",
+        agoLabel: "Hace 8 min",
         status: "listos",
     },
 ]);
@@ -78,6 +88,10 @@ const ordersByColumn = computed(() => {
         return acc;
     }, {});
 });
+
+function advanceStatus(order, nextStatus) {
+    order.status = nextStatus;
+}
 </script>
 
 <template>
@@ -104,6 +118,87 @@ const ordersByColumn = computed(() => {
                             class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-on-primary font-ui text-xs font-semibold">
                             {{ ordersByColumn[col.key].length }}
                         </span>
+                    </div>
+
+                    <div class="flex flex-col gap-3">
+                        <div v-for="order in ordersByColumn[col.key]" :key="order.id"
+                            class="bg-surface-container rounded-lg p-4 flex flex-col gap-3"
+                            :class="col.key === 'listos' ? 'opacity-50' : ''">
+                            <div class="flex items-center justify-between">
+                                <span class="font-headline text-lg text-on-surface"
+                                    :class="col.key === 'listos' ? 'line-through' : ''">
+                                    {{ order.id }}
+                                </span>
+                                <span
+                                    class="flex items-center gap-1 font-ui text-xs font-semibold px-2 py-1 rounded-full"
+                                    :class="order.type === 'mesa'
+                                            ? 'bg-secondary-container text-secondary'
+                                            : 'bg-tertiary-container text-tertiary'
+                                        ">
+                                    <component :is="order.type === 'mesa' ? Store : Bike" class="w-3.5 h-3.5" />
+                                    {{ order.locationLabel }}
+                                </span>
+                            </div>
+
+                            <template v-if="col.key === 'listos'">
+                                <p class="font-body text-sm text-outline">
+                                    {{ order.deliveredNote }}
+                                </p>
+                                <p class="font-body text-xs text-outline">
+                                    {{ order.agoLabel }}
+                                </p>
+                            </template>
+
+                            <template v-else>
+                                <span class="flex items-center gap-1 font-ui text-xs text-outline">
+                                    <Clock class="w-3.5 h-3.5" />
+                                    {{ order.elapsedMin }} min
+                                </span>
+
+                                <ul v-if="order.items" class="flex flex-col gap-1">
+                                    <li v-for="item in order.items" :key="item"
+                                        class="font-body text-sm text-on-surface">
+                                        {{ item }}
+                                    </li>
+                                </ul>
+
+                                <ul v-if="order.checklist" class="flex flex-col gap-1">
+                                    <li v-for="item in order.checklist" :key="item.name"
+                                        class="flex items-center gap-2 font-body text-sm"
+                                        :class="item.done ? 'text-outline line-through' : 'text-on-surface'">
+                                        <component :is="item.done ? CheckSquare : Square" class="w-4 h-4 shrink-0" />
+                                        {{ item.name }}
+                                    </li>
+                                </ul>
+
+                                <div v-if="order.note"
+                                    class="bg-error-container text-on-error-container rounded-lg p-3 flex items-start gap-2">
+                                    <AlertTriangle class="w-4 h-4 shrink-0 mt-0.5" />
+                                    <div>
+                                        <p class="font-ui text-xs font-semibold uppercase">
+                                            Indicación del cliente
+                                        </p>
+                                        <p class="font-body text-sm">{{ order.note }}</p>
+                                    </div>
+                                </div>
+
+                                <button v-if="col.key === 'nuevos'" type="button"
+                                    @click="advanceStatus(order, 'en-curso')"
+                                    class="w-full rounded bg-primary text-on-primary font-ui text-sm font-semibold uppercase py-2">
+                                    Empezar
+                                </button>
+                                <button v-if="col.key === 'en-curso'" type="button"
+                                    @click="advanceStatus(order, 'listos')"
+                                    class="w-full rounded bg-primary text-on-primary font-ui text-sm font-semibold uppercase py-2">
+                                    Listo
+                                </button>
+                                <button v-if="col.key === 'con-retraso'" type="button"
+                                    @click="advanceStatus(order, 'listos')"
+                                    class="w-full rounded bg-error text-on-error font-ui text-sm font-semibold uppercase py-2">
+                                    Marcar Listo Urgente
+                                </button>
+                            </template>
+                        </div>
                     </div>
                 </section>
             </div>
