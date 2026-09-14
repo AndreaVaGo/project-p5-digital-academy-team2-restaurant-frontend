@@ -11,6 +11,7 @@ import AdminOrdersView from "../Views/AdminOrdersView.vue";
 import AdminBillingView from "../Views/AdminBillingView.vue";
 import AdminWelcomeView from "../Views/AdminWelcomeView.vue";
 import ProductDetailView from "../Views/ProductDetailView.vue";
+import KitchenDashboardView from "../Views/KitchenDashboardView.vue";
 
 const routes = [
   { path: "/", name: "home", component: Home, alias: "/home" },
@@ -49,6 +50,11 @@ const routes = [
     path: "/product/:id",
     name: "product-detail",
     component: ProductDetailView,
+  },
+  {
+    path: "/cocina",
+    name: "kitchen-dashboard",
+    component: KitchenDashboardView,
   },
 ];
 
