@@ -87,19 +87,19 @@ function downloadReport() {
       Auditoría rigurosa y exportación documental.
     </p>
 
-    <div class="grid grid-cols-[1fr_320px] gap-4 mt-4">
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4 mt-4">
       <div>
         <h2 class="font-headline text-xl text-on-surface mb-3">
           Últimas Facturas
         </h2>
 
         <div
-          class="bg-surface-container-lowest rounded-xl p-4 flex items-center gap-4"
+          class="bg-surface-container-lowest rounded-xl p-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3"
         >
           <div
             class="flex-1 flex items-center gap-2 bg-surface-container-low rounded-lg px-4 py-2"
           >
-            <Search class="w-4 h-4 text-outline" />
+            <Search class="w-4 h-4 text-outline shrink-0" />
             <input
               v-model="searchQuery"
               type="text"
@@ -107,26 +107,28 @@ function downloadReport() {
               class="bg-transparent w-full font-body text-on-surface outline-none"
             />
           </div>
-          <button
-            v-for="tab in statusTabs"
-            :key="tab"
-            type="button"
-            @click="activeStatus = tab"
-            class="font-ui font-semibold text-sm px-4 py-2 rounded-full whitespace-nowrap"
-            :class="
-              activeStatus === tab
-                ? [statusTabStyles[tab].bg, statusTabStyles[tab].text]
-                : 'bg-surface-container-low text-on-surface'
-            "
-          >
-            {{ tab }}
-          </button>
+          <div class="flex gap-2 overflow-x-auto">
+            <button
+              v-for="tab in statusTabs"
+              :key="tab"
+              type="button"
+              @click="activeStatus = tab"
+              class="font-ui font-semibold text-sm px-4 py-2 rounded-full whitespace-nowrap shrink-0"
+              :class="
+                activeStatus === tab
+                  ? [statusTabStyles[tab].bg, statusTabStyles[tab].text]
+                  : 'bg-surface-container-low text-on-surface'
+              "
+            >
+              {{ tab }}
+            </button>
+          </div>
         </div>
 
         <div
-          class="bg-surface-container-lowest rounded-xl mt-3 overflow-hidden"
+          class="bg-surface-container-lowest rounded-xl mt-3 overflow-x-auto"
         >
-          <table class="w-full">
+          <table class="w-full min-w-140">
             <thead>
               <tr
                 class="font-ui text-sm font-semibold text-outline text-left border-b border-outline-variant/30"
@@ -145,24 +147,32 @@ function downloadReport() {
                 :key="inv.id"
                 class="border-b border-outline-variant/20 last:border-0"
               >
-                <td class="p-4 font-ui font-semibold text-primary">
+                <td
+                  class="p-4 font-ui font-semibold text-primary whitespace-nowrap"
+                >
                   {{ inv.id }}
                 </td>
-                <td class="p-4 font-body text-on-surface">
+                <td class="p-4 font-body text-on-surface whitespace-nowrap">
                   {{ inv.customer }}
                 </td>
-                <td class="p-4 font-body text-sm text-outline">
+                <td
+                  class="p-4 font-body text-sm text-outline whitespace-nowrap"
+                >
                   {{ inv.date }}
                 </td>
-                <td class="p-4 font-headline text-2xl text-primary">
+                <td
+                  class="p-4 font-headline text-2xl text-primary whitespace-nowrap"
+                >
                   {{ formatCurrency(inv.amount) }}
                 </td>
-                <td class="p-4 font-body text-sm text-outline">
+                <td
+                  class="p-4 font-body text-sm text-outline whitespace-nowrap"
+                >
                   {{ inv.method }}
                 </td>
                 <td class="p-4">
                   <span
-                    class="font-ui text-sm font-semibold px-3 py-1 rounded-full"
+                    class="font-ui text-sm font-semibold px-3 py-1 rounded-full whitespace-nowrap"
                     :class="statusClass(inv.status)"
                   >
                     {{ inv.status }}
@@ -172,7 +182,7 @@ function downloadReport() {
             </tbody>
           </table>
           <div
-            class="flex items-center justify-between p-4 font-ui text-sm text-outline"
+            class="flex flex-wrap items-center justify-between gap-3 p-4 font-ui text-sm text-outline"
           >
             <span
               >Mostrando {{ filteredInvoices.length }} de 142 registros</span
