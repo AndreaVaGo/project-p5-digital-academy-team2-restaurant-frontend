@@ -137,7 +137,7 @@ const starProducts = ref([
       Visión general del rendimiento de Goxu hoy.
     </p>
 
-    <div class="grid grid-cols-4 gap-4 mt-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
       <div
         v-for="stat in stats"
         :key="stat.label"
@@ -159,8 +159,8 @@ const starProducts = ref([
       </div>
     </div>
 
-    <div class="grid grid-cols-4 gap-4 mt-4">
-      <div class="bg-surface-container-lowest rounded-xl p-5 col-span-3">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mt-4">
+      <div class="bg-surface-container-lowest rounded-xl p-5 lg:col-span-3">
         <div class="flex items-center justify-between">
           <h2 class="font-headline text-lg text-on-surface">
             Tendencia de Ventas (Semana)
@@ -170,16 +170,16 @@ const starProducts = ref([
             >Esta Semana</span
           >
         </div>
-        <div class="flex gap-3 mt-4">
+        <div class="flex gap-3 mt-4 overflow-x-auto">
           <div
-            class="flex flex-col justify-between h-40 font-ui text-xs text-outline"
+            class="flex flex-col justify-between h-40 font-ui text-xs text-outline shrink-0"
           >
             <span>3k</span>
             <span>2k</span>
             <span>1k</span>
             <span>0</span>
           </div>
-          <div class="flex-1 flex items-end gap-3 h-40">
+          <div class="flex-1 flex items-end gap-3 h-40 min-w-100">
             <div
               v-for="(d, index) in weeklySales"
               :key="d.day"
@@ -230,7 +230,9 @@ const starProducts = ref([
       </div>
     </div>
 
-    <div class="bg-surface-container-lowest rounded-xl p-4 mt-4 flex-1">
+    <div
+      class="bg-surface-container-lowest rounded-xl p-4 mt-4 flex-1 overflow-x-auto"
+    >
       <div class="flex items-center justify-between mb-3">
         <h2 class="font-headline text-lg text-on-surface">
           Productos Estrella
@@ -241,7 +243,7 @@ const starProducts = ref([
           >Ver menú completo</RouterLink
         >
       </div>
-      <table class="w-full">
+      <table class="w-full min-w-125">
         <thead>
           <tr
             class="font-ui text-xs text-outline text-left border-b border-outline-variant/30"
