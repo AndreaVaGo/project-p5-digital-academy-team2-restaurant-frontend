@@ -106,16 +106,19 @@ function advanceStatus(order, nextStatus) {
         </header>
 
         <main class="p-4 md:p-6">
+            <h1 class="sr-only">Dashboard de Cocina</h1>
             <div
                 class="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 md:grid md:grid-cols-4 md:overflow-visible md:pb-0">
-                <section v-for="col in columns" :key="col.key"
+                <section v-for="col in columns" :key="col.key" :aria-labelledby="`col-title-${col.key}`"
                     class="shrink-0 w-[85vw] max-w-sm snap-start md:w-auto md:max-w-none bg-surface-container-lowest rounded-xl p-4">
                     <div class="flex items-center justify-between mb-4">
-                        <span class="font-ui text-xs font-semibold uppercase tracking-caps text-outline">
+                        <h2 :id="`col-title-${col.key}`"
+                            class="font-ui text-xs font-semibold uppercase tracking-caps text-outline">
                             {{ col.label }}
-                        </span>
+                        </h2>
                         <span
-                            class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-on-primary font-ui text-xs font-semibold">
+                            class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-on-primary font-ui text-xs font-semibold"
+                            :aria-label="`${ordersByColumn[col.key].length} pedidos`">
                             {{ ordersByColumn[col.key].length }}
                         </span>
                     </div>
@@ -125,17 +128,18 @@ function advanceStatus(order, nextStatus) {
                             class="bg-surface-container rounded-lg p-4 flex flex-col gap-3"
                             :class="col.key === 'listos' ? 'opacity-50' : ''">
                             <div class="flex items-center justify-between">
-                                <span class="font-headline text-lg text-on-surface"
+                                <h3 class="font-headline text-lg text-on-surface"
                                     :class="col.key === 'listos' ? 'line-through' : ''">
                                     {{ order.id }}
-                                </span>
+                                </h3>
                                 <span
                                     class="flex items-center gap-1 font-ui text-xs font-semibold px-2 py-1 rounded-full"
                                     :class="order.type === 'mesa'
-                                            ? 'bg-secondary-container text-secondary'
-                                            : 'bg-tertiary-container text-tertiary'
+                                        ? 'bg-secondary-container text-secondary'
+                                        : 'bg-tertiary-container text-tertiary'
                                         ">
-                                    <component :is="order.type === 'mesa' ? Store : Bike" class="w-3.5 h-3.5" />
+                                    <component :is="order.type === 'mesa' ? Store : Bike" class="w-3.5 h-3.5"
+                                        aria-hidden="true" />
                                     {{ order.locationLabel }}
                                 </span>
                             </div>
@@ -151,7 +155,7 @@ function advanceStatus(order, nextStatus) {
 
                             <template v-else>
                                 <span class="flex items-center gap-1 font-ui text-xs text-outline">
-                                    <Clock class="w-3.5 h-3.5" />
+                                    <Clock class="w-3.5 h-3.5" aria-hidden="true" />
                                     {{ order.elapsedMin }} min
                                 </span>
 
@@ -166,14 +170,16 @@ function advanceStatus(order, nextStatus) {
                                     <li v-for="item in order.checklist" :key="item.name"
                                         class="flex items-center gap-2 font-body text-sm"
                                         :class="item.done ? 'text-outline line-through' : 'text-on-surface'">
-                                        <component :is="item.done ? CheckSquare : Square" class="w-4 h-4 shrink-0" />
+                                        <component :is="item.done ? CheckSquare : Square" class="w-4 h-4 shrink-0"
+                                            aria-hidden="true" />
+                                        <span class="sr-only">{{ item.done ? "Completado" : "Pendiente" }}: </span>
                                         {{ item.name }}
                                     </li>
                                 </ul>
 
                                 <div v-if="order.note"
                                     class="bg-error-container text-on-error-container rounded-lg p-3 flex items-start gap-2">
-                                    <AlertTriangle class="w-4 h-4 shrink-0 mt-0.5" />
+                                    <AlertTriangle class="w-4 h-4 shrink-0 mt-0.5" aria-hidden="true" />
                                     <div>
                                         <p class="font-ui text-xs font-semibold uppercase">
                                             Indicación del cliente
