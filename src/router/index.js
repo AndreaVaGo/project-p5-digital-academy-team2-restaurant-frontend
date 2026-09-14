@@ -7,6 +7,8 @@ import AdminDashboardView from '../Views/AdminDashboardView.vue'
 import AdminProductsView from '../Views/AdminProductsView.vue'
 import AdminOrdersView from '../Views/AdminOrdersView.vue'
 import AdminBillingView from '../Views/AdminBillingView.vue'
+import AdminWelcomeView from '../Views/AdminWelcomeView.vue'
+import ProductDetailView from '../Views/ProductDetailView.vue'
 
 const routes = [
   { path: '/', name: 'home', component: Home, alias: '/home' },
@@ -22,6 +24,8 @@ const routes = [
       { path: 'facturacion', name: 'admin-billing', component: AdminBillingView },
     ],
   },
+  { path: '/admin/welcome', name: 'admin-welcome', component: AdminWelcomeView },
+  { path: '/product/:id', name: 'product-detail', component: ProductDetailView },
 ]
 
 export default createRouter({
