@@ -1,9 +1,10 @@
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import CartItem from "../components/cart/CartItem.vue";
 import CartSummary from "../components/cart/CartSummary.vue";
 import CartEmpty from "../components/cart/CartEmpty.vue";
 import { useCart } from "../composables/useCart";
+import { useOrder } from "../composables/useOrder.js";
 
 import cachopoImage from "../assets/images/menu/cachopo-tradicional.png";
 import tablaQuesosImage from "../assets/images/eventos/chosco-evento.png"; //imagenes luego se cambian con la Api externa
@@ -18,6 +19,14 @@ const {
   increaseQuantity,
   decreaseQuantity,
 } = useCart();
+const {
+  orderType,
+  scheduledOrder,
+  orderItems,
+  order,
+  updateOrderType,
+  updateScheduledOrder,
+} = useOrder(cartItems);
 
 // Productos temporales para probar el carrito
 const demoProducts = [
@@ -36,33 +45,6 @@ const demoProducts = [
     image: tablaQuesosImage,
   },
 ];
-
-const orderType = ref("restaurant");
-
-const scheduledOrder = ref ("");
-
-const updateOrderType = (type) => {
-  orderType.value = type;
-};
-
-const updateScheduledOrder = (value) => {
-  scheduledOrder.value = value;
-};
-
-const orderItems = computed(() => {
-  return cartItems.value.map((item) => ({
-    productId: item.product.id,
-    quantity: item.quantity,
-  }));
-});
-
-const order = computed(() => {
-  return {
-    type: orderType.value,
-    scheduledAt: scheduledOrder.value || null,
-    items: orderItems.value,
-  };
-});
 
 // Añade productos de prueba mientras no tengamos la API
 onMounted(() => {
