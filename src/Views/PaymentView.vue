@@ -2,8 +2,13 @@
 import { ref } from "vue";
 import PaymentMethodSelector from "../components/payment/PaymentMethodSelector.vue";
 import PaymentCard from "../components/payment/PaymentCard.vue";
+import PaymentSummary from "../components/payment/PaymentSummary.vue";
 
 const paymentMethod = ref("card");
+
+const subtotal = ref(42);
+const tax = ref(4.2);
+const total = ref(46.2);
 
 const updatePaymentMethod = (method) => {
   paymentMethod.value = method;
@@ -38,7 +43,7 @@ const updatePaymentMethod = (method) => {
         </section>
 
         <aside>
-          <!-- Resumen del pedido -->
+          <PaymentSummary :subtotal="subtotal" :tax="tax" :total="total" />
         </aside>
       </div>
     </section>
