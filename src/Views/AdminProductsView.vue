@@ -65,7 +65,9 @@ function toggleAvailability(productId) {
 
 <template>
   <div>
-    <div class="flex items-start justify-between">
+    <div
+      class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
+    >
       <div>
         <h1 class="font-headline text-3xl font-semibold text-primary">
           Gestión de Productos
@@ -76,19 +78,19 @@ function toggleAvailability(productId) {
       </div>
       <button
         type="button"
-        class="bg-primary-container text-white font-ui font-semibold px-5 py-3 rounded-xl"
+        class="bg-primary-container text-white font-ui font-semibold px-5 py-3 rounded-xl w-full sm:w-auto"
       >
         + AÑADIR PRODUCTO
       </button>
     </div>
 
     <div
-      class="bg-surface-container-lowest rounded-xl p-4 mt-4 flex items-center gap-4"
+      class="bg-surface-container-lowest rounded-xl p-4 mt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3"
     >
       <div
         class="flex-1 flex items-center gap-2 bg-surface-container-low rounded-lg px-4 py-2"
       >
-        <Search class="w-4 h-4 text-outline" />
+        <Search class="w-4 h-4 text-outline shrink-0" />
         <input
           v-model="searchQuery"
           type="text"
@@ -96,24 +98,83 @@ function toggleAvailability(productId) {
           class="bg-transparent w-full font-body text-on-surface outline-none"
         />
       </div>
-      <button
-        v-for="cat in categories"
-        :key="cat"
-        type="button"
-        @click="activeCategory = cat"
-        class="font-ui font-semibold text-sm px-4 py-2 rounded-full whitespace-nowrap"
-        :class="
-          activeCategory === cat
-            ? [categoryStyles[cat].bg, categoryStyles[cat].text]
-            : 'bg-surface-container-low text-on-surface'
-        "
-      >
-        {{ cat }}
-      </button>
+      <div class="flex flex-wrap gap-2">
+        <button
+          v-for="cat in categories"
+          :key="cat"
+          type="button"
+          @click="activeCategory = cat"
+          class="font-ui font-semibold text-sm px-4 py-2 rounded-full whitespace-nowrap"
+          :class="
+            activeCategory === cat
+              ? [categoryStyles[cat].bg, categoryStyles[cat].text]
+              : 'bg-surface-container-low text-on-surface'
+          "
+        >
+          {{ cat }}
+        </button>
+      </div>
     </div>
 
-    <div class="bg-surface-container-lowest rounded-xl mt-4 overflow-hidden">
-      <table class="w-full">
+    <!-- Tarjetas: solo en móvil -->
+    <div class="md:hidden flex flex-col gap-3 mt-4">
+      <div
+        v-for="p in filteredProducts"
+        :key="p.id"
+        class="bg-surface-container-lowest rounded-xl p-4 flex flex-col gap-3"
+      >
+        <div class="flex items-center gap-4">
+          <img
+            :src="p.image"
+            alt=""
+            class="w-16 h-16 rounded-lg object-cover shrink-0"
+          />
+          <div class="flex-1">
+            <p class="font-headline text-xl text-on-surface">{{ p.name }}</p>
+            <p class="font-body text-sm text-outline">{{ p.description }}</p>
+          </div>
+        </div>
+        <div class="flex items-center justify-between">
+          <span
+            class="font-ui text-xs px-3 py-1 rounded-full whitespace-nowrap"
+            :class="[
+              categoryStyles[p.category]?.bg || 'bg-secondary-container',
+              categoryStyles[p.category]?.text || 'text-secondary',
+            ]"
+          >
+            {{ p.category }}
+          </span>
+          <span class="font-headline text-2xl text-primary">{{
+            formatCurrency(p.price)
+          }}</span>
+        </div>
+        <div
+          class="flex items-center justify-between border-t border-outline-variant/20 pt-3"
+        >
+          <span class="font-ui text-sm font-semibold text-on-surface"
+            >Disponibilidad</span
+          >
+          <button
+            type="button"
+            @click="toggleAvailability(p.id)"
+            class="w-11 h-6 rounded-full relative transition-colors cursor-pointer appearance-none border-0 p-0 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            :class="p.available ? 'bg-primary' : 'bg-outline-variant'"
+            :aria-pressed="p.available"
+          >
+            <span
+              class="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform block"
+              :class="p.available ? 'translate-x-5' : 'translate-x-0'"
+            ></span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla: desde tablet en adelante -->
+    <div
+      class="hidden md:block bg-surface-container-lowest rounded-xl mt-4 overflow-x-auto"
+    >
+      <table class="w-full min-w-160">
         <thead>
           <tr
             class="font-ui text-xs text-outline text-left border-b border-outline-variant/30"
@@ -135,7 +196,7 @@ function toggleAvailability(productId) {
               <img
                 :src="p.image"
                 alt=""
-                class="w-16 h-16 rounded-lg object-cover"
+                class="w-16 h-16 rounded-lg object-cover shrink-0"
               />
               <div>
                 <p class="font-headline text-xl text-on-surface">
@@ -148,7 +209,7 @@ function toggleAvailability(productId) {
             </td>
             <td class="p-4">
               <span
-                class="font-ui text-xs px-3 py-1 rounded-full"
+                class="font-ui text-xs px-3 py-1 rounded-full whitespace-nowrap"
                 :class="[
                   categoryStyles[p.category]?.bg || 'bg-secondary-container',
                   categoryStyles[p.category]?.text || 'text-secondary',
@@ -157,7 +218,9 @@ function toggleAvailability(productId) {
                 {{ p.category }}
               </span>
             </td>
-            <td class="p-4 font-headline text-2xl text-primary">
+            <td
+              class="p-4 font-headline text-2xl text-primary whitespace-nowrap"
+            >
               {{ formatCurrency(p.price) }}
             </td>
             <td class="p-4">
