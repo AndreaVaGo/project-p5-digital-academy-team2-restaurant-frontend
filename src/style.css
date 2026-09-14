@@ -123,6 +123,7 @@
   body {
     margin: 0;
     background-color: #7c8874;
+    background-color: var(--color-outline-variant);
   }
 
   h1,
@@ -370,4 +371,9 @@
       border-right-color: var(--border);
     }
   }
+}
+}
+body {
+  margin: 0;
+}
 }
