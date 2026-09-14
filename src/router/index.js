@@ -3,12 +3,61 @@ import Home from "../components/Home.vue";
 import LoginView from "../Views/LoginView.vue";
 import RegisterView from "../Views/RegisterView.vue";
 import CartView from "../Views/CartView.vue";
+import MyAccountView from "../Views/MyAccountView.vue";
+import CustomerProfileView from "../Views/CustomerProfileView.vue";
+import AdminLayout from "../Views/AdminLayout.vue";
+import AdminDashboardView from "../Views/AdminDashboardView.vue";
+import AdminProductsView from "../Views/AdminProductsView.vue";
+import AdminOrdersView from "../Views/AdminOrdersView.vue";
+import AdminBillingView from "../Views/AdminBillingView.vue";
+import AdminWelcomeView from "../Views/AdminWelcomeView.vue";
+import ProductDetailView from "../Views/ProductDetailView.vue";
+import KitchenDashboardView from "../Views/KitchenDashboardView.vue";
 
 const routes = [
   { path: "/", name: "home", component: Home, alias: "/home" },
   { path: "/login", name: "login", component: LoginView, alias: "/login" },
   { path: "/register", name: "register", component: RegisterView },
   { path: "/cart",name: "cart", component: CartView, alias: "/cart"  },
+  { path: "/account", name: "account", component: MyAccountView },
+  {
+    path: "/account/profile",
+    name: "customer-profile",
+    component: CustomerProfileView,
+  },
+  {
+    path: "/admin",
+    component: AdminLayout,
+    children: [
+      { path: "", name: "admin-dashboard", component: AdminDashboardView },
+      {
+        path: "productos",
+        name: "admin-products",
+        component: AdminProductsView,
+      },
+      { path: "pedidos", name: "admin-orders", component: AdminOrdersView },
+      {
+        path: "facturacion",
+        name: "admin-billing",
+        component: AdminBillingView,
+      },
+    ],
+  },
+  {
+    path: "/admin/welcome",
+    name: "admin-welcome",
+    component: AdminWelcomeView,
+  },
+  {
+    path: "/product/:id",
+    name: "product-detail",
+    component: ProductDetailView,
+  },
+  {
+    path: "/cocina",
+    name: "kitchen-dashboard",
+    component: KitchenDashboardView,
+  },
 ];
 
 export default createRouter({
