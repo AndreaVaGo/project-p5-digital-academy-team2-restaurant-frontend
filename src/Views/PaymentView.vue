@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from "vue";
 import PaymentMethodSelector from "../components/payment/PaymentMethodSelector.vue";
+import PaymentCard from "../components/payment/PaymentCard.vue";
 
 const paymentMethod = ref("card");
 
@@ -33,6 +34,7 @@ const updatePaymentMethod = (method) => {
       >
         <section>
           <PaymentMethodSelector @update-method="updatePaymentMethod" />
+          <PaymentCard v-if="paymentMethod === 'card'" />
         </section>
 
         <aside>
