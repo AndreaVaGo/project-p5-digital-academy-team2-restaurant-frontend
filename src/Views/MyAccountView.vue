@@ -26,19 +26,20 @@ function verSeguimiento() {
 
 <template>
   <div
-    class="text-left bg-outline-variant/50 px-8 py-6"
-    style="background-color: rgba(189, 203, 178, 0.5); padding: 1.5rem 2rem"
+    class="text-left bg-outline-variant/50 px-4 py-6 sm:px-6 md:px-8"
+    style="background-color: rgba(189, 203, 178, 0.5)"
   >
-    <h1 class="font-headline text-3xl font-semibold text-primary">MI CUENTA</h1>
+    <h1 class="font-headline text-2xl sm:text-3xl font-semibold text-primary">
+      MI CUENTA
+    </h1>
 
     <!-- Accesos rápidos -->
-    <div class="grid grid-cols-3 gap-3 mt-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
       <article
         class="bg-surface-container-lowest rounded-xl p-4 flex flex-col"
         style="
           background-color: var(--color-surface-container-lowest);
           border-radius: 1rem;
-          padding: 1rem;
         "
       >
         <div
@@ -65,7 +66,6 @@ function verSeguimiento() {
         style="
           background-color: var(--color-surface-container-lowest);
           border-radius: 1rem;
-          padding: 1rem;
         "
       >
         <div
@@ -88,11 +88,10 @@ function verSeguimiento() {
       </article>
 
       <article
-        class="bg-surface-container-lowest rounded-xl p-4 flex flex-col"
+        class="bg-surface-container-lowest rounded-xl p-4 flex flex-col sm:col-span-2 lg:col-span-1"
         style="
           background-color: var(--color-surface-container-lowest);
           border-radius: 1rem;
-          padding: 1rem;
         "
       >
         <div
@@ -116,13 +115,12 @@ function verSeguimiento() {
     </div>
 
     <!-- Pedido actual + Mi perfil -->
-    <div class="grid grid-cols-[1.6fr_1fr] gap-4 mt-3">
+    <div class="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-4 mt-3">
       <div
         class="bg-surface-container-lowest rounded-xl p-5"
         style="
           background-color: var(--color-surface-container-lowest);
           border-radius: 1rem;
-          padding: 1.25rem;
         "
       >
         <div class="flex items-center justify-between">
@@ -134,7 +132,7 @@ function verSeguimiento() {
         </div>
         <hr class="border-outline-variant/40 my-3" />
 
-        <div class="grid grid-cols-4 gap-10">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 lg:gap-10">
           <div class="flex flex-col gap-1">
             <span class="font-ui text-xs font-semibold text-outline"
               >FECHA</span
@@ -172,10 +170,10 @@ function verSeguimiento() {
           <li
             v-for="step in trackerSteps"
             :key="step.key"
-            class="relative z-10 flex flex-col items-center gap-2 flex-1"
+            class="relative z-10 flex flex-col items-center gap-1 sm:gap-2 flex-1"
           >
             <span
-              class="w-9 h-9 rounded-full flex items-center justify-center"
+              class="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
               :class="
                 step.done
                   ? 'bg-primary-container text-white'
@@ -190,7 +188,7 @@ function verSeguimiento() {
               <component :is="step.icon" class="w-4 h-4" />
             </span>
             <span
-              class="font-ui text-xs"
+              class="font-ui text-[10px] sm:text-xs text-center leading-tight"
               :class="
                 step.active ? 'text-primary font-semibold' : 'text-outline'
               "
@@ -203,7 +201,7 @@ function verSeguimiento() {
         <button
           type="button"
           @click="verSeguimiento"
-          class="bg-primary-container text-white font-ui font-semibold px-5 py-2 rounded-xl flex items-center gap-2"
+          class="w-full sm:w-auto bg-primary-container text-white font-ui font-semibold px-5 py-2 rounded-xl flex items-center justify-center gap-2"
         >
           <BookOpenCheck class="w-4 h-4" />
           VER SEGUIMIENTO
@@ -215,7 +213,6 @@ function verSeguimiento() {
         style="
           background-color: var(--color-surface-container-lowest);
           border-radius: 1rem;
-          padding: 1.25rem;
         "
       >
         <h2 class="font-headline text-xl text-on-surface">Mi perfil</h2>
@@ -239,7 +236,7 @@ function verSeguimiento() {
           <span class="font-ui text-xs font-semibold text-outline block mb-1"
             >EMAIL</span
           >
-          <span class="font-body text-sm text-on-surface"
+          <span class="font-body text-sm text-on-surface wrap-break-word"
             >alejandro.garcia@example.com</span
           >
         </div>
