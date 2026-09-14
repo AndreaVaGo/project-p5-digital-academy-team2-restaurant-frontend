@@ -57,20 +57,20 @@ function dictarCiudad() {
 
 <template>
   <div
-    class="text-left bg-outline-variant/50 px-8 py-6"
-    style="background-color: rgba(189, 203, 178, 0.5); padding: 1.5rem 2rem"
+    class="text-left bg-outline-variant/50 px-4 py-6 sm:px-6 md:px-8"
+    style="background-color: rgba(189, 203, 178, 0.5)"
   >
-    <h1 class="font-headline text-3xl font-semibold text-primary">
+    <h1 class="font-headline text-2xl sm:text-3xl font-semibold text-primary">
       Perfil de Cliente
     </h1>
     <p class="font-body text-white text-sm mt-1">
       Gestiona tus datos personales y preferencias para tus pedidos en GiaComo.
     </p>
 
-    <div class="grid grid-cols-[260px_1fr] gap-6 mt-6">
+    <div class="grid grid-cols-1 md:grid-cols-[260px_1fr] gap-6 mt-6">
       <!-- Columna izquierda: foto, nombre y nivel -->
-      <aside class="flex flex-col">
-        <div class="relative w-full aspect-square">
+      <aside class="flex flex-col items-center md:items-stretch">
+        <div class="relative w-full max-w-55 md:max-w-none aspect-square">
           <img
             src="https://i.pravatar.cc/300?img=12"
             alt="Foto de perfil de Alejandro García"
@@ -85,13 +85,17 @@ function dictarCiudad() {
           </button>
         </div>
 
-        <h2 class="font-headline text-xl text-on-surface mt-4">
+        <h2
+          class="font-headline text-xl text-on-surface mt-4 text-center md:text-left"
+        >
           {{ form.nombre }} {{ form.apellidos }}
         </h2>
-        <p class="font-body text-sm text-outline">{{ form.email }}</p>
+        <p class="font-body text-sm text-outline text-center md:text-left">
+          {{ form.email }}
+        </p>
 
         <div
-          class="flex items-center gap-3 bg-surface-container-lowest rounded-xl p-4 mt-4"
+          class="flex items-center gap-3 bg-surface-container-lowest rounded-xl p-4 mt-4 w-full max-w-55 md:max-w-none"
           style="
             background-color: var(--color-surface-container-lowest);
             border-radius: 1rem;
@@ -110,15 +114,14 @@ function dictarCiudad() {
 
       <!-- Formulario -->
       <section
-        class="bg-surface-container-lowest rounded-xl p-8"
+        class="bg-surface-container-lowest rounded-xl p-5 sm:p-8"
         style="
           background-color: var(--color-surface-container-lowest);
           border-radius: 1rem;
-          padding: 2rem;
         "
       >
         <form @submit.prevent="guardarCambios">
-          <div class="grid grid-cols-2 gap-8">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-8">
             <div class="flex flex-col">
               <label
                 for="nombre"
@@ -181,7 +184,7 @@ function dictarCiudad() {
             />
           </div>
 
-          <div class="grid grid-cols-2 gap-8 mt-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-8 mt-6">
             <div class="flex flex-col">
               <label
                 for="cp"
@@ -226,10 +229,10 @@ function dictarCiudad() {
             </div>
           </div>
 
-          <div class="flex justify-end mt-8">
+          <div class="flex justify-center sm:justify-end mt-8">
             <button
               type="submit"
-              class="bg-primary-container text-white font-ui font-semibold px-7 py-3 rounded-xl"
+              class="w-full sm:w-auto bg-primary-container text-white font-ui font-semibold px-7 py-3 rounded-xl"
             >
               Guardar cambios
             </button>
