@@ -4,6 +4,13 @@ import LoginView from "../Views/LoginView.vue";
 import RegisterView from "../Views/RegisterView.vue";
 import MyAccountView from "../Views/MyAccountView.vue";
 import CustomerProfileView from "../Views/CustomerProfileView.vue";
+import AdminLayout from "../Views/AdminLayout.vue";
+import AdminDashboardView from "../Views/AdminDashboardView.vue";
+import AdminProductsView from "../Views/AdminProductsView.vue";
+import AdminOrdersView from "../Views/AdminOrdersView.vue";
+import AdminBillingView from "../Views/AdminBillingView.vue";
+import AdminWelcomeView from "../Views/AdminWelcomeView.vue";
+import ProductDetailView from "../Views/ProductDetailView.vue";
 
 const routes = [
   { path: "/", name: "home", component: Home, alias: "/home" },
@@ -15,39 +22,37 @@ const routes = [
     name: "customer-profile",
     component: CustomerProfileView,
   },
-];
-import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../components/Home.vue'
-import LoginView from '../Views/LoginView.vue'
-import RegisterView from '../Views/RegisterView.vue'
-import AdminLayout from '../Views/AdminLayout.vue'
-import AdminDashboardView from '../Views/AdminDashboardView.vue'
-import AdminProductsView from '../Views/AdminProductsView.vue'
-import AdminOrdersView from '../Views/AdminOrdersView.vue'
-import AdminBillingView from '../Views/AdminBillingView.vue'
-import AdminWelcomeView from '../Views/AdminWelcomeView.vue'
-import ProductDetailView from '../Views/ProductDetailView.vue'
-
-const routes = [
-  { path: '/', name: 'home', component: Home, alias: '/home' },
-  { path: '/login', name: 'login', component: LoginView, alias: '/login' },
-  { path: '/register', name: 'register', component: RegisterView },
   {
-    path: '/admin',
+    path: "/admin",
     component: AdminLayout,
     children: [
-      { path: '', name: 'admin-dashboard', component: AdminDashboardView },
-      { path: 'productos', name: 'admin-products', component: AdminProductsView },
-      { path: 'pedidos', name: 'admin-orders', component: AdminOrdersView },
-      { path: 'facturacion', name: 'admin-billing', component: AdminBillingView },
+      { path: "", name: "admin-dashboard", component: AdminDashboardView },
+      {
+        path: "productos",
+        name: "admin-products",
+        component: AdminProductsView,
+      },
+      { path: "pedidos", name: "admin-orders", component: AdminOrdersView },
+      {
+        path: "facturacion",
+        name: "admin-billing",
+        component: AdminBillingView,
+      },
     ],
   },
-  { path: '/admin/welcome', name: 'admin-welcome', component: AdminWelcomeView },
-  { path: '/product/:id', name: 'product-detail', component: ProductDetailView },
-]
+  {
+    path: "/admin/welcome",
+    name: "admin-welcome",
+    component: AdminWelcomeView,
+  },
+  {
+    path: "/product/:id",
+    name: "product-detail",
+    component: ProductDetailView,
+  },
+];
 
 export default createRouter({
   history: createWebHistory(),
   routes,
 });
-})
