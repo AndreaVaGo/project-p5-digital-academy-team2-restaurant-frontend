@@ -5,18 +5,32 @@ import PaymentCard from "../components/payment/PaymentCard.vue";
 import PaymentSummary from "../components/payment/PaymentSummary.vue";
 import PaymentAction from "../components/payment/PaymentAction.vue";
 import { usePayment } from "../composables/usePayment";
+import BaseModal from "../components/BaseModal.vue";
 
 const paymentMethod = ref("card");
 
-const subtotal = ref(42); // estos datos se cambiarán con la logica de useCart.js
+// Datos temporales mientras no conectemos useCart()
+const subtotal = ref(42);
 const tax = ref(4.2);
 const total = ref(46.2);
 
-const { paymentStatus, startPayment } = usePayment();
+const {
+  paymentStatus,
+  paymentAttempts,
+  maxAttempts,
+  canRetry,
+  startPayment,
+  confirmPayment,
+  failPayment,
+  retryPayment,
+  resetPayment,
+  cancelPayment,
+} = usePayment();
 
 const updatePaymentMethod = (method) => {
   paymentMethod.value = method;
 };
+
 const handlePayment = () => {
   startPayment();
 };
@@ -45,32 +59,149 @@ const handlePayment = () => {
         class="grid grid-cols-1 gap-8 md:grid-cols-[minmax(0,1fr)_360px] lg:gap-10"
       >
         <section>
-          <PaymentMethodSelector @update-method="updatePaymentMethod" />
+          <PaymentMethodSelector
+            @update-method="updatePaymentMethod"
+          />
+
           <PaymentCard v-if="paymentMethod === 'card'" />
+
           <PaymentAction @submit-payment="handlePayment" />
 
-          
-        <div
-          v-if="paymentStatus === 'processing'"
-          class="mt-4 rounded-2xl bg-[var(--color-surface-container)] px-4 py-3 text-center"
-        >
-          <p
-            class="font-ui text-sm font-semibold text-[var(--color-on-surface)]"
+          <!-- Simulaciones para probar el flujo de pago -->
+          <div
+            v-if="paymentStatus === 'processing'"
+            class="mt-4 rounded-2xl bg-[var(--color-surface-container)] px-4 py-4 text-center"
           >
-            Procesando el pago...
-          </p>
-        </div>
+            <p
+              class="font-ui text-sm font-semibold text-[var(--color-on-surface)]"
+            >
+              Procesando el pago...
+            </p>
 
-        
+            <div class="mt-4 flex flex-wrap justify-center gap-3">
+              <button
+                type="button"
+                class="rounded-full border border-[var(--color-outline-variant)] px-4 py-2 font-ui text-xs font-semibold text-[var(--color-on-surface)]"
+                @click="confirmPayment"
+              >
+                Simular pago confirmado
+              </button>
+
+              <button
+                type="button"
+                class="rounded-full border border-[var(--color-outline-variant)] px-4 py-2 font-ui text-xs font-semibold text-[var(--color-on-surface)]"
+                @click="failPayment"
+              >
+                Simular pago fallido
+              </button>
+            </div>
+          </div>
+
+          <!-- Simulaciones para probar los reintentos -->
+          <div
+            v-if="paymentStatus === 'failed'"
+            class="mt-4 rounded-2xl bg-[var(--color-surface-container)] px-4 py-4 text-center"
+          >
+            <p
+              class="font-ui text-sm font-semibold text-[var(--color-on-surface)]"
+            >
+              Pago rechazado
+            </p>
+
+            <p
+              class="mt-1 font-body text-xs text-[var(--color-on-surface-variant)]"
+            >
+              Intentos realizados: {{ paymentAttempts }} de
+              {{ maxAttempts }}
+            </p>
+
+            <button
+              v-if="canRetry"
+              type="button"
+              class="mt-4 rounded-full bg-[var(--color-primary)] px-5 py-2 font-ui text-xs font-semibold text-[var(--color-on-primary)]"
+              @click="retryPayment"
+            >
+              Intentar de nuevo
+            </button>
+          </div>
+
+          <!-- Simulacion cuando se alcanzan los 3 intentos -->
+          <div
+            v-if="paymentStatus === 'max-attempts'"
+            class="mt-4 rounded-2xl bg-[var(--color-surface-container)] px-4 py-4 text-center"
+          >
+            <p
+              class="font-ui text-sm font-semibold text-[var(--color-on-surface)]"
+            >
+              Máximo de intentos alcanzado
+            </p>
+
+            <p
+              class="mt-1 font-body text-xs text-[var(--color-on-surface-variant)]"
+            >
+              Has utilizado {{ paymentAttempts }} de
+              {{ maxAttempts }} intentos.
+            </p>
+
+            <div class="mt-4 flex flex-wrap justify-center gap-3">
+              <button
+                type="button"
+                class="rounded-full border border-[var(--color-outline-variant)] px-5 py-2 font-ui text-xs font-semibold text-[var(--color-on-surface)]"
+                @click="resetPayment"
+              >
+                Cambiar método de pago
+              </button>
+
+              <button
+                type="button"
+                class="rounded-full bg-[var(--color-primary)] px-5 py-2 font-ui text-xs font-semibold text-[var(--color-on-primary)]"
+                @click="cancelPayment"
+              >
+                Cancelar pedido
+              </button>
+            </div>
+          </div>
         </section>
 
-
         <aside>
-          <PaymentSummary :subtotal="subtotal" :tax="tax" :total="total" />
+          <PaymentSummary
+            :subtotal="subtotal"
+            :tax="tax"
+            :total="total"
+          />
         </aside>
       </div>
     </section>
   </main>
+
+  <!-- confirmación provisional -->
+  <BaseModal
+    :open="paymentStatus === 'confirmed'"
+    @close="resetPayment"
+  >
+    <div class="text-center">
+      <h2
+        class="font-headline text-3xl font-semibold text-[var(--color-on-surface)]"
+      >
+        ¡Pago confirmado!
+      </h2>
+
+      <p
+        class="mt-3 font-body text-sm leading-6 text-[var(--color-on-surface-variant)]"
+      >
+        Tu pago se ha realizado correctamente.
+      </p>
+
+      <button
+        type="button"
+        class="mt-6 rounded-full bg-[var(--color-primary)] px-6 py-3 font-ui text-sm font-semibold text-[var(--color-on-primary)]"
+        @click="resetPayment"
+      >
+        Continuar
+      </button>
+    </div>
+  </BaseModal>
 </template>
 
-<style scoped></style>
+<style scoped>
+</style>
