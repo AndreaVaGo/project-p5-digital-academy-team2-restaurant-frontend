@@ -12,6 +12,7 @@ import AdminOrdersView from "../Views/AdminOrdersView.vue";
 import AdminBillingView from "../Views/AdminBillingView.vue";
 import AdminWelcomeView from "../Views/AdminWelcomeView.vue";
 import ProductDetailView from "../Views/ProductDetailView.vue";
+import ReservationView from "../Views/ReservationView.vue";
 import CartaView from "../Views/CartaView.vue";
 import KitchenDashboardView from "../Views/KitchenDashboardView.vue";
 
