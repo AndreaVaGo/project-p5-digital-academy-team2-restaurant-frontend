@@ -7,6 +7,7 @@ import PaymentAction from "../components/payment/PaymentAction.vue";
 import { usePayment } from "../composables/usePayment";
 import BaseModal from "../components/BaseModal.vue";
 import PaymentErrorModal from "../components/payment/PaymentErrorModal.vue";
+import PaymentRejectedModal from "../components/payment/PaymentRejectedModal.vue";
 
 const paymentMethod = ref("card");
 
@@ -139,13 +140,20 @@ const handlePayment = () => {
       </div>
     </section>
   </main>
+  
+  <PaymentErrorModal
+    :open="paymentStatus === 'failed' && paymentAttempts === 1"
+    @retry="retryPayment"
+    @cancel="resetPayment"
+  />
 
-          <PaymentErrorModal
-            :open="paymentStatus === 'failed'"
-            @retry="retryPayment"
-            @cancel="resetPayment"
-          />
-          
+  <PaymentRejectedModal
+    :open="paymentStatus === 'failed' && paymentAttempts > 1"
+    :attempts="paymentAttempts"
+    :max-attempts="maxAttempts"
+    @retry="retryPayment"
+    @change-method="resetPayment"
+  />
   <!-- confirmación provisional -->
   <BaseModal :open="paymentStatus === 'confirmed'" @close="resetPayment">
     <div class="text-center">
