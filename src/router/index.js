@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import Home from "../components/Home.vue";
 import LoginView from "../Views/LoginView.vue";
 import RegisterView from "../Views/RegisterView.vue";
-import ReservationView from "../Views/ReservationView.vue";
+import CartView from "../Views/CartView.vue";
 import MyAccountView from "../Views/MyAccountView.vue";
 import CustomerProfileView from "../Views/CustomerProfileView.vue";
 import AdminLayout from "../Views/AdminLayout.vue";
@@ -12,6 +12,7 @@ import AdminOrdersView from "../Views/AdminOrdersView.vue";
 import AdminBillingView from "../Views/AdminBillingView.vue";
 import AdminWelcomeView from "../Views/AdminWelcomeView.vue";
 import ProductDetailView from "../Views/ProductDetailView.vue";
+import CartaView from "../Views/CartaView.vue";
 import KitchenDashboardView from "../Views/KitchenDashboardView.vue";
 import PaymentView from "../Views/PaymentView.vue";
 
@@ -19,6 +20,7 @@ const routes = [
   { path: "/", name: "home", component: Home, alias: "/home" },
   { path: "/login", name: "login", component: LoginView, alias: "/login" },
   { path: "/register", name: "register", component: RegisterView },
+  { path: "/cart",name: "cart", component: CartView, alias: "/cart"  },
   { path: "/account", name: "account", component: MyAccountView },
   {
     path: "/account/profile",
@@ -52,6 +54,11 @@ const routes = [
     path: "/product/:id",
     name: "product-detail",
     component: ProductDetailView,
+  },
+  {
+    path: "/carta",
+    name: "carta",
+    component: CartaView,
   },
   {
     path: "/cocina",
