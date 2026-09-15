@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { Search } from "lucide-vue-next";
 import fabadaImg from "@/assets/images/menu/fabada.png";
 import sidraImg from "@/assets/images/menu/sidra.png";
@@ -16,7 +16,11 @@ const categoryStyles = {
 const activeCategory = ref("Todos");
 const searchQuery = ref("");
 
-const products = ref([
+const products = ref([]);
+const cargando = ref(true);
+const errorCarga = ref(false);
+
+const productosMock = [
   {
     id: 1,
     image: fabadaImg,
@@ -44,7 +48,28 @@ const products = ref([
     price: 7.5,
     available: false,
   },
-]);
+];
+
+async function cargarProductos() {
+  cargando.value = true;
+  errorCarga.value = false;
+  try {
+    const response = await fetch("/api/productos");
+    if (!response.ok) throw new Error("Error al cargar productos");
+    products.value = await response.json();
+  } catch (err) {
+    console.warn(
+      "No se pudo conectar con el backend de productos, usando datos de ejemplo:",
+      err,
+    );
+    errorCarga.value = true;
+    products.value = productosMock;
+  } finally {
+    cargando.value = false;
+  }
+}
+
+onMounted(cargarProductos);
 
 const filteredProducts = computed(() =>
   products.value.filter((p) => {
@@ -57,9 +82,26 @@ const filteredProducts = computed(() =>
   }),
 );
 
-function toggleAvailability(productId) {
+async function toggleAvailability(productId) {
   const product = products.value.find((p) => p.id === productId);
-  if (product) product.available = !product.available;
+  if (!product) return;
+  const nuevoEstado = !product.available;
+  product.available = nuevoEstado;
+
+  try {
+    const response = await fetch(`/api/productos/${productId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ available: nuevoEstado }),
+    });
+    if (!response.ok) throw new Error("Error al actualizar disponibilidad");
+  } catch (err) {
+    console.warn(
+      "No se pudo actualizar en el backend, revirtiendo cambio local:",
+      err,
+    );
+    product.available = !nuevoEstado;
+  }
 }
 </script>
 
@@ -83,6 +125,10 @@ function toggleAvailability(productId) {
         + AÑADIR PRODUCTO
       </button>
     </div>
+
+    <p v-if="errorCarga" class="font-ui text-sm text-error mt-3">
+      No se ha podido conectar con el servidor. Mostrando datos de ejemplo.
+    </p>
 
     <div
       class="bg-surface-container-lowest rounded-xl p-4 mt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3"
@@ -116,131 +162,135 @@ function toggleAvailability(productId) {
       </div>
     </div>
 
-    <!-- Tarjetas: solo en móvil -->
-    <div class="md:hidden flex flex-col gap-3 mt-4">
-      <div
-        v-for="p in filteredProducts"
-        :key="p.id"
-        class="bg-surface-container-lowest rounded-xl p-4 flex flex-col gap-3"
-      >
-        <div class="flex items-center gap-4">
-          <img
-            :src="p.image"
-            alt=""
-            class="w-16 h-16 rounded-lg object-cover shrink-0"
-          />
-          <div class="flex-1">
-            <p class="font-headline text-xl text-on-surface">{{ p.name }}</p>
-            <p class="font-body text-sm text-outline">{{ p.description }}</p>
+    <p v-if="cargando" class="font-ui text-sm text-outline mt-4">
+      Cargando productos...
+    </p>
+
+    <template v-else>
+      <div class="md:hidden flex flex-col gap-3 mt-4">
+        <div
+          v-for="p in filteredProducts"
+          :key="p.id"
+          class="bg-surface-container-lowest rounded-xl p-4 flex flex-col gap-3"
+        >
+          <div class="flex items-center gap-4">
+            <img
+              :src="p.image"
+              alt=""
+              class="w-16 h-16 rounded-lg object-cover shrink-0"
+            />
+            <div class="flex-1">
+              <p class="font-headline text-xl text-on-surface">{{ p.name }}</p>
+              <p class="font-body text-sm text-outline">{{ p.description }}</p>
+            </div>
+          </div>
+          <div class="flex items-center justify-between">
+            <span
+              class="font-ui text-xs px-3 py-1 rounded-full whitespace-nowrap"
+              :class="[
+                categoryStyles[p.category]?.bg || 'bg-secondary-container',
+                categoryStyles[p.category]?.text || 'text-secondary',
+              ]"
+            >
+              {{ p.category }}
+            </span>
+            <span class="font-headline text-2xl text-primary">{{
+              formatCurrency(p.price)
+            }}</span>
+          </div>
+          <div
+            class="flex items-center justify-between border-t border-outline-variant/20 pt-3"
+          >
+            <span class="font-ui text-sm font-semibold text-on-surface"
+              >Disponibilidad</span
+            >
+            <button
+              type="button"
+              @click="toggleAvailability(p.id)"
+              class="w-11 h-6 rounded-full relative transition-colors cursor-pointer appearance-none border-0 p-0 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              :class="p.available ? 'bg-primary' : 'bg-outline-variant'"
+              :aria-pressed="p.available"
+            >
+              <span
+                class="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform block"
+                :class="p.available ? 'translate-x-5' : 'translate-x-0'"
+              ></span>
+            </button>
           </div>
         </div>
-        <div class="flex items-center justify-between">
-          <span
-            class="font-ui text-xs px-3 py-1 rounded-full whitespace-nowrap"
-            :class="[
-              categoryStyles[p.category]?.bg || 'bg-secondary-container',
-              categoryStyles[p.category]?.text || 'text-secondary',
-            ]"
-          >
-            {{ p.category }}
-          </span>
-          <span class="font-headline text-2xl text-primary">{{
-            formatCurrency(p.price)
-          }}</span>
-        </div>
-        <div
-          class="flex items-center justify-between border-t border-outline-variant/20 pt-3"
-        >
-          <span class="font-ui text-sm font-semibold text-on-surface"
-            >Disponibilidad</span
-          >
-          <button
-            type="button"
-            @click="toggleAvailability(p.id)"
-            class="w-11 h-6 rounded-full relative transition-colors cursor-pointer appearance-none border-0 p-0 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-            :class="p.available ? 'bg-primary' : 'bg-outline-variant'"
-            :aria-pressed="p.available"
-          >
-            <span
-              class="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform block"
-              :class="p.available ? 'translate-x-5' : 'translate-x-0'"
-            ></span>
-          </button>
-        </div>
       </div>
-    </div>
 
-    <!-- Tabla: desde tablet en adelante -->
-    <div
-      class="hidden md:block bg-surface-container-lowest rounded-xl mt-4 overflow-x-auto"
-    >
-      <table class="w-full min-w-160">
-        <thead>
-          <tr
-            class="font-ui text-xs text-outline text-left border-b border-outline-variant/30"
-          >
-            <th class="p-4">Producto</th>
-            <th class="p-4">Categoría</th>
-            <th class="p-4">Precio</th>
-            <th class="p-4">Disponibilidad</th>
-            <th class="p-4">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="p in filteredProducts"
-            :key="p.id"
-            class="border-b border-outline-variant/20 last:border-0"
-          >
-            <td class="p-4 flex items-center gap-4">
-              <img
-                :src="p.image"
-                alt=""
-                class="w-16 h-16 rounded-lg object-cover shrink-0"
-              />
-              <div>
-                <p class="font-headline text-xl text-on-surface">
-                  {{ p.name }}
-                </p>
-                <p class="font-body text-base text-outline">
-                  {{ p.description }}
-                </p>
-              </div>
-            </td>
-            <td class="p-4">
-              <span
-                class="font-ui text-xs px-3 py-1 rounded-full whitespace-nowrap"
-                :class="[
-                  categoryStyles[p.category]?.bg || 'bg-secondary-container',
-                  categoryStyles[p.category]?.text || 'text-secondary',
-                ]"
-              >
-                {{ p.category }}
-              </span>
-            </td>
-            <td
-              class="p-4 font-headline text-2xl text-primary whitespace-nowrap"
+      <div
+        class="hidden md:block bg-surface-container-lowest rounded-xl mt-4 overflow-x-auto"
+      >
+        <table class="w-full min-w-160">
+          <thead>
+            <tr
+              class="font-ui text-xs text-outline text-left border-b border-outline-variant/30"
             >
-              {{ formatCurrency(p.price) }}
-            </td>
-            <td class="p-4">
-              <button
-                type="button"
-                @click="toggleAvailability(p.id)"
-                class="w-11 h-6 rounded-full relative transition-colors cursor-pointer appearance-none border-0 p-0 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                :class="p.available ? 'bg-primary' : 'bg-outline-variant'"
-                :aria-pressed="p.available"
-              >
+              <th class="p-4">Producto</th>
+              <th class="p-4">Categoría</th>
+              <th class="p-4">Precio</th>
+              <th class="p-4">Disponibilidad</th>
+              <th class="p-4">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="p in filteredProducts"
+              :key="p.id"
+              class="border-b border-outline-variant/20 last:border-0"
+            >
+              <td class="p-4 flex items-center gap-4">
+                <img
+                  :src="p.image"
+                  alt=""
+                  class="w-16 h-16 rounded-lg object-cover shrink-0"
+                />
+                <div>
+                  <p class="font-headline text-xl text-on-surface">
+                    {{ p.name }}
+                  </p>
+                  <p class="font-body text-base text-outline">
+                    {{ p.description }}
+                  </p>
+                </div>
+              </td>
+              <td class="p-4">
                 <span
-                  class="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform block"
-                  :class="p.available ? 'translate-x-5' : 'translate-x-0'"
-                ></span>
-              </button>
-            </td>
-            <td class="p-4"></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+                  class="font-ui text-xs px-3 py-1 rounded-full whitespace-nowrap"
+                  :class="[
+                    categoryStyles[p.category]?.bg || 'bg-secondary-container',
+                    categoryStyles[p.category]?.text || 'text-secondary',
+                  ]"
+                >
+                  {{ p.category }}
+                </span>
+              </td>
+              <td
+                class="p-4 font-headline text-2xl text-primary whitespace-nowrap"
+              >
+                {{ formatCurrency(p.price) }}
+              </td>
+              <td class="p-4">
+                <button
+                  type="button"
+                  @click="toggleAvailability(p.id)"
+                  class="w-11 h-6 rounded-full relative transition-colors cursor-pointer appearance-none border-0 p-0 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                  :class="p.available ? 'bg-primary' : 'bg-outline-variant'"
+                  :aria-pressed="p.available"
+                >
+                  <span
+                    class="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform block"
+                    :class="p.available ? 'translate-x-5' : 'translate-x-0'"
+                  ></span>
+                </button>
+              </td>
+              <td class="p-4"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </template>
   </div>
 </template>
