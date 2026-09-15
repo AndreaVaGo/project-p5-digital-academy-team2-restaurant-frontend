@@ -18,15 +18,19 @@ function guardarCambios() {
 
 // Dictado por voz para el campo Ciudad, usando la Web Speech API del navegador
 const dictando = ref(false);
+const avisoVoz = ref("");
 
 function dictarCiudad() {
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
 
   if (!SpeechRecognition) {
-    console.warn("Este navegador no soporta reconocimiento de voz.");
+    avisoVoz.value =
+      "Tu navegador no soporta el dictado por voz. Puedes escribir la ciudad manualmente.";
     return;
   }
+
+  avisoVoz.value = "";
 
   const recognition = new SpeechRecognition();
   recognition.lang = "es-ES";
@@ -44,7 +48,13 @@ function dictarCiudad() {
   };
 
   recognition.onerror = (event) => {
-    console.warn("Error en el dictado por voz:", event.error);
+    if (event.error === "not-allowed" || event.error === "permission-denied") {
+      avisoVoz.value =
+        "No se ha concedido permiso al micrófono. Puedes escribir la ciudad manualmente.";
+    } else {
+      avisoVoz.value =
+        "No se ha podido reconocer tu voz. Puedes escribir la ciudad manualmente.";
+    }
   };
 
   recognition.onend = () => {
@@ -226,6 +236,9 @@ function dictarCiudad() {
                   />
                 </button>
               </div>
+              <p v-if="avisoVoz" class="font-ui text-xs text-error mt-1">
+                {{ avisoVoz }}
+              </p>
             </div>
           </div>
 
