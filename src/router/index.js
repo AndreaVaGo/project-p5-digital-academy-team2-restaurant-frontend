@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import Home from "../components/Home.vue";
 import LoginView from "../Views/LoginView.vue";
 import RegisterView from "../Views/RegisterView.vue";
-import ReservationView from "../Views/ReservationView.vue";
+import CartView from "../Views/CartView.vue";
 import MyAccountView from "../Views/MyAccountView.vue";
 import CustomerProfileView from "../Views/CustomerProfileView.vue";
 import AdminLayout from "../Views/AdminLayout.vue";
@@ -19,7 +19,7 @@ const routes = [
   { path: "/", name: "home", component: Home, alias: "/home" },
   { path: "/login", name: "login", component: LoginView, alias: "/login" },
   { path: "/register", name: "register", component: RegisterView },
-  { path: "/reservation", name: "reservation", component: ReservationView, alias: "/reservation"},
+  { path: "/cart",name: "cart", component: CartView, alias: "/cart"  },
   { path: "/account", name: "account", component: MyAccountView },
   {
     path: "/account/profile",
@@ -64,6 +64,7 @@ const routes = [
     name: "kitchen-dashboard",
     component: KitchenDashboardView,
   },
+  { path: "/reservation", name: "reservation", component: ReservationView, alias: "/reservation"},
 ];
 
 export default createRouter({

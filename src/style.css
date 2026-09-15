@@ -120,11 +120,12 @@
     }
   }
 
-  body {
-    margin: 0;
-    background-color: #7c8874;
-    background-color: var(--color-outline-variant);
-  }
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100svh;
+  background: var(--color-surface);
+}
 
   h1,
   h2 {
@@ -231,15 +232,13 @@
     }
   }
 
-  #app {
-    width: 100%;
-    margin: 0;
-    border-inline: none;
-    min-height: 100svh;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-  }
+#app {
+  width: 100%;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
 
   #center {
     display: flex;
