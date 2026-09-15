@@ -3,10 +3,11 @@ import { ref } from "vue";
 import PaymentMethodSelector from "../components/payment/PaymentMethodSelector.vue";
 import PaymentCard from "../components/payment/PaymentCard.vue";
 import PaymentSummary from "../components/payment/PaymentSummary.vue";
+import PaymentAction from "../components/payment/PaymentAction.vue";
 
 const paymentMethod = ref("card");
 
-const subtotal = ref(42);
+const subtotal = ref(42);  // estos datos se cambiarán con la logica de useCart.js 
 const tax = ref(4.2);
 const total = ref(46.2);
 
@@ -40,6 +41,7 @@ const updatePaymentMethod = (method) => {
         <section>
           <PaymentMethodSelector @update-method="updatePaymentMethod" />
           <PaymentCard v-if="paymentMethod === 'card'" />
+          <PaymentAction @submit-payment="handlePayment" />
         </section>
 
         <aside>
