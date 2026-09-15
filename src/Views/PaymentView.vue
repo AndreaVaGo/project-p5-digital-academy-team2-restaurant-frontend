@@ -9,8 +9,10 @@ import BaseModal from "../components/BaseModal.vue";
 import PaymentErrorModal from "../components/payment/PaymentErrorModal.vue";
 import PaymentRejectedModal from "../components/payment/PaymentRejectedModal.vue";
 import PaymentMaxAttemptsModal from "../components/payment/PaymentMaxAttemptsModal.vue";
+import PaymentCancelModal from "../components/payment/PaymentCancelModal.vue";
 
 const paymentMethod = ref("card");
+const showCancelModal = ref(false);
 
 // Datos temporales mientras no conectemos useCart()
 const subtotal = ref(42);
@@ -36,6 +38,18 @@ const updatePaymentMethod = (method) => {
 
 const handlePayment = () => {
   startPayment();
+};
+
+const openCancelModal = () => {
+  showCancelModal.value = true;
+};
+
+const closeCancelModal = () => {
+  showCancelModal.value = false;
+};
+const confirmCancel = () => {
+  showCancelModal.value = false;
+  cancelPayment();
 };
 </script>
 
@@ -123,7 +137,14 @@ const handlePayment = () => {
   <PaymentMaxAttemptsModal
     v-if="paymentStatus === 'max-attempts'"
     @change-method="resetPayment"
-    @cancel="cancelPayment"
+    @cancel="openCancelModal"
+  />
+
+  <PaymentCancelModal
+    :open="showCancelModal"
+    @confirm="confirmCancel"
+    @continue="closeCancelModal"
+    @close="closeCancelModal"
   />
   <!-- confirmación provisional -->
   <BaseModal :open="paymentStatus === 'confirmed'" @close="resetPayment">
