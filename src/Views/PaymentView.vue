@@ -4,15 +4,21 @@ import PaymentMethodSelector from "../components/payment/PaymentMethodSelector.v
 import PaymentCard from "../components/payment/PaymentCard.vue";
 import PaymentSummary from "../components/payment/PaymentSummary.vue";
 import PaymentAction from "../components/payment/PaymentAction.vue";
+import { usePayment } from "../composables/usePayment";
 
 const paymentMethod = ref("card");
 
-const subtotal = ref(42);  // estos datos se cambiarán con la logica de useCart.js 
+const subtotal = ref(42); // estos datos se cambiarán con la logica de useCart.js
 const tax = ref(4.2);
 const total = ref(46.2);
 
+const { paymentStatus, startPayment } = usePayment();
+
 const updatePaymentMethod = (method) => {
   paymentMethod.value = method;
+};
+const handlePayment = () => {
+  startPayment();
 };
 </script>
 
@@ -42,7 +48,22 @@ const updatePaymentMethod = (method) => {
           <PaymentMethodSelector @update-method="updatePaymentMethod" />
           <PaymentCard v-if="paymentMethod === 'card'" />
           <PaymentAction @submit-payment="handlePayment" />
+
+          
+        <div
+          v-if="paymentStatus === 'processing'"
+          class="mt-4 rounded-2xl bg-[var(--color-surface-container)] px-4 py-3 text-center"
+        >
+          <p
+            class="font-ui text-sm font-semibold text-[var(--color-on-surface)]"
+          >
+            Procesando el pago...
+          </p>
+        </div>
+
+        
         </section>
+
 
         <aside>
           <PaymentSummary :subtotal="subtotal" :tax="tax" :total="total" />
