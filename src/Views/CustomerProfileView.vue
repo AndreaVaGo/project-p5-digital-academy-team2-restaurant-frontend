@@ -11,7 +11,30 @@ const form = ref({
   ciudad: "Oviedo",
 });
 
+const errores = ref({});
+
+function validarFormulario() {
+  const nuevosErrores = {};
+  if (!form.value.nombre.trim())
+    nuevosErrores.nombre = "El nombre es obligatorio.";
+  if (!form.value.apellidos.trim())
+    nuevosErrores.apellidos = "Los apellidos son obligatorios.";
+  if (!form.value.email.trim())
+    nuevosErrores.email = "El email es obligatorio.";
+  if (!form.value.direccion.trim())
+    nuevosErrores.direccion = "La dirección es obligatoria.";
+  if (!form.value.codigoPostal.trim())
+    nuevosErrores.codigoPostal = "El código postal es obligatorio.";
+  if (!form.value.ciudad.trim())
+    nuevosErrores.ciudad = "La ciudad es obligatoria.";
+  errores.value = nuevosErrores;
+  return Object.keys(nuevosErrores).length === 0;
+}
+
 function guardarCambios() {
+  if (!validarFormulario()) {
+    return;
+  }
   console.log("Datos del perfil guardados:", form.value);
   // Aquí, más adelante, irá la llamada al backend (fetch/PUT) para guardar los cambios.
 }
@@ -43,7 +66,6 @@ function dictarCiudad() {
 
   recognition.onresult = (event) => {
     const texto = event.results[0][0].transcript;
-    // Ponemos en mayúscula la primera letra (ej. "oviedo" -> "Oviedo")
     form.value.ciudad = texto.charAt(0).toUpperCase() + texto.slice(1);
   };
 
@@ -78,7 +100,6 @@ function dictarCiudad() {
     </p>
 
     <div class="grid grid-cols-1 md:grid-cols-[260px_1fr] gap-6 mt-6">
-      <!-- Columna izquierda: foto, nombre y nivel -->
       <aside class="flex flex-col items-center md:items-stretch">
         <div class="relative w-full max-w-55 md:max-w-none aspect-square">
           <img
@@ -122,7 +143,6 @@ function dictarCiudad() {
         </div>
       </aside>
 
-      <!-- Formulario -->
       <section
         class="bg-surface-container-lowest rounded-xl p-5 sm:p-8"
         style="
@@ -142,8 +162,14 @@ function dictarCiudad() {
                 id="nombre"
                 v-model="form.nombre"
                 type="text"
-                class="bg-transparent border-b border-outline-variant py-1.5 font-body text-on-surface outline-none focus:border-primary"
+                class="bg-transparent border-b py-1.5 font-body text-on-surface outline-none focus:border-primary"
+                :class="
+                  errores.nombre ? 'border-error' : 'border-outline-variant'
+                "
               />
+              <p v-if="errores.nombre" class="font-ui text-xs text-error mt-1">
+                {{ errores.nombre }}
+              </p>
             </div>
             <div class="flex flex-col">
               <label
@@ -155,8 +181,17 @@ function dictarCiudad() {
                 id="apellidos"
                 v-model="form.apellidos"
                 type="text"
-                class="bg-transparent border-b border-outline-variant py-1.5 font-body text-on-surface outline-none focus:border-primary"
+                class="bg-transparent border-b py-1.5 font-body text-on-surface outline-none focus:border-primary"
+                :class="
+                  errores.apellidos ? 'border-error' : 'border-outline-variant'
+                "
               />
+              <p
+                v-if="errores.apellidos"
+                class="font-ui text-xs text-error mt-1"
+              >
+                {{ errores.apellidos }}
+              </p>
             </div>
           </div>
 
@@ -170,8 +205,12 @@ function dictarCiudad() {
               id="email"
               v-model="form.email"
               type="email"
-              class="bg-transparent border-b border-outline-variant py-1.5 font-body text-on-surface outline-none focus:border-primary"
+              class="bg-transparent border-b py-1.5 font-body text-on-surface outline-none focus:border-primary"
+              :class="errores.email ? 'border-error' : 'border-outline-variant'"
             />
+            <p v-if="errores.email" class="font-ui text-xs text-error mt-1">
+              {{ errores.email }}
+            </p>
           </div>
 
           <hr class="border-outline-variant/40 my-8" />
@@ -190,8 +229,14 @@ function dictarCiudad() {
               id="direccion"
               v-model="form.direccion"
               type="text"
-              class="bg-transparent border-b border-outline-variant py-1.5 font-body text-on-surface outline-none focus:border-primary"
+              class="bg-transparent border-b py-1.5 font-body text-on-surface outline-none focus:border-primary"
+              :class="
+                errores.direccion ? 'border-error' : 'border-outline-variant'
+              "
             />
+            <p v-if="errores.direccion" class="font-ui text-xs text-error mt-1">
+              {{ errores.direccion }}
+            </p>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-8 mt-6">
@@ -205,8 +250,19 @@ function dictarCiudad() {
                 id="cp"
                 v-model="form.codigoPostal"
                 type="text"
-                class="bg-transparent border-b border-outline-variant py-1.5 font-body text-on-surface outline-none focus:border-primary"
+                class="bg-transparent border-b py-1.5 font-body text-on-surface outline-none focus:border-primary"
+                :class="
+                  errores.codigoPostal
+                    ? 'border-error'
+                    : 'border-outline-variant'
+                "
               />
+              <p
+                v-if="errores.codigoPostal"
+                class="font-ui text-xs text-error mt-1"
+              >
+                {{ errores.codigoPostal }}
+              </p>
             </div>
             <div class="flex flex-col">
               <label
@@ -214,7 +270,12 @@ function dictarCiudad() {
                 class="font-ui text-xs font-semibold text-outline mb-2"
                 >CIUDAD</label
               >
-              <div class="flex items-center border-b border-outline-variant">
+              <div
+                class="flex items-center border-b"
+                :class="
+                  errores.ciudad ? 'border-error' : 'border-outline-variant'
+                "
+              >
                 <input
                   id="ciudad"
                   v-model="form.ciudad"
@@ -236,7 +297,10 @@ function dictarCiudad() {
                   />
                 </button>
               </div>
-              <p v-if="avisoVoz" class="font-ui text-xs text-error mt-1">
+              <p v-if="errores.ciudad" class="font-ui text-xs text-error mt-1">
+                {{ errores.ciudad }}
+              </p>
+              <p v-else-if="avisoVoz" class="font-ui text-xs text-error mt-1">
                 {{ avisoVoz }}
               </p>
             </div>
