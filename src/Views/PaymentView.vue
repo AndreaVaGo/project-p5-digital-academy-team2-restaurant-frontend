@@ -8,6 +8,7 @@ import { usePayment } from "../composables/usePayment";
 import BaseModal from "../components/BaseModal.vue";
 import PaymentErrorModal from "../components/payment/PaymentErrorModal.vue";
 import PaymentRejectedModal from "../components/payment/PaymentRejectedModal.vue";
+import PaymentMaxAttemptsModal from "../components/payment/PaymentMaxAttemptsModal.vue";
 
 const paymentMethod = ref("card");
 
@@ -96,42 +97,6 @@ const handlePayment = () => {
               </button>
             </div>
           </div>
-
-          <!-- Simulacion cuando se alcanzan los 3 intentos -->
-          <div
-            v-if="paymentStatus === 'max-attempts'"
-            class="mt-4 rounded-2xl bg-[var(--color-surface-container)] px-4 py-4 text-center"
-          >
-            <p
-              class="font-ui text-sm font-semibold text-[var(--color-on-surface)]"
-            >
-              Máximo de intentos alcanzado
-            </p>
-
-            <p
-              class="mt-1 font-body text-xs text-[var(--color-on-surface-variant)]"
-            >
-              Has utilizado {{ paymentAttempts }} de {{ maxAttempts }} intentos.
-            </p>
-
-            <div class="mt-4 flex flex-wrap justify-center gap-3">
-              <button
-                type="button"
-                class="rounded-full border border-[var(--color-outline-variant)] px-5 py-2 font-ui text-xs font-semibold text-[var(--color-on-surface)]"
-                @click="resetPayment"
-              >
-                Cambiar método de pago
-              </button>
-
-              <button
-                type="button"
-                class="rounded-full bg-[var(--color-primary)] px-5 py-2 font-ui text-xs font-semibold text-[var(--color-on-primary)]"
-                @click="cancelPayment"
-              >
-                Cancelar pedido
-              </button>
-            </div>
-          </div>
         </section>
 
         <aside>
@@ -140,7 +105,7 @@ const handlePayment = () => {
       </div>
     </section>
   </main>
-  
+
   <PaymentErrorModal
     :open="paymentStatus === 'failed' && paymentAttempts === 1"
     @retry="retryPayment"
@@ -153,6 +118,12 @@ const handlePayment = () => {
     :max-attempts="maxAttempts"
     @retry="retryPayment"
     @change-method="resetPayment"
+  />
+
+  <PaymentMaxAttemptsModal
+    v-if="paymentStatus === 'max-attempts'"
+    @change-method="resetPayment"
+    @cancel="cancelPayment"
   />
   <!-- confirmación provisional -->
   <BaseModal :open="paymentStatus === 'confirmed'" @close="resetPayment">
