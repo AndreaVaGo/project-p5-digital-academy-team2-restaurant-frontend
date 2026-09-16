@@ -21,6 +21,11 @@ const availableService = ref({
     distance: "1,8 km",
     prepTime: "Listo en 5 min",
 });
+
+const recentHistory = ref([
+    { id: "#045", price: 42.0, address: "Calle Corrida, 28", deliveredAt: "13:40", distance: "2,1 km" },
+    { id: "#041", price: 21.5, address: "Paseo de Begoña, 14", deliveredAt: "12:55", distance: "1,4 km" },
+]);
 </script>
 
 <template>
@@ -34,7 +39,7 @@ const availableService = ref({
 
         <div class="grid gap-6 lg:grid-cols-[1fr_360px]">
             <div class="flex flex-col gap-6">
-                <section class="bg-surface-container-lowest rounded-xl p-4 flex flex-col gap-4">
+                <section class="bg-surface-container-lowest rounded-xl p-4 flex flex-col gap-4 border-2 border-primary">
                     <h2
                         class="flex items-center gap-2 font-ui text-xs font-semibold uppercase tracking-caps text-outline">
                         <AlertTriangle class="w-4 h-4" aria-hidden="true" />
@@ -50,8 +55,8 @@ const availableService = ref({
                             <h3 class="font-headline text-lg text-on-surface">Pedido {{ currentService.id }}</h3>
                         </div>
                         <div class="text-right">
-                            <p class="font-headline text-xl text-on-surface">{{ formatCurrency(currentService.price)
-                            }}</p>
+                            <p class="font-headline text-xl text-tertiary">{{ formatCurrency(currentService.price) }}
+                            </p>
                             <p class="font-body text-xs text-outline">{{ currentService.paymentMethod }}</p>
                         </div>
                     </div>
@@ -91,53 +96,71 @@ const availableService = ref({
                     </div>
                 </section>
 
-                <section class="bg-surface-container-lowest rounded-xl p-4 flex flex-col gap-4">
+                <section
+                    class="bg-surface-container-highest rounded-xl p-4 flex flex-col gap-3 border border-primary/50">
                     <h2
                         class="flex items-center gap-2 font-ui text-xs font-semibold uppercase tracking-caps text-outline">
                         <Bell class="w-4 h-4" aria-hidden="true" />
                         Servicios Disponibles
                     </h2>
 
-                    <div class="bg-surface-container rounded-lg p-3 flex flex-col gap-3">
-                        <div class="flex items-start justify-between">
-                            <span
-                                class="inline-block bg-primary-container text-on-primary-container font-ui text-xs font-semibold uppercase px-3 py-1 rounded-full">
-                                Nuevo Servicio Asignado
-                            </span>
-                            <p class="font-headline text-lg text-on-surface">{{ formatCurrency(availableService.price)
-                            }}</p>
-                        </div>
-
-                        <p class="font-headline text-lg text-on-surface">Pedido {{ availableService.id }}</p>
-
-                        <div class="flex items-center gap-2 font-body text-sm text-on-surface">
-                            <Store class="w-4 h-4 shrink-0" aria-hidden="true" />
-                            <span>{{ availableService.establishment }}</span>
-                            <MapPin class="w-4 h-4 shrink-0" aria-hidden="true" />
-                            <span>{{ availableService.customerAddress }}</span>
-                        </div>
-                        <p class="font-body text-xs text-outline">
-                            Distancia: {{ availableService.distance }} • Prep: {{ availableService.prepTime }}
-                        </p>
-
-                        <button type="button"
-                            class="flex items-center justify-center gap-2 rounded-lg bg-surface-container-high text-on-surface font-ui text-sm font-semibold uppercase py-2">
-                            <Handshake class="w-4 h-4 text-primary" aria-hidden="true" />
-                            Gestionar / Aceptar
-                        </button>
+                    <div class="flex items-start justify-between">
+                        <span
+                            class="inline-block bg-primary-container text-on-primary-container font-ui text-xs font-semibold uppercase px-3 py-1 rounded-full">
+                            Nuevo Servicio Asignado
+                        </span>
+                        <p class="font-headline text-lg text-tertiary">{{ formatCurrency(availableService.price) }}</p>
                     </div>
+
+                    <p class="font-headline text-lg text-on-surface">Pedido {{ availableService.id }}</p>
+
+                    <div class="flex items-center gap-2 font-body text-sm text-on-surface">
+                        <Store class="w-4 h-4 shrink-0" aria-hidden="true" />
+                        <span>{{ availableService.establishment }}</span>
+                        <MapPin class="w-4 h-4 shrink-0" aria-hidden="true" />
+                        <span>{{ availableService.customerAddress }}</span>
+                    </div>
+                    <p class="font-body text-xs text-outline">
+                        Distancia: {{ availableService.distance }} • Prep: {{ availableService.prepTime }}
+                    </p>
+
+                    <button type="button"
+                        class="mt-1 flex items-center justify-center gap-2 rounded-lg bg-[#ddd7c7] border border-outline-variant/40 text-on-surface font-ui text-sm font-semibold uppercase py-2.5">
+                        <Handshake class="w-4 h-4 text-primary" aria-hidden="true" />
+                        Gestionar / Aceptar
+                    </button>
                 </section>
 
-                <section class="bg-surface-container-lowest rounded-xl p-4">
+                <section class="flex flex-col gap-3">
                     <h2
                         class="flex items-center gap-2 font-ui text-xs font-semibold uppercase tracking-caps text-outline">
                         <History class="w-4 h-4" aria-hidden="true" />
                         Historial Reciente (Hoy)
                     </h2>
+
+                    <div v-for="order in recentHistory" :key="order.id"
+                        class="bg-surface-container-lowest rounded-xl p-3 border border-primary/50 shadow-sm flex items-center justify-between">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <p class="font-headline text-base text-on-surface">Pedido {{ order.id }}</p>
+                                <span
+                                    class="bg-secondary-container text-on-secondary-container font-ui text-xs font-semibold px-2 py-0.5 rounded-full">
+                                    Entregado
+                                </span>
+                            </div>
+                            <p class="font-body text-sm text-outline">
+                                {{ order.address }} • Entregado a las {{ order.deliveredAt }}
+                            </p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-headline text-base text-tertiary">{{ formatCurrency(order.price) }}</p>
+                            <p class="font-body text-xs text-outline">{{ order.distance }}</p>
+                        </div>
+                    </div>
                 </section>
             </div>
 
-            <aside class="bg-surface-container-lowest rounded-xl p-4">
+            <aside class="bg-surface-container-lowest rounded-xl p-4 border border-primary/50 shadow-sm">
                 <h2 class="flex items-center gap-2 font-ui text-xs font-semibold uppercase tracking-caps text-outline">
                     <Map class="w-4 h-4" aria-hidden="true" />
                     Ruta Activa
