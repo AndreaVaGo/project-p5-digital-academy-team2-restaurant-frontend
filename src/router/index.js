@@ -12,15 +12,18 @@ import AdminOrdersView from "../Views/AdminOrdersView.vue";
 import AdminBillingView from "../Views/AdminBillingView.vue";
 import AdminWelcomeView from "../Views/AdminWelcomeView.vue";
 import ProductDetailView from "../Views/ProductDetailView.vue";
+import ReservationView from "../Views/ReservationView.vue";
 import CartaView from "../Views/CartaView.vue";
 import KitchenDashboardView from "../Views/KitchenDashboardView.vue";
+import SpecialOffersView from "../Views/SpecialOffersView.vue";
+import EventsCalendarView from "../Views/EventsCalendarView.vue";
 import PaymentView from "../Views/PaymentView.vue";
 
 const routes = [
   { path: "/", name: "home", component: Home, alias: "/home" },
   { path: "/login", name: "login", component: LoginView, alias: "/login" },
   { path: "/register", name: "register", component: RegisterView },
-  { path: "/cart",name: "cart", component: CartView, alias: "/cart"  },
+  { path: "/cart", name: "cart", component: CartView, alias: "/cart" },
   { path: "/account", name: "account", component: MyAccountView },
   {
     path: "/account/profile",
@@ -65,7 +68,22 @@ const routes = [
     name: "kitchen-dashboard",
     component: KitchenDashboardView,
   },
-  { path: "/reservation", name: "reservation", component: ReservationView, alias: "/reservation"},
+  {
+    path: "/ofertas-eventos",
+    name: "special-offers",
+    component: SpecialOffersView,
+  },
+  {
+  path: "/calendario-eventos",
+  name: "events-calendar",
+  component: EventsCalendarView,
+},
+  {
+    path: "/reservation",
+    name: "reservation",
+    component: ReservationView,
+    alias: "/reservation",
+  },
   {path: "/payment", name: "payment", component: PaymentView },
 ];
 
