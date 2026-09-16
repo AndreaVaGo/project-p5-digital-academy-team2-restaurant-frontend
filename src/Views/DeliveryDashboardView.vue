@@ -1,7 +1,19 @@
 <script setup>
-import { ref } from "vue";
-import { Store, MapPin, Eye, CheckCircle, AlertTriangle, Bell, History, Map, Handshake } from "lucide-vue-next";
+import { ref, onMounted, onBeforeUnmount } from "vue";
+import { Store, MapPin, Eye, CheckCircle, AlertTriangle, Bell, History, Map, Handshake, CornerUpRight } from "lucide-vue-next";
 import { formatCurrency } from "../utils/formatCurrency";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: markerIcon2x,
+    iconUrl: markerIcon,
+    shadowUrl: markerShadow,
+});
 
 const currentService = ref({
     id: "#047",
@@ -26,6 +38,47 @@ const recentHistory = ref([
     { id: "#045", price: 42.0, address: "Calle Corrida, 28", deliveredAt: "13:40", distance: "2,1 km" },
     { id: "#041", price: 21.5, address: "Paseo de Begoña, 14", deliveredAt: "12:55", distance: "1,4 km" },
 ]);
+
+const activeRoute = ref({
+    zone: "Asturias (Gijón)",
+    nextTurn: "Gira a la derecha en Av. de la Constitución",
+    turnDistance: "180 m",
+    eta: "8 min",
+    remainingDistance: "1,2 km",
+    origin: [43.5410, 5.6635 * -1],
+    destination: [43.5357, 5.6532 * -1],
+});
+
+const mapContainer = ref(null);
+let mapInstance = null;
+
+onMounted(() => {
+    mapInstance = L.map(mapContainer.value, {
+        zoomControl: false,
+        attributionControl: false,
+    });
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+    }).addTo(mapInstance);
+
+    const originMarker = L.marker(activeRoute.value.origin).addTo(mapInstance);
+    const destinationMarker = L.marker(activeRoute.value.destination).addTo(mapInstance);
+
+    L.polyline([activeRoute.value.origin, activeRoute.value.destination], {
+        color: "#246d00",
+        weight: 4,
+    }).addTo(mapInstance);
+
+    mapInstance.fitBounds([activeRoute.value.origin, activeRoute.value.destination], { padding: [30, 30] });
+});
+
+onBeforeUnmount(() => {
+    if (mapInstance) {
+        mapInstance.remove();
+        mapInstance = null;
+    }
+});
 </script>
 
 <template>
@@ -160,11 +213,38 @@ const recentHistory = ref([
                 </section>
             </div>
 
-            <aside class="bg-surface-container-lowest rounded-xl p-4 border border-primary/50 shadow-sm">
-                <h2 class="flex items-center gap-2 font-ui text-xs font-semibold uppercase tracking-caps text-outline">
-                    <Map class="w-4 h-4" aria-hidden="true" />
-                    Ruta Activa
-                </h2>
+            <aside
+                class="bg-surface-container-lowest rounded-xl p-4 border border-primary/50 shadow-sm flex flex-col gap-3 self-start">
+                <div class="flex items-center justify-between">
+                    <h2
+                        class="flex items-center gap-2 font-ui text-xs font-semibold uppercase tracking-caps text-outline">
+                        <Map class="w-4 h-4" aria-hidden="true" />
+                        Ruta Activa • {{ activeRoute.zone }}
+                    </h2>
+                    <span class="flex items-center gap-1 font-ui text-xs font-semibold text-primary">
+                        <span class="w-2 h-2 rounded-full bg-primary"></span>
+                        GPS Activo
+                    </span>
+                </div>
+
+                <div class="bg-surface-container rounded-lg p-3 flex items-center gap-2">
+                    <CornerUpRight class="w-4 h-4 text-primary shrink-0" aria-hidden="true" />
+                    <p class="font-body text-sm text-on-surface flex-1">{{ activeRoute.nextTurn }}</p>
+                    <span class="font-ui text-xs font-semibold text-outline">{{ activeRoute.turnDistance }}</span>
+                </div>
+
+                <div ref="mapContainer" class="rounded-lg h-64 z-0"></div>
+
+                <div class="bg-surface-container rounded-lg p-3 flex items-center justify-between">
+                    <div>
+                        <p class="font-ui text-xs font-semibold uppercase text-outline">Tiempo Estimado</p>
+                        <p class="font-headline text-lg text-primary">{{ activeRoute.eta }}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-ui text-xs font-semibold uppercase text-outline">Distancia Restante</p>
+                        <p class="font-headline text-lg text-on-surface">{{ activeRoute.remainingDistance }}</p>
+                    </div>
+                </div>
             </aside>
         </div>
     </div>
