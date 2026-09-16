@@ -103,6 +103,15 @@ async function toggleAvailability(productId) {
     product.available = !nuevoEstado;
   }
 }
+
+defineExpose({
+  products,
+  errorCarga,
+  cargando,
+  activeCategory,
+  filteredProducts,
+  toggleAvailability,
+});
 </script>
 
 <template>
