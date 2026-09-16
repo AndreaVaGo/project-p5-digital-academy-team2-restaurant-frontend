@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from "vue";
-import { Store, MapPin, Eye, CheckCircle, AlertTriangle, Bell, History, Map } from "lucide-vue-next";
+import { Store, MapPin, Eye, CheckCircle, AlertTriangle, Bell, History, Map, Handshake } from "lucide-vue-next";
 import { formatCurrency } from "../utils/formatCurrency";
 
 const currentService = ref({
@@ -11,6 +11,15 @@ const currentService = ref({
     customerName: "Carmen Alonso",
     customerAddress: "Av. de la Constitución, 45, 3ºB",
     customerPhone: "+34 600 123 456",
+});
+
+const availableService = ref({
+    id: "#048",
+    price: 29.9,
+    establishment: "Gochu Centro (Calle Mayor, 15)",
+    customerAddress: "Calle Uría, 12, Bajo D",
+    distance: "1,8 km",
+    prepTime: "Listo en 5 min",
 });
 </script>
 
@@ -82,12 +91,41 @@ const currentService = ref({
                     </div>
                 </section>
 
-                <section class="bg-surface-container-lowest rounded-xl p-4">
+                <section class="bg-surface-container-lowest rounded-xl p-4 flex flex-col gap-4">
                     <h2
                         class="flex items-center gap-2 font-ui text-xs font-semibold uppercase tracking-caps text-outline">
                         <Bell class="w-4 h-4" aria-hidden="true" />
                         Servicios Disponibles
                     </h2>
+
+                    <div class="bg-surface-container rounded-lg p-3 flex flex-col gap-3">
+                        <div class="flex items-start justify-between">
+                            <span
+                                class="inline-block bg-primary-container text-on-primary-container font-ui text-xs font-semibold uppercase px-3 py-1 rounded-full">
+                                Nuevo Servicio Asignado
+                            </span>
+                            <p class="font-headline text-lg text-on-surface">{{ formatCurrency(availableService.price)
+                            }}</p>
+                        </div>
+
+                        <p class="font-headline text-lg text-on-surface">Pedido {{ availableService.id }}</p>
+
+                        <div class="flex items-center gap-2 font-body text-sm text-on-surface">
+                            <Store class="w-4 h-4 shrink-0" aria-hidden="true" />
+                            <span>{{ availableService.establishment }}</span>
+                            <MapPin class="w-4 h-4 shrink-0" aria-hidden="true" />
+                            <span>{{ availableService.customerAddress }}</span>
+                        </div>
+                        <p class="font-body text-xs text-outline">
+                            Distancia: {{ availableService.distance }} • Prep: {{ availableService.prepTime }}
+                        </p>
+
+                        <button type="button"
+                            class="flex items-center justify-center gap-2 rounded-lg bg-surface-container-high text-on-surface font-ui text-sm font-semibold uppercase py-2">
+                            <Handshake class="w-4 h-4 text-primary" aria-hidden="true" />
+                            Gestionar / Aceptar
+                        </button>
+                    </div>
                 </section>
 
                 <section class="bg-surface-container-lowest rounded-xl p-4">
