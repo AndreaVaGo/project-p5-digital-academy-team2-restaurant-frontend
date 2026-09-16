@@ -2,6 +2,7 @@
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { Store, MapPin, Eye, CheckCircle, AlertTriangle, Bell, History, Map, Handshake, CornerUpRight } from "lucide-vue-next";
 import { formatCurrency } from "../utils/formatCurrency";
+import NewOrderModal from "../components/delivery/NewOrderModal.vue";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
@@ -49,6 +50,29 @@ const activeRoute = ref({
     destination: [43.5357, 5.6532 * -1],
 });
 
+const incomingOrder = ref({
+    id: "#049",
+    establishmentName: "Gochu Centro",
+    pickupAddress: "Calle Mayor, 15 · 33206 Gijón, Asturias",
+    pickupNote: "Recoger el pedido preparado en Gochu Centro",
+    customerName: "María García",
+    deliveryAddress: "C/ Uría, 18 · 33003 Oviedo, Asturias",
+    distance: "28 km",
+    amount: 42.5,
+    type: "A domicilio",
+});
+
+const showNewOrderModal = ref(false);
+let newOrderTimer = null;
+
+function acceptOrder() {
+    showNewOrderModal.value = false;
+}
+
+function rejectOrder() {
+    showNewOrderModal.value = false;
+}
+
 const mapContainer = ref(null);
 let mapInstance = null;
 
@@ -71,12 +95,19 @@ onMounted(() => {
     }).addTo(mapInstance);
 
     mapInstance.fitBounds([activeRoute.value.origin, activeRoute.value.destination], { padding: [30, 30] });
+
+    newOrderTimer = setTimeout(() => {
+        showNewOrderModal.value = true;
+    }, 1500);
 });
 
 onBeforeUnmount(() => {
     if (mapInstance) {
         mapInstance.remove();
         mapInstance = null;
+    }
+    if (newOrderTimer) {
+        clearTimeout(newOrderTimer);
     }
 });
 </script>
@@ -130,7 +161,7 @@ onBeforeUnmount(() => {
                                     {{ currentService.customerName }} — {{ currentService.customerAddress }}
                                 </p>
                                 <p class="font-body text-sm text-outline">Teléfono: {{ currentService.customerPhone
-                                }}</p>
+                                    }}</p>
                             </div>
                         </div>
                     </div>
@@ -177,7 +208,7 @@ onBeforeUnmount(() => {
                         Distancia: {{ availableService.distance }} • Prep: {{ availableService.prepTime }}
                     </p>
 
-                    <button type="button"
+                    <button type="button" @click="showNewOrderModal = true"
                         class="mt-1 flex items-center justify-center gap-2 rounded-lg bg-[#ddd7c7] border border-outline-variant/40 text-on-surface font-ui text-sm font-semibold uppercase py-2.5">
                         <Handshake class="w-4 h-4 text-primary" aria-hidden="true" />
                         Gestionar / Aceptar
@@ -247,5 +278,8 @@ onBeforeUnmount(() => {
                 </div>
             </aside>
         </div>
+
+        <NewOrderModal :open="showNewOrderModal" :order="incomingOrder" @accept="acceptOrder" @reject="rejectOrder"
+            @close="showNewOrderModal = false" />
     </div>
 </template>
