@@ -17,6 +17,7 @@ import CartaView from "../Views/CartaView.vue";
 import KitchenDashboardView from "../Views/KitchenDashboardView.vue";
 import SpecialOffersView from "../Views/SpecialOffersView.vue";
 import EventsCalendarView from "../Views/EventsCalendarView.vue";
+import PaymentView from "../Views/PaymentView.vue";
 
 const routes = [
   { path: "/", name: "home", component: Home, alias: "/home" },
@@ -83,6 +84,7 @@ const routes = [
     component: ReservationView,
     alias: "/reservation",
   },
+  {path: "/payment", name: "payment", component: PaymentView },
 ];
 
 export default createRouter({
