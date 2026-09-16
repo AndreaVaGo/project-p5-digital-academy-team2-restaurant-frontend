@@ -25,7 +25,7 @@ function logout() {
 </script>
 
 <template>
-    <div class="min-h-screen flex bg-[#7c8874]">
+    <div class="min-h-screen flex bg-surface-container">
         <div
             class="md:hidden fixed top-0 left-0 right-0 z-30 bg-surface-container-lowest border-b border-outline-variant/30 flex items-center justify-between px-4 py-3">
             <div class="flex items-center gap-2">
