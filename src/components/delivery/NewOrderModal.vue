@@ -20,10 +20,8 @@ const emit = defineEmits(["accept", "reject", "close"]);
 <template>
     <BaseModal :open="open" @close="emit('close')">
         <div v-if="order" class="max-h-[75vh] overflow-y-auto pr-1">
-            <div class="flex items-start justify-between mb-4">
-                <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center shrink-0">
-                    <Bell class="w-5 h-5 text-primary" aria-hidden="true" />
-                </div>
+            <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center mb-4">
+                <Bell class="w-5 h-5 text-primary" aria-hidden="true" />
             </div>
 
             <span

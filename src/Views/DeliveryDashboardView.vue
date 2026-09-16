@@ -76,8 +76,8 @@ onMounted(() => {
         maxZoom: 19,
     }).addTo(mapInstance);
 
-    const originMarker = L.marker(activeRoute.value.origin).addTo(mapInstance);
-    const destinationMarker = L.marker(activeRoute.value.destination).addTo(mapInstance);
+    L.marker(activeRoute.value.origin).addTo(mapInstance);
+    L.marker(activeRoute.value.destination).addTo(mapInstance);
 
     L.polyline([activeRoute.value.origin, activeRoute.value.destination], {
         color: "#246d00",
@@ -133,7 +133,7 @@ onBeforeUnmount(() => {
                             </div>
                             <div class="text-right">
                                 <p class="font-headline text-xl text-tertiary">{{ formatCurrency(currentService.price)
-                                    }}
+                                }}
                                 </p>
                                 <p class="font-body text-xs text-outline">{{ currentService.paymentMethod }}</p>
                             </div>
@@ -155,7 +155,7 @@ onBeforeUnmount(() => {
                                         {{ currentService.customerName }} — {{ currentService.customerAddress }}
                                     </p>
                                     <p class="font-body text-sm text-outline">Teléfono: {{ currentService.customerPhone
-                                        }}</p>
+                                    }}</p>
                                 </div>
                             </div>
                         </div>

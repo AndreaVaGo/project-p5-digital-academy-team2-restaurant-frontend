@@ -1,5 +1,10 @@
 import { ref } from "vue";
 
+function formatToday() {
+    const now = new Date();
+    return `Hoy (${now.getDate()}/${now.getMonth() + 1}/${String(now.getFullYear()).slice(-2)})`;
+}
+
 export const currentService = ref({
     id: "#047",
     price: 38.5,
@@ -73,7 +78,7 @@ export function deliverOrder(remainingDistance) {
 
     allOrders.value.unshift({
         id: currentService.value.id,
-        date: "Hoy (16/9/26)",
+        date: formatToday(),
         time,
         address: currentService.value.customerAddress,
         distance: remainingDistance ?? "—",
