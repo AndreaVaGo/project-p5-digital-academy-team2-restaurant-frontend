@@ -1,16 +1,7 @@
 <script setup>
-import { ref } from "vue";
 import { Truck } from "lucide-vue-next";
 import { formatCurrency } from "../utils/formatCurrency";
-
-const orders = ref([
-    { id: "#047", date: "Hoy (16/9/26)", time: "14:10", address: "Av. de la Constitución, 45, 3ºB", distance: "1,2 km", price: 38.5, status: "En Tránsito" },
-    { id: "#045", date: "Hoy (16/9/26)", time: "13:40", address: "Calle Corrida, 28", distance: "2,1 km", price: 42.0, status: "Entregado" },
-    { id: "#041", date: "Hoy (16/9/26)", time: "12:55", address: "Paseo de Begoña, 14", distance: "1,4 km", price: 21.5, status: "Entregado" },
-    { id: "#038", date: "Ayer (15/9/26)", time: "19:20", address: "Calle Uría, 12, Bajo D", distance: "1,8 km", price: 29.9, status: "Entregado" },
-    { id: "#032", date: "Ayer (15/9/26)", time: "14:05", address: "Calle Corrida, 5", distance: "0,9 km", price: 18.2, status: "Entregado" },
-    { id: "#025", date: "Lun (14/9/26)", time: "20:15", address: "Plaza del Humedal, 3", distance: "2,4 km", price: 33.4, status: "Entregado" },
-]);
+import { allOrders } from "../composables/useDeliveryState";
 
 const columns = "grid-cols-[80px_120px_70px_1fr_90px_90px_110px]";
 </script>
@@ -39,13 +30,13 @@ const columns = "grid-cols-[80px_120px_70px_1fr_90px_90px_110px]";
                 <span>Estado</span>
             </div>
 
-            <div v-for="order in orders" :key="order.id" :class="columns"
+            <div v-for="order in allOrders" :key="order.id" :class="columns"
                 class="bg-surface-container-lowest rounded-xl p-3 border border-primary/50 shadow-sm grid grid-cols-2 md:grid gap-2 items-center text-center">
                 <span class="font-headline text-3xl font-black text-black">{{ order.id }}</span>
                 <span class="font-body text-sm font-bold text-on-surface">{{ order.date }}</span>
                 <span class="font-body text-sm font-bold text-on-surface">{{ order.time }}</span>
                 <span class="font-body text-sm font-bold text-on-surface col-span-2 md:col-span-1">{{ order.address
-                }}</span>
+                    }}</span>
                 <span class="font-body text-sm font-bold text-on-surface">{{ order.distance }}</span>
                 <span class="font-body text-sm font-bold text-on-surface">{{ formatCurrency(order.price) }}</span>
                 <span

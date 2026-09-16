@@ -1,9 +1,10 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { computed, onMounted, onBeforeUnmount, ref } from "vue";
 import { Store, MapPin, Eye, CheckCircle, AlertTriangle, Bell, History, Map, Handshake, CornerUpRight } from "lucide-vue-next";
 import { formatCurrency } from "../utils/formatCurrency";
 import NewOrderModal from "../components/delivery/NewOrderModal.vue";
 import OrderDetailModal from "../components/delivery/OrderDetailModal.vue";
+import { currentService, availableService, allOrders, acceptOrder, rejectOrder, deliverOrder } from "../composables/useDeliveryState";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
@@ -17,35 +18,6 @@ L.Icon.Default.mergeOptions({
     shadowUrl: markerShadow,
 });
 
-const currentService = ref({
-    id: "#047",
-    price: 38.5,
-    paymentMethod: "Tarjeta (Pagado)",
-    establishment: "Gochu Centro (Calle Mayor, 15)",
-    customerName: "Carmen Alonso",
-    customerAddress: "Av. de la Constitución, 45, 3ºB",
-    customerPhone: "+34 600 123 456",
-    items: [
-        { name: "Bocadillo de calamares", quantity: 2 },
-        { name: "Ración de croquetas caseras", quantity: 1 },
-        { name: "Sidra natural (botella)", quantity: 1 },
-    ],
-});
-
-const availableService = ref({
-    id: "#048",
-    price: 29.9,
-    establishment: "Gochu Centro (Calle Mayor, 15)",
-    customerAddress: "Calle Uría, 12, Bajo D",
-    distance: "1,8 km",
-    prepTime: "Listo en 5 min",
-});
-
-const recentHistory = ref([
-    { id: "#045", price: 42.0, address: "Calle Corrida, 28", deliveredAt: "13:40", distance: "2,1 km" },
-    { id: "#041", price: 21.5, address: "Paseo de Begoña, 14", deliveredAt: "12:55", distance: "1,4 km" },
-]);
-
 const activeRoute = ref({
     zone: "Asturias (Gijón)",
     nextTurn: "Gira a la derecha en Av. de la Constitución",
@@ -56,45 +28,39 @@ const activeRoute = ref({
     destination: [43.5357, 5.6532 * -1],
 });
 
-const incomingOrder = ref({
-    id: "#049",
-    establishmentName: "Gochu Centro",
-    pickupAddress: "Calle Mayor, 15 · 33206 Gijón, Asturias",
-    pickupNote: "Recoger el pedido preparado en Gochu Centro",
-    customerName: "María García",
-    deliveryAddress: "C/ Uría, 18 · 33003 Oviedo, Asturias",
-    distance: "28 km",
-    amount: 42.5,
-    type: "A domicilio",
+const todayHistory = computed(() => allOrders.value.filter((order) => order.date.startsWith("Hoy")).slice(0, 5));
+
+const incomingOrderForModal = computed(() => {
+    if (!availableService.value) return null;
+    return {
+        id: availableService.value.id,
+        establishmentName: availableService.value.establishmentName,
+        pickupAddress: availableService.value.pickupAddress,
+        pickupNote: availableService.value.pickupNote,
+        customerName: availableService.value.customerName,
+        deliveryAddress: availableService.value.customerAddress,
+        distance: availableService.value.distance,
+        amount: availableService.value.price,
+        type: availableService.value.type,
+    };
 });
 
 const showNewOrderModal = ref(false);
 const showOrderDetailModal = ref(false);
 let newOrderTimer = null;
 
-function acceptOrder() {
+function handleAccept() {
+    acceptOrder();
     showNewOrderModal.value = false;
 }
 
-function rejectOrder() {
+function handleReject() {
+    rejectOrder();
     showNewOrderModal.value = false;
 }
 
-function deliverOrder() {
-    if (!currentService.value) return;
-
-    const now = new Date();
-    const deliveredAt = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-
-    recentHistory.value.unshift({
-        id: currentService.value.id,
-        price: currentService.value.price,
-        address: currentService.value.customerAddress,
-        deliveredAt,
-        distance: activeRoute.value.remainingDistance,
-    });
-
-    currentService.value = null;
+function handleDeliver() {
+    deliverOrder(activeRoute.value.remainingDistance);
 }
 
 const mapContainer = ref(null);
@@ -121,7 +87,9 @@ onMounted(() => {
     mapInstance.fitBounds([activeRoute.value.origin, activeRoute.value.destination], { padding: [30, 30] });
 
     newOrderTimer = setTimeout(() => {
-        showNewOrderModal.value = true;
+        if (availableService.value) {
+            showNewOrderModal.value = true;
+        }
     }, 1500);
 });
 
@@ -198,7 +166,7 @@ onBeforeUnmount(() => {
                                 <Eye class="w-4 h-4" aria-hidden="true" />
                                 Ver Pedido
                             </button>
-                            <button type="button" @click="deliverOrder"
+                            <button type="button" @click="handleDeliver"
                                 class="flex-1 flex items-center justify-center gap-2 rounded-full bg-primary-container text-on-primary-container font-ui text-sm font-semibold uppercase py-2">
                                 <CheckCircle class="w-4 h-4" aria-hidden="true" />
                                 Entregar
@@ -219,31 +187,38 @@ onBeforeUnmount(() => {
                         Servicios Disponibles
                     </h2>
 
-                    <div class="flex items-start justify-between">
-                        <span
-                            class="inline-block bg-primary-container text-on-primary-container font-ui text-xs font-semibold uppercase px-3 py-1 rounded-full">
-                            Nuevo Servicio Asignado
-                        </span>
-                        <p class="font-headline text-lg text-tertiary">{{ formatCurrency(availableService.price) }}</p>
-                    </div>
+                    <template v-if="availableService">
+                        <div class="flex items-start justify-between">
+                            <span
+                                class="inline-block bg-primary-container text-on-primary-container font-ui text-xs font-semibold uppercase px-3 py-1 rounded-full">
+                                Nuevo Servicio Asignado
+                            </span>
+                            <p class="font-headline text-lg text-tertiary">{{ formatCurrency(availableService.price) }}
+                            </p>
+                        </div>
 
-                    <p class="font-headline text-lg text-on-surface">Pedido {{ availableService.id }}</p>
+                        <p class="font-headline text-lg text-on-surface">Pedido {{ availableService.id }}</p>
 
-                    <div class="flex items-center gap-2 font-body text-sm text-on-surface">
-                        <Store class="w-4 h-4 shrink-0" aria-hidden="true" />
-                        <span>{{ availableService.establishment }}</span>
-                        <MapPin class="w-4 h-4 shrink-0" aria-hidden="true" />
-                        <span>{{ availableService.customerAddress }}</span>
-                    </div>
-                    <p class="font-body text-xs text-outline">
-                        Distancia: {{ availableService.distance }} • Prep: {{ availableService.prepTime }}
+                        <div class="flex items-center gap-2 font-body text-sm text-on-surface">
+                            <Store class="w-4 h-4 shrink-0" aria-hidden="true" />
+                            <span>{{ availableService.establishmentName }} ({{ availableService.pickupAddress }})</span>
+                            <MapPin class="w-4 h-4 shrink-0" aria-hidden="true" />
+                            <span>{{ availableService.customerAddress }}</span>
+                        </div>
+                        <p class="font-body text-xs text-outline">
+                            Distancia: {{ availableService.distance }} • Prep: {{ availableService.prepTime }}
+                        </p>
+
+                        <button type="button" @click="showNewOrderModal = true"
+                            class="mt-1 flex items-center justify-center gap-2 rounded-lg bg-[#ddd7c7] border border-outline-variant/40 text-on-surface font-ui text-sm font-semibold uppercase py-2.5">
+                            <Handshake class="w-4 h-4 text-primary" aria-hidden="true" />
+                            Gestionar / Aceptar
+                        </button>
+                    </template>
+
+                    <p v-else class="font-body text-sm text-outline">
+                        No hay servicios disponibles ahora mismo.
                     </p>
-
-                    <button type="button" @click="showNewOrderModal = true"
-                        class="mt-1 flex items-center justify-center gap-2 rounded-lg bg-[#ddd7c7] border border-outline-variant/40 text-on-surface font-ui text-sm font-semibold uppercase py-2.5">
-                        <Handshake class="w-4 h-4 text-primary" aria-hidden="true" />
-                        Gestionar / Aceptar
-                    </button>
                 </section>
 
                 <section class="flex flex-col gap-3">
@@ -253,7 +228,7 @@ onBeforeUnmount(() => {
                         Historial Reciente (Hoy)
                     </h2>
 
-                    <div v-for="order in recentHistory" :key="order.id"
+                    <div v-for="order in todayHistory" :key="order.id"
                         class="bg-surface-container-lowest rounded-xl p-3 border border-primary/50 shadow-sm flex items-center justify-between">
                         <div>
                             <div class="flex items-center gap-2">
@@ -264,7 +239,7 @@ onBeforeUnmount(() => {
                                 </span>
                             </div>
                             <p class="font-body text-sm text-outline">
-                                {{ order.address }} • Entregado a las {{ order.deliveredAt }}
+                                {{ order.address }} • Entregado a las {{ order.time }}
                             </p>
                         </div>
                         <div class="text-right">
@@ -310,8 +285,8 @@ onBeforeUnmount(() => {
             </aside>
         </div>
 
-        <NewOrderModal :open="showNewOrderModal" :order="incomingOrder" @accept="acceptOrder" @reject="rejectOrder"
-            @close="showNewOrderModal = false" />
+        <NewOrderModal :open="showNewOrderModal" :order="incomingOrderForModal" @accept="handleAccept"
+            @reject="handleReject" @close="showNewOrderModal = false" />
         <OrderDetailModal :open="showOrderDetailModal" :order="currentService" @close="showOrderDetailModal = false" />
     </div>
 </template>
