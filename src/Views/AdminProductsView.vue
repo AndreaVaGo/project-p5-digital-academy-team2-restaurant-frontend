@@ -59,7 +59,7 @@ async function cargarProductos() {
     products.value = await response.json();
   } catch (err) {
     console.warn(
-      "No se pudo conectar con el backend, usando datos de ejemplo:",
+      "No se pudo conectar con el backend de productos, usando datos de ejemplo:",
       err,
     );
     errorCarga.value = true;
