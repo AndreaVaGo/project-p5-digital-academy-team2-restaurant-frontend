@@ -18,6 +18,9 @@ import KitchenDashboardView from "../Views/KitchenDashboardView.vue";
 import SpecialOffersView from "../Views/SpecialOffersView.vue";
 import EventsCalendarView from "../Views/EventsCalendarView.vue";
 import PaymentView from "../Views/PaymentView.vue";
+import DeliveryLayout from "../Views/DeliveryLayout.vue";
+import DeliveryDashboardView from "../Views/DeliveryDashboardView.vue";
+import DeliveryOrdersView from "../Views/DeliveryOrdersView.vue";
 
 const routes = [
   { path: "/", name: "home", component: Home, alias: "/home" },
@@ -74,17 +77,33 @@ const routes = [
     component: SpecialOffersView,
   },
   {
-  path: "/calendario-eventos",
-  name: "events-calendar",
-  component: EventsCalendarView,
-},
+    path: "/calendario-eventos",
+    name: "events-calendar",
+    component: EventsCalendarView,
+  },
+  { path: "/payment", name: "payment", component: PaymentView },
+  {
+    path: "/motorista",
+    component: DeliveryLayout,
+    children: [
+      {
+        path: "",
+        name: "delivery-dashboard",
+        component: DeliveryDashboardView,
+      },
+      {
+        path: "entregas",
+        name: "delivery-orders",
+        component: DeliveryOrdersView,
+      },
+    ],
+  },
   {
     path: "/reservation",
     name: "reservation",
     component: ReservationView,
     alias: "/reservation",
   },
-  {path: "/payment", name: "payment", component: PaymentView },
 ];
 
 export default createRouter({
