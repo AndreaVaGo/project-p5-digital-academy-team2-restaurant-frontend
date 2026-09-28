@@ -60,7 +60,9 @@ function adaptEvent(event) {
 /*
  * Agrupa los eventos por mes para el calendario anual.
  * El back ya los devuelve ordenados por fecha, así que los grupos salen en orden.
- * La clave incluye el año para no mezclar el mismo mes de años distintos.
+ * La clave incluye el año para no mezclar el mismo mes de años distintos,
+ * y el título del grupo también lo muestra ("Junio 2027"), para que el orden
+ * se entienda cuando el calendario abarca más de un año.
  */
 const eventsByMonth = computed(() => {
   const groups = []
@@ -72,7 +74,7 @@ const eventsByMonth = computed(() => {
       const monthName = date.toLocaleDateString('es-ES', { month: 'long' })
       group = {
         key,
-        month: monthName.charAt(0).toUpperCase() + monthName.slice(1),
+        month: `${monthName.charAt(0).toUpperCase() + monthName.slice(1)} ${date.getFullYear()}`,
         events: [],
       }
       groups.push(group)

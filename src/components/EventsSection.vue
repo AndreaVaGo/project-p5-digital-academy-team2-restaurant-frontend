@@ -31,9 +31,14 @@ defineProps({
           calendario anual →</RouterLink>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!--
+        Flex centrado en lugar de grid: las tarjetas quedan centradas
+        tengan 1, 2 o 3 eventos. Cada tarjeta ocupa un tercio del ancho
+        (descontando los dos huecos de 1.5rem), igual que en la rejilla anterior.
+      -->
+      <div class="flex flex-wrap justify-center gap-6">
         <article v-for="event in events" :key="event.id"
-          class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-lg flex flex-col">
+          class="w-full md:w-[calc((100%-3rem)/3)] bg-surface-container-lowest rounded-2xl overflow-hidden shadow-lg flex flex-col">
           <div class="relative">
             <img :src="event.image" :alt="event.title" class="w-full h-40 object-cover" />
             <span
