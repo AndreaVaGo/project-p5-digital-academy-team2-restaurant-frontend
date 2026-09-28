@@ -7,8 +7,11 @@ import ContactForm from '../../components/ContactForm.vue'
 import { useProducts } from '@/composables/useProducts'
 import { useEvents } from '@/composables/useEvents'
 
-const { products } = useProducts()
+const { products, cargarProductos } = useProducts()
 const dishes = computed(() => products.value.filter((p) => p.featured))
+
+/* Los productos vienen del back: se piden al entrar en la Home */
+onMounted(cargarProductos)
 
 /*
  * Eventos del back: la Home solo muestra los destacados (featured = true)
