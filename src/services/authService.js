@@ -1,3 +1,5 @@
+import { getToken } from '../utils/authStorage'
+
 const API_URL = import.meta.env.VITE_API_URL
 
 export async function registerUser(payload) {
@@ -28,6 +30,31 @@ export async function loginUser(email, password) {
     method: 'POST',
     headers: {
       Authorization: `Basic ${credentials}`,
+    },
+  })
+
+  const data = await response.json()
+
+  if (!response.ok) {
+    throw {
+      status: response.status,
+      data,
+    }
+  }
+
+  return data
+}
+export async function getCurrentUser() {
+  const token = getToken()
+
+  if (!token) {
+    throw new Error('No hay una sesión activa')
+  }
+
+  const response = await fetch(`${API_URL}/auth/me`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
   })
 
