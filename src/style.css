@@ -3,6 +3,7 @@
 
 @theme {
   --color-highlight: #d98a98;
+  --color-highlight-hover: #c26f7e;
   --color-surface: #fcf9ef;
   --color-surface-dim: #dddad0;
   --color-surface-bright: #fcf9ef;

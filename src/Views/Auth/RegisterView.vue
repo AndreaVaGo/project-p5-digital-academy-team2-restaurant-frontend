@@ -1,37 +1,50 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import AuthTabs from '../../components/AuthTabs.vue'
-import BaseInput from '../../components/BaseInput.vue'
-import BaseButton from '../../components/BaseButton.vue'
+import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import BaseModal from "../../components/BaseModal.vue";
+import AuthTabs from "../../components/AuthTabs.vue";
+import BaseInput from "../../components/BaseInput.vue";
+import BaseButton from "../../components/BaseButton.vue";
 //import { loadRecaptcha, getRecaptchaToken } from '../../composables/useRecaptcha'
-import { registerUser } from '../../services/authService'
+import { registerUser } from "../../services/authService";
 
-const firstName = ref('')
-const lastName = ref('')
-const email = ref('')
-const confirmEmail = ref('')
-const password = ref('')
-const confirmPassword = ref('')
-const submitted = ref(false)
-const verifying = ref(false)
+const firstName = ref("");
+const lastName = ref("");
+const email = ref("");
+const confirmEmail = ref("");
+const password = ref("");
+const confirmPassword = ref("");
+const submitted = ref(false);
+const verifying = ref(false);
 
 const emailMismatch = computed(
-  () => (confirmEmail.value !== '' || submitted.value) && confirmEmail.value !== email.value
-)
+  () =>
+    (confirmEmail.value !== "" || submitted.value) &&
+    confirmEmail.value !== email.value,
+);
 const passwordMismatch = computed(
-  () => (confirmPassword.value !== '' || submitted.value) && confirmPassword.value !== password.value
-)
+  () =>
+    (confirmPassword.value !== "" || submitted.value) &&
+    confirmPassword.value !== password.value,
+);
+
+const router = useRouter();
+const registrationSuccess = ref(false);
+
+function goToLogin() {
+  router.push({ name: "login" });
+}
 
 //onMounted(() => {
 //  loadRecaptcha().catch((error) => console.error(error.message))
 //})
 
 async function handleSubmit() {
-  submitted.value = true
+  submitted.value = true;
 
-  if (emailMismatch.value || passwordMismatch.value) return
+  if (emailMismatch.value || passwordMismatch.value) return;
 
-  verifying.value = true
+  verifying.value = true;
 
   try {
     const payload = {
@@ -39,15 +52,17 @@ async function handleSubmit() {
       email: email.value,
       password: password.value,
       confirmPassword: confirmPassword.value,
-    }
+    };
 
-    const response = await registerUser(payload)
+    const response = await registerUser(payload);
 
-    console.log('Registro completado:', response)
+    console.log("Registro completado:", response);
+
+    registrationSuccess.value = true;
   } catch (error) {
-    console.error('Error al registrar usuario:', error)
+    console.error("Error al registrar usuario:", error);
   } finally {
-    verifying.value = false
+    verifying.value = false;
   }
 }
 </script>
@@ -56,11 +71,17 @@ async function handleSubmit() {
   <div class="flex min-h-screen">
     <div class="hidden flex-1 bg-surface-dim md:block"></div>
 
-    <div class="flex flex-1 items-center justify-center bg-surface px-6 py-16 md:px-16">
+    <div
+      class="flex flex-1 items-center justify-center bg-surface px-6 py-16 md:px-16"
+    >
       <div class="w-full max-w-md">
         <AuthTabs />
 
-        <h1 class="mt-10 font-headline text-headline-md font-medium text-on-surface">Crea tu cuenta</h1>
+        <h1
+          class="mt-10 font-headline text-headline-md font-medium text-on-surface"
+        >
+          Crea tu cuenta
+        </h1>
         <p class="mt-2 font-body text-body-md text-on-surface-variant">
           Regístrate para gestionar tus reservas y pedidos.
         </p>
@@ -99,7 +120,11 @@ async function handleSubmit() {
               placeholder="tu@email.com"
               autocomplete="email"
             />
-            <p v-if="emailMismatch" class="mt-2 font-body text-sm text-error" role="alert">
+            <p
+              v-if="emailMismatch"
+              class="mt-2 font-body text-sm text-error"
+              role="alert"
+            >
               Los correos electrónicos no coinciden.
             </p>
           </div>
@@ -120,26 +145,75 @@ async function handleSubmit() {
               placeholder="••••••••"
               autocomplete="new-password"
             />
-            <p v-if="passwordMismatch" class="mt-2 font-body text-sm text-error" role="alert">
+            <p
+              v-if="passwordMismatch"
+              class="mt-2 font-body text-sm text-error"
+              role="alert"
+            >
               Las contraseñas no coinciden.
             </p>
           </div>
 
           <p class="font-body text-xs text-on-surface-variant">
             Este sitio está protegido por reCAPTCHA y se aplican la
-            <a href="https://policies.google.com/privacy" target="_blank" rel="noopener" class="underline">
+            <a
+              href="https://policies.google.com/privacy"
+              target="_blank"
+              rel="noopener"
+              class="underline"
+            >
               Política de privacidad
             </a>
             y las
-            <a href="https://policies.google.com/terms" target="_blank" rel="noopener" class="underline">
+            <a
+              href="https://policies.google.com/terms"
+              target="_blank"
+              rel="noopener"
+              class="underline"
+            >
               Condiciones del servicio
             </a>
             de Google.
           </p>
 
-          <BaseButton type="submit" :disabled="verifying">Crear cuenta</BaseButton>
+          <BaseButton type="submit" :disabled="verifying"
+            >Crear cuenta</BaseButton
+          >
         </form>
+        <BaseModal
+          :open="registrationSuccess"
+          @close="registrationSuccess = false"
+        >
+          <div class="text-center px-2 pb-2">
+            <div
+              class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-highlight/15"
+              aria-hidden="true"
+            >
+              <span class="text-2xl text-highlight">✓</span>
+            </div>
 
+            <h2
+              class="mt-5 font-headline text-headline-md font-medium text-on-surface"
+            >
+              Cuenta creada correctamente
+            </h2>
+
+            <p
+              class="mt-3 font-body text-body-md leading-relaxed text-on-surface-variant"
+            >
+              Tu cuenta se ha creado correctamente. Ya puedes iniciar sesión
+              para acceder a tu panel de usuario.
+            </p>
+
+            <BaseButton
+              type="button"
+              class="mt-7 w-full !bg-highlight !text-on-primary shadow-md transition-all duration-200 hover:!bg-highlight-hover hover:shadow-lg active:scale-[0.98]"
+              @click="goToLogin"
+            >
+              Iniciar sesión
+            </BaseButton>
+          </div>
+        </BaseModal>
         <RouterLink
           to="/"
           class="mt-8 flex items-center justify-center gap-2 font-body text-sm text-highlight hover:underline"
