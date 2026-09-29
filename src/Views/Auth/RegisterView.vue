@@ -3,7 +3,8 @@ import { ref, computed, onMounted } from 'vue'
 import AuthTabs from '../../components/AuthTabs.vue'
 import BaseInput from '../../components/BaseInput.vue'
 import BaseButton from '../../components/BaseButton.vue'
-import { loadRecaptcha, getRecaptchaToken } from '../../composables/useRecaptcha'
+//import { loadRecaptcha, getRecaptchaToken } from '../../composables/useRecaptcha'
+import { registerUser } from '../../services/authService'
 
 const firstName = ref('')
 const lastName = ref('')
@@ -21,28 +22,30 @@ const passwordMismatch = computed(
   () => (confirmPassword.value !== '' || submitted.value) && confirmPassword.value !== password.value
 )
 
-onMounted(() => {
-  loadRecaptcha().catch((error) => console.error(error.message))
-})
+//onMounted(() => {
+//  loadRecaptcha().catch((error) => console.error(error.message))
+//})
 
 async function handleSubmit() {
   submitted.value = true
+
   if (emailMismatch.value || passwordMismatch.value) return
 
   verifying.value = true
+
   try {
-    const recaptchaToken = await getRecaptchaToken('register')
-    // Pendiente de conectar: enviar estos datos y el token al backend, que debe verificarlo con la clave secreta
     const payload = {
-      firstName: firstName.value,
-      lastName: lastName.value,
+      name: `${firstName.value} ${lastName.value}`.trim(),
       email: email.value,
       password: password.value,
-      recaptchaToken,
+      confirmPassword: confirmPassword.value,
     }
-    return payload
+
+    const response = await registerUser(payload)
+
+    console.log('Registro completado:', response)
   } catch (error) {
-    console.error(error.message)
+    console.error('Error al registrar usuario:', error)
   } finally {
     verifying.value = false
   }

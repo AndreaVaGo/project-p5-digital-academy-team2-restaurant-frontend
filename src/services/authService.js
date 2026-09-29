@@ -20,3 +20,25 @@ export async function registerUser(payload) {
 
   return data
 }
+
+export async function loginUser(email, password) {
+  const credentials = btoa(`${email}:${password}`)
+
+  const response = await fetch(`${API_URL}/auth/token`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Basic ${credentials}`,
+    },
+  })
+
+  const data = await response.json()
+
+  if (!response.ok) {
+    throw {
+      status: response.status,
+      data,
+    }
+  }
+
+  return data
+}
