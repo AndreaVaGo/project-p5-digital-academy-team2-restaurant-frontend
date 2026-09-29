@@ -13,8 +13,18 @@ const dishes = computed(() => products.value.filter((p) => p.featured))
 /* Los productos vienen del back: se piden al entrar en la Home */
 onMounted(cargarProductos)
 
-const { events: allEvents } = useEvents()
-const events = computed(() => allEvents.value.filter((e) => e.featured))
+/*
+ * Eventos del back: la Home solo muestra los destacados (featured = true)
+ * que todavía no han pasado, porque la sección se llama "Próximos eventos".
+ * La carga se lanza al montar la página.
+ */
+const { events: allEvents, cargarEventos } = useEvents()
+const events = computed(() => {
+  const now = new Date()
+  return allEvents.value.filter((e) => e.featured && new Date(e.eventDate) > now)
+})
+
+onMounted(cargarEventos)
 </script>
 
 <template>
