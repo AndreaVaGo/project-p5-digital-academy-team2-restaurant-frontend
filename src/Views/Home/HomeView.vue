@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import HeroSection from '../../components/HeroSection.vue'
 import SpecialtiesSection from '../../components/SpecialtiesSection.vue'
 import EventsSection from '../../components/EventsSection.vue'
@@ -7,8 +7,11 @@ import ContactForm from '../../components/ContactForm.vue'
 import { useProducts } from '@/composables/useProducts'
 import { useEvents } from '@/composables/useEvents'
 
-const { products } = useProducts()
+const { products, cargarProductos } = useProducts()
 const dishes = computed(() => products.value.filter((p) => p.featured))
+
+/* Los productos vienen del back: se piden al entrar en la Home */
+onMounted(cargarProductos)
 
 const { events: allEvents } = useEvents()
 const events = computed(() => allEvents.value.filter((e) => e.featured))
