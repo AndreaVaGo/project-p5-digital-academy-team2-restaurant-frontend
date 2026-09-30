@@ -1,4 +1,5 @@
-<script setup>
+<script>
+
 import {
   UserCog,
   History,
@@ -10,6 +11,17 @@ import {
   Home,
   BookOpenCheck,
 } from "lucide-vue-next";
+import { onMounted } from "vue";
+import { useAuth } from "../../composables/useAuth";
+
+
+const { user, loadUser } = useAuth();
+
+onMounted(async () => {
+  if (!user.value) {
+    await loadUser();
+  }
+});
 
 const trackerSteps = [
   { key: "recibido", label: "Recibido", icon: ClipboardList, done: true },
@@ -226,7 +238,7 @@ function verSeguimiento() {
           />
           <div class="flex flex-col">
             <strong class="font-headline text-base text-on-surface"
-              >Alejandro García</strong
+              > {{ user?.name }}</strong
             >
             <span class="font-body text-sm text-outline">Cliente Premium</span>
           </div>
@@ -237,7 +249,7 @@ function verSeguimiento() {
             >EMAIL</span
           >
           <span class="font-body text-sm text-on-surface wrap-break-word"
-            >alejandro.garcia@example.com</span
+            >{{ user?.email }}</span
           >
         </div>
         <div class="border-b border-outline-variant/40 py-2">
