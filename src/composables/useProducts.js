@@ -2,9 +2,9 @@ import { ref } from 'vue'
 
 /*
  * Ruta del back para los productos (la Carta).
- * Es relativa: el proxy de vite.config.js la reenvía al back en desarrollo.
+ * Se construye con VITE_API_URL (archivo .env), igual que el login en authService.
  */
-const PRODUCTS_URL = '/api/products'
+const PRODUCTS_URL = `${import.meta.env.VITE_API_URL}/products`
 
 /*
  * Estado compartido: está fuera de la función para que la Home y la Carta

@@ -6,7 +6,7 @@ import { formatCurrency } from '@/utils/formatCurrency'
  * Está en un único sitio para que, si el equipo cambia la forma de conectar,
  * solo haya que tocar esta línea.
  */
-const EVENTS_URL = '/api/events'
+const EVENTS_URL = `${import.meta.env.VITE_API_URL}/events`
 
 /*
  * Estado compartido: está fuera de la función para que la Home y el calendario

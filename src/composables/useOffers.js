@@ -3,9 +3,9 @@ import { formatCurrency } from '@/utils/formatCurrency'
 
 /*
  * Ruta del back para las ofertas.
- * Es relativa: el proxy de vite.config.js la reenvía al back en desarrollo.
+ * Se construye con VITE_API_URL (archivo .env), igual que el login en authService.
  */
-const OFFERS_URL = '/api/offers'
+const OFFERS_URL = `${import.meta.env.VITE_API_URL}/offers`
 
 /* Estado compartido de las ofertas */
 const offers = ref([])
