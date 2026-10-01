@@ -1,5 +1,4 @@
-<script>
-
+<script setup>
 import {
   UserCog,
   History,
@@ -11,17 +10,47 @@ import {
   Home,
   BookOpenCheck,
 } from "lucide-vue-next";
-import { onMounted } from "vue";
-import { useAuth } from "../../composables/useAuth";
 
+import { onMounted, ref } from "vue";
+import { useAuth } from "../../composables/useAuth";
+import { getCustomerProfile } from "../../services/profileService";
 
 const { user, loadUser } = useAuth();
 
-onMounted(async () => {
-  if (!user.value) {
-    await loadUser();
+const profile = ref(null);
+const cargandoPerfil = ref(true);
+const errorPerfil = ref("");
+
+async function cargarPerfil() {
+  try {
+    console.log("1. INICIO cargarPerfil");
+
+    cargandoPerfil.value = true;
+    errorPerfil.value = "";
+
+    const currentUser = user.value || (await loadUser());
+
+    console.log("2. USUARIO ACTUAL:", currentUser);
+    console.log("3. ID USUARIO:", currentUser?.id);
+
+    if (!currentUser?.id) {
+      throw new Error("No se ha podido identificar al usuario.");
+    }
+
+    console.log("4. ANTES DE getCustomerProfile");
+
+    profile.value = await getCustomerProfile(currentUser.id);
+
+    console.log("5. PERFIL RECIBIDO:", profile.value);
+  } catch (error) {
+    console.error("6. ERROR:", error);
+    errorPerfil.value = "No se ha podido cargar tu perfil.";
+  } finally {
+    cargandoPerfil.value = false;
   }
-});
+}
+
+onMounted(cargarPerfil);
 
 const trackerSteps = [
   { key: "recibido", label: "Recibido", icon: ClipboardList, done: true },
@@ -232,15 +261,17 @@ function verSeguimiento() {
 
         <div class="flex items-center gap-3 mb-3">
           <img
-            src="https://i.pravatar.cc/150?img=12"
-            alt="Foto de perfil de Alejandro García"
+            :src="profile?.avatar || 'https://i.pravatar.cc/150?img=12'"
+            :alt="`Foto de perfil de ${profile?.name || ''} ${profile?.surname || ''}`"
             class="w-12 h-12 rounded-full object-cover"
           />
+
           <div class="flex flex-col">
-            <strong class="font-headline text-base text-on-surface"
-              > {{ user?.name }}</strong
-            >
-            <span class="font-body text-sm text-outline">Cliente Premium</span>
+            <strong class="font-headline text-base text-on-surface">
+              {{ profile?.name }} {{ profile?.surname }}
+            </strong>
+
+            <span class="font-body text-sm text-outline"> Cliente </span>
           </div>
         </div>
 
@@ -248,22 +279,26 @@ function verSeguimiento() {
           <span class="font-ui text-xs font-semibold text-outline block mb-1"
             >EMAIL</span
           >
-          <span class="font-body text-sm text-on-surface wrap-break-word"
-            >{{ user?.email }}</span
-          >
+          <span class="font-body text-sm text-on-surface wrap-break-word">
+            {{ profile?.email }}
+          </span>
         </div>
         <div class="border-b border-outline-variant/40 py-2">
           <span class="font-ui text-xs font-semibold text-outline block mb-1"
             >TELÉFONO</span
           >
-          <span class="font-body text-sm text-on-surface">+34 600 123 456</span>
+          <span class="font-body text-sm text-on-surface">
+            {{ profile?.phone || "No indicado" }}</span
+          >
         </div>
         <div class="py-2">
           <span class="font-ui text-xs font-semibold text-outline block mb-1"
             >DIRECCIÓN DE ENTREGA PRINCIPAL</span
           >
           <span class="font-body text-sm text-on-surface"
-            >Calle Uria 45, 3º B<br />33003, Oviedo, Asturias</span
+            >    {{ profile?.address || "No indicada" }}<br />
+    {{ profile?.postalCode }}, {{ profile?.city }}
+            </span
           >
         </div>
 
