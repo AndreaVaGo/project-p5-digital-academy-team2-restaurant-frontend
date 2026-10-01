@@ -2,7 +2,10 @@
 import { onMounted, ref } from "vue";
 import { Pencil, Mic } from "lucide-vue-next";
 import { useAuth } from "../../composables/useAuth";
-import { getCustomerProfile } from "../../services/profileService";
+import {
+  getCustomerProfile,
+  updateCustomerProfile,
+} from "../../services/profileService";
 
 const { user, loadUser } = useAuth();
 
@@ -80,12 +83,56 @@ function validarFormulario() {
   return Object.keys(nuevosErrores).length === 0;
 }
 
-function guardarCambios() {
+const guardando = ref(false);
+const mensajeGuardado = ref("");
+const errorGuardado = ref("");
+
+async function guardarCambios() {
   if (!validarFormulario()) {
     return;
   }
 
-  console.log("Datos del perfil:", form.value);
+  try {
+    guardando.value = true;
+    mensajeGuardado.value = "";
+    errorGuardado.value = "";
+
+    const currentUser = user.value || (await loadUser());
+
+    if (!currentUser?.id) {
+      throw new Error("No se ha podido identificar al usuario.");
+    }
+
+    const payload = {
+      surname: form.value.apellidos,
+      phone: form.value.telefono,
+      address: form.value.direccion,
+      postalCode: form.value.codigoPostal,
+      city: form.value.ciudad,
+      avatar: form.value.avatar,
+    };
+
+    const profile = await updateCustomerProfile(currentUser.id, payload);
+
+    form.value = {
+      ...form.value,
+      nombre: profile.name || "",
+      apellidos: profile.surname || "",
+      email: profile.email || "",
+      telefono: profile.phone || "",
+      direccion: profile.address || "",
+      codigoPostal: profile.postalCode || "",
+      ciudad: profile.city || "",
+      avatar: profile.avatar || "",
+    };
+
+    mensajeGuardado.value = "Los cambios se han guardado correctamente.";
+  } catch (error) {
+    console.info("Error al guardar el perfil:", error);
+    errorGuardado.value = "No se han podido guardar los cambios.";
+  } finally {
+    guardando.value = false;
+  }
 }
 
 const dictando = ref(false);
@@ -333,11 +380,23 @@ defineExpose({ form, errores, avisoVoz, dictando });
 
           <div class="flex justify-center sm:justify-end mt-8">
             <button
-              type="submit"
+              type="button"
+              @click="guardarCambios"
+              :disabled="guardando"
               class="w-full sm:w-auto bg-primary-container text-white font-ui font-semibold px-7 py-3 rounded-xl"
             >
-              Guardar cambios
+              {{ guardando ? "Guardando..." : "Guardar cambios" }}
             </button>
+            <p
+              v-if="mensajeGuardado"
+              class="mt-3 text-sm text-[var(--color-highlight)]"
+            >
+              {{ mensajeGuardado }}
+            </p>
+
+            <p v-if="errorGuardado" class="mt-3 text-sm text-red-500">
+              {{ errorGuardado }}
+            </p>
           </div>
         </form>
       </section>
