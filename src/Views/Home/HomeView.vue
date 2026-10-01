@@ -47,6 +47,19 @@ onMounted(cargarEventos)
   background-position: 88% center;
 }
 
+/* Below md: "fixed" measures against the viewport, not this very tall
+   wrapper, so it leaves a gap at the top and re-shows the photo mid-scroll.
+   Scope it to the element instead and fill any uncovered edge with the
+   photo's own bottom-edge tone so it blends in. Desktop (md+) is untouched. */
+@media (max-width: 767px) {
+  .atmosphere-wrapper {
+    background-color: #3b2b1f;
+    background-attachment: scroll;
+    background-size: cover;
+    background-position: top center;
+  }
+}
+
 /* GC-83: animación de entrada (estilos mobile-first) */
 @keyframes fade-in-up {
   from {
