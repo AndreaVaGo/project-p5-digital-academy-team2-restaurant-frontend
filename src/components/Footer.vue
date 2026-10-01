@@ -4,12 +4,12 @@ import logo from '../assets/images/branding/logo-Goxu.png'
 const links = ['Carta', 'Política de privacidad', 'Aviso legal']
 
 const developers = [
-  { name: 'Desarrollador/a 1', github: 'https://github.com/ruddycruzc' },
-  { name: 'Desarrollador/a 2', github: 'https://github.com/gmp395' },
-  { name: 'Desarrollador/a 3', github: 'https://github.com/JuanIsidroMenendez' },
-  { name: 'Desarrollador/a 4', github: 'https://github.com/Jennydev-25' },
-  { name: 'Desarrollador/a 5', github: 'https://github.com/AndreaVaGo' },
-  { name: 'Desarrollador/a 6', github: 'https://github.com/ikerardi-dev' },
+  { name: 'Ruddy', github: 'https://github.com/ruddycruzc' },
+  { name: 'Gema', github: 'https://github.com/gmp395' },
+  { name: 'Juan', github: 'https://github.com/JuanIsidroMenendez' },
+  { name: 'Jenny', github: 'https://github.com/Jennydev-25' },
+  { name: 'Andrea', github: 'https://github.com/AndreaVaGo' },
+  { name: 'Iker', github: 'https://github.com/ikerardi-dev' },
 ]
 </script>
 
