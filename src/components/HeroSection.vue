@@ -15,7 +15,7 @@
       </p>
 
       <RouterLink to="/carta"
-        class="inline-flex items-center justify-center bg-green-600 text-white text-xs font-semibold tracking-wide uppercase no-underline px-7 py-3.5 rounded-xl transition hover:opacity-90 hover:-translate-y-0.5"
+        class="inline-flex items-center justify-center bg-primary text-white text-xs font-semibold tracking-wide uppercase no-underline px-7 py-3.5 rounded-xl transition hover:opacity-90 hover:-translate-y-0.5"
         style="font-family: 'Inter', sans-serif">Ver la carta</RouterLink>
     </div>
   </section>
