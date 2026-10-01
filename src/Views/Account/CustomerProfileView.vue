@@ -1,41 +1,138 @@
 <script setup>
-import { ref } from "vue";
-import { Pencil, Star, Mic } from "lucide-vue-next";
+import { onMounted, ref } from "vue";
+import { Pencil, Mic } from "lucide-vue-next";
+import { useAuth } from "../../composables/useAuth";
+import {
+  getCustomerProfile,
+  updateCustomerProfile,
+} from "../../services/profileService";
+
+const { user, loadUser } = useAuth();
 
 const form = ref({
-  nombre: "Alejandro",
-  apellidos: "García",
-  email: "alejandro.garcia@example.com",
-  direccion: "Calle Uria 45, 3º B",
-  codigoPostal: "33003",
-  ciudad: "Oviedo",
+  nombre: "",
+  apellidos: "",
+  email: "",
+  direccion: "",
+  codigoPostal: "",
+  ciudad: "",
+  telefono: "",
+  avatar: "",
 });
 
 const errores = ref({});
+const cargando = ref(true);
+const errorPerfil = ref("");
+
+async function cargarPerfil() {
+  try {
+    cargando.value = true;
+    errorPerfil.value = "";
+
+    const currentUser = user.value || (await loadUser());
+
+    if (!currentUser?.id) {
+      throw new Error("No se ha podido identificar al usuario.");
+    }
+
+    const profile = await getCustomerProfile(currentUser.id);
+
+    form.value = {
+      nombre: profile.name || "",
+      apellidos: profile.surname || "",
+      email: profile.email || "",
+      direccion: profile.address || "",
+      codigoPostal: profile.postalCode || "",
+      ciudad: profile.city || "",
+      telefono: profile.phone || "",
+      avatar: profile.avatar || "",
+    };
+  } catch (error) {
+    console.error("Error al cargar el perfil:", error);
+    errorPerfil.value = "No se ha podido cargar tu perfil.";
+  } finally {
+    cargando.value = false;
+  }
+}
+
+onMounted(cargarPerfil);
 
 function validarFormulario() {
   const nuevosErrores = {};
+
   if (!form.value.nombre.trim())
     nuevosErrores.nombre = "El nombre es obligatorio.";
+
   if (!form.value.apellidos.trim())
     nuevosErrores.apellidos = "Los apellidos son obligatorios.";
+
   if (!form.value.email.trim())
     nuevosErrores.email = "El email es obligatorio.";
+
   if (!form.value.direccion.trim())
     nuevosErrores.direccion = "La dirección es obligatoria.";
+
   if (!form.value.codigoPostal.trim())
     nuevosErrores.codigoPostal = "El código postal es obligatorio.";
+
   if (!form.value.ciudad.trim())
     nuevosErrores.ciudad = "La ciudad es obligatoria.";
+
   errores.value = nuevosErrores;
+
   return Object.keys(nuevosErrores).length === 0;
 }
 
-function guardarCambios() {
+const guardando = ref(false);
+const mensajeGuardado = ref("");
+const errorGuardado = ref("");
+
+async function guardarCambios() {
   if (!validarFormulario()) {
     return;
   }
-  console.log("Datos del perfil guardados:", form.value);
+
+  try {
+    guardando.value = true;
+    mensajeGuardado.value = "";
+    errorGuardado.value = "";
+
+    const currentUser = user.value || (await loadUser());
+
+    if (!currentUser?.id) {
+      throw new Error("No se ha podido identificar al usuario.");
+    }
+
+    const payload = {
+      surname: form.value.apellidos,
+      phone: form.value.telefono,
+      address: form.value.direccion,
+      postalCode: form.value.codigoPostal,
+      city: form.value.ciudad,
+      avatar: form.value.avatar,
+    };
+
+    const profile = await updateCustomerProfile(currentUser.id, payload);
+
+    form.value = {
+      ...form.value,
+      nombre: profile.name || "",
+      apellidos: profile.surname || "",
+      email: profile.email || "",
+      telefono: profile.phone || "",
+      direccion: profile.address || "",
+      codigoPostal: profile.postalCode || "",
+      ciudad: profile.city || "",
+      avatar: profile.avatar || "",
+    };
+
+    mensajeGuardado.value = "Los cambios se han guardado correctamente.";
+  } catch (error) {
+    console.info("Error al guardar el perfil:", error);
+    errorGuardado.value = "No se han podido guardar los cambios.";
+  } finally {
+    guardando.value = false;
+  }
 }
 
 const dictando = ref(false);
@@ -96,15 +193,15 @@ defineExpose({ form, errores, avisoVoz, dictando });
       Perfil de Cliente
     </h1>
     <p class="font-body text-white text-sm mt-1">
-      Gestiona tus datos personales y preferencias para tus pedidos en GiaComo.
+      Gestiona tus datos personales y preferencias para tus pedidos en Goxu.
     </p>
 
     <div class="grid grid-cols-1 md:grid-cols-[260px_1fr] gap-6 mt-6">
       <aside class="flex flex-col items-center md:items-stretch">
         <div class="relative w-full max-w-55 md:max-w-none aspect-square">
           <img
-            src="https://i.pravatar.cc/300?img=12"
-            alt="Foto de perfil de Alejandro García"
+            :src="form.avatar || 'https://i.pravatar.cc/300?img=12'"
+            :alt="`Foto de perfil de ${form.nombre} ${form.apellidos}`"
             class="w-full h-full rounded-2xl object-cover"
           />
           <button
@@ -124,18 +221,6 @@ defineExpose({ form, errores, avisoVoz, dictando });
         <p class="font-body text-sm text-outline text-center md:text-left">
           {{ form.email }}
         </p>
-
-        <div
-          class="flex items-center gap-3 bg-surface-container-lowest rounded-xl p-4 mt-4 w-full max-w-55 md:max-w-none"
-        >
-          <Star class="w-5 h-5 text-primary" fill="currentColor" />
-          <div class="flex flex-col">
-            <span class="font-ui text-xs text-outline">Nivel</span>
-            <strong class="font-ui text-sm text-on-surface"
-              >Gastrónomo Frecuente</strong
-            >
-          </div>
-        </div>
       </aside>
 
       <section class="bg-surface-container-lowest rounded-xl p-5 sm:p-8">
@@ -186,20 +271,18 @@ defineExpose({ form, errores, avisoVoz, dictando });
 
           <div class="flex flex-col mt-6">
             <label
-              for="email"
+              for="telefono"
               class="font-ui text-xs font-semibold text-outline mb-2"
-              >EMAIL</label
             >
+              TELÉFONO
+            </label>
+
             <input
-              id="email"
-              v-model="form.email"
-              type="email"
-              class="bg-transparent border-b py-1.5 font-body text-on-surface outline-none focus:border-primary"
-              :class="errores.email ? 'border-error' : 'border-outline-variant'"
+              id="telefono"
+              v-model="form.telefono"
+              type="tel"
+              class="bg-transparent border-b py-1.5 font-body text-on-surface outline-none focus:border-primary border-outline-variant"
             />
-            <p v-if="errores.email" class="font-ui text-xs text-error mt-1">
-              {{ errores.email }}
-            </p>
           </div>
 
           <hr class="border-outline-variant/40 my-8" />
@@ -297,11 +380,23 @@ defineExpose({ form, errores, avisoVoz, dictando });
 
           <div class="flex justify-center sm:justify-end mt-8">
             <button
-              type="submit"
+              type="button"
+              @click="guardarCambios"
+              :disabled="guardando"
               class="w-full sm:w-auto bg-primary-container text-white font-ui font-semibold px-7 py-3 rounded-xl"
             >
-              Guardar cambios
+              {{ guardando ? "Guardando..." : "Guardar cambios" }}
             </button>
+            <p
+              v-if="mensajeGuardado"
+              class="mt-3 text-sm text-[var(--color-highlight)]"
+            >
+              {{ mensajeGuardado }}
+            </p>
+
+            <p v-if="errorGuardado" class="mt-3 text-sm text-red-500">
+              {{ errorGuardado }}
+            </p>
           </div>
         </form>
       </section>
