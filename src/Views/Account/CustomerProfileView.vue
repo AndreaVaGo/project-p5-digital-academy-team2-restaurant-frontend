@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref } from "vue";
-import { Pencil, Star, Mic } from "lucide-vue-next";
+import { Pencil, Mic } from "lucide-vue-next";
 import { useAuth } from "../../composables/useAuth";
 import { getCustomerProfile } from "../../services/profileService";
 
@@ -26,7 +26,7 @@ async function cargarPerfil() {
     cargando.value = true;
     errorPerfil.value = "";
 
-    const currentUser = user.value || await loadUser();
+    const currentUser = user.value || (await loadUser());
 
     if (!currentUser?.id) {
       throw new Error("No se ha podido identificar al usuario.");
@@ -146,15 +146,15 @@ defineExpose({ form, errores, avisoVoz, dictando });
       Perfil de Cliente
     </h1>
     <p class="font-body text-white text-sm mt-1">
-      Gestiona tus datos personales y preferencias para tus pedidos en GiaComo.
+      Gestiona tus datos personales y preferencias para tus pedidos en Goxu.
     </p>
 
     <div class="grid grid-cols-1 md:grid-cols-[260px_1fr] gap-6 mt-6">
       <aside class="flex flex-col items-center md:items-stretch">
         <div class="relative w-full max-w-55 md:max-w-none aspect-square">
           <img
-            src="https://i.pravatar.cc/300?img=12"
-            alt="Foto de perfil de Alejandro García"
+            :src="form.avatar || 'https://i.pravatar.cc/300?img=12'"
+            :alt="`Foto de perfil de ${form.nombre} ${form.apellidos}`"
             class="w-full h-full rounded-2xl object-cover"
           />
           <button
@@ -174,18 +174,6 @@ defineExpose({ form, errores, avisoVoz, dictando });
         <p class="font-body text-sm text-outline text-center md:text-left">
           {{ form.email }}
         </p>
-
-        <div
-          class="flex items-center gap-3 bg-surface-container-lowest rounded-xl p-4 mt-4 w-full max-w-55 md:max-w-none"
-        >
-          <Star class="w-5 h-5 text-primary" fill="currentColor" />
-          <div class="flex flex-col">
-            <span class="font-ui text-xs text-outline">Nivel</span>
-            <strong class="font-ui text-sm text-on-surface"
-              >Gastrónomo Frecuente</strong
-            >
-          </div>
-        </div>
       </aside>
 
       <section class="bg-surface-container-lowest rounded-xl p-5 sm:p-8">
@@ -236,20 +224,18 @@ defineExpose({ form, errores, avisoVoz, dictando });
 
           <div class="flex flex-col mt-6">
             <label
-              for="email"
+              for="telefono"
               class="font-ui text-xs font-semibold text-outline mb-2"
-              >EMAIL</label
             >
+              TELÉFONO
+            </label>
+
             <input
-              id="email"
-              v-model="form.email"
-              type="email"
-              class="bg-transparent border-b py-1.5 font-body text-on-surface outline-none focus:border-primary"
-              :class="errores.email ? 'border-error' : 'border-outline-variant'"
+              id="telefono"
+              v-model="form.telefono"
+              type="tel"
+              class="bg-transparent border-b py-1.5 font-body text-on-surface outline-none focus:border-primary border-outline-variant"
             />
-            <p v-if="errores.email" class="font-ui text-xs text-error mt-1">
-              {{ errores.email }}
-            </p>
           </div>
 
           <hr class="border-outline-variant/40 my-8" />
