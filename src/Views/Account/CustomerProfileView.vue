@@ -1,33 +1,82 @@
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { Pencil, Star, Mic } from "lucide-vue-next";
+import { useAuth } from "../../composables/useAuth";
+import { getCustomerProfile } from "../../services/profileService";
+
+const { user, loadUser } = useAuth();
 
 const form = ref({
-  nombre: "Alejandro",
-  apellidos: "García",
-  email: "alejandro.garcia@example.com",
-  direccion: "Calle Uria 45, 3º B",
-  codigoPostal: "33003",
-  ciudad: "Oviedo",
+  nombre: "",
+  apellidos: "",
+  email: "",
+  direccion: "",
+  codigoPostal: "",
+  ciudad: "",
+  telefono: "",
+  avatar: "",
 });
 
 const errores = ref({});
+const cargando = ref(true);
+const errorPerfil = ref("");
+
+async function cargarPerfil() {
+  try {
+    cargando.value = true;
+    errorPerfil.value = "";
+
+    const currentUser = user.value || await loadUser();
+
+    if (!currentUser?.id) {
+      throw new Error("No se ha podido identificar al usuario.");
+    }
+
+    const profile = await getCustomerProfile(currentUser.id);
+
+    form.value = {
+      nombre: profile.name || "",
+      apellidos: profile.surname || "",
+      email: profile.email || "",
+      direccion: profile.address || "",
+      codigoPostal: profile.postalCode || "",
+      ciudad: profile.city || "",
+      telefono: profile.phone || "",
+      avatar: profile.avatar || "",
+    };
+  } catch (error) {
+    console.error("Error al cargar el perfil:", error);
+    errorPerfil.value = "No se ha podido cargar tu perfil.";
+  } finally {
+    cargando.value = false;
+  }
+}
+
+onMounted(cargarPerfil);
 
 function validarFormulario() {
   const nuevosErrores = {};
+
   if (!form.value.nombre.trim())
     nuevosErrores.nombre = "El nombre es obligatorio.";
+
   if (!form.value.apellidos.trim())
     nuevosErrores.apellidos = "Los apellidos son obligatorios.";
+
   if (!form.value.email.trim())
     nuevosErrores.email = "El email es obligatorio.";
+
   if (!form.value.direccion.trim())
     nuevosErrores.direccion = "La dirección es obligatoria.";
+
   if (!form.value.codigoPostal.trim())
     nuevosErrores.codigoPostal = "El código postal es obligatorio.";
+
   if (!form.value.ciudad.trim())
     nuevosErrores.ciudad = "La ciudad es obligatoria.";
+
   errores.value = nuevosErrores;
+
   return Object.keys(nuevosErrores).length === 0;
 }
 
@@ -35,7 +84,8 @@ function guardarCambios() {
   if (!validarFormulario()) {
     return;
   }
-  console.log("Datos del perfil guardados:", form.value);
+
+  console.log("Datos del perfil:", form.value);
 }
 
 const dictando = ref(false);
