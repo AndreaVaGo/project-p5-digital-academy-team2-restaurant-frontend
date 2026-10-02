@@ -122,7 +122,7 @@ const routes = [
     path: "/cocina",
     name: "kitchen-dashboard",
     component: KitchenDashboardView,
-     meta: { roles: ["KITCHEN"] },
+    meta: { roles: ["KITCHEN"] },
   },
   {
     path: "/motorista",
@@ -168,7 +168,7 @@ router.beforeEach(async (to) => {
     }
 
     const hasRequiredRole = user.roles?.some((role) =>
-      requiredRoles.includes(role)
+      requiredRoles.includes(role),
     );
 
     if (!hasRequiredRole) {
