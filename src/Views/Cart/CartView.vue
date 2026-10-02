@@ -102,6 +102,7 @@ onMounted(() => {
           :total="total"
           @update-order-type="updateOrderType"
           @update-scheduled-order="updateScheduledOrder"
+          @continue="handleContinue"
         />
       </div>
     </section>
