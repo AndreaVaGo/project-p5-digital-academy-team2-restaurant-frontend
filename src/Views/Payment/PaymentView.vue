@@ -7,14 +7,15 @@ import PaymentCard from "../../components/payment/PaymentCard.vue";
 import PaymentSummary from "../../components/payment/PaymentSummary.vue";
 import PaymentAction from "../../components/payment/PaymentAction.vue";
 import { usePayment } from "../../composables/usePayment";
-import { getOrderById } from "../../services/orderService";
+import { getOrderById,payOrder } from "../../services/orderService";
 import BaseModal from "../../components/BaseModal.vue";
 import PaymentErrorModal from "../../components/payment/PaymentErrorModal.vue";
 import PaymentRejectedModal from "../../components/payment/PaymentRejectedModal.vue";
 import PaymentMaxAttemptsModal from "../../components/payment/PaymentMaxAttemptsModal.vue";
 import PaymentCancelModal from "../../components/payment/PaymentCancelModal.vue";
-const route = useRoute();
 
+const route = useRoute();
+const paymentCard = ref(null);
 const paymentMethod = ref("card");
 const showCancelModal = ref(false);
 
@@ -43,8 +44,21 @@ const updatePaymentMethod = (method) => {
   paymentMethod.value = method;
 };
 
-const handlePayment = () => {
-  startPayment();
+const handlePayment = async () => {
+  const orderId = route.query.orderId;
+  const paymentData = paymentCard.value?.getPaymentData();
+
+  if (!orderId || !paymentData) {
+    return;
+  }
+
+  try {
+    const paidOrder = await payOrder(orderId, paymentData);
+
+    console.log("Pago realizado:", paidOrder);
+  } catch (error) {
+    console.error("No se pudo realizar el pago:", error);
+  }
 };
 
 const openCancelModal = () => {
@@ -114,7 +128,7 @@ onMounted(() => {
         <section>
           <PaymentMethodSelector @update-method="updatePaymentMethod" />
 
-          <PaymentCard v-if="paymentMethod === 'card'" />
+          <PaymentCard v-if="paymentMethod === 'card'" ref="paymentCard" />
 
           <PaymentAction @submit-payment="handlePayment" />
 

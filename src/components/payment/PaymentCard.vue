@@ -6,16 +6,18 @@ const cardName = ref("");
 const expiryDate = ref("");
 const cvv = ref("");
 
-const emit = defineEmits(["submit-payment"]);
-
-const submitPayment = () => {
-  emit("submit-payment", {
+const getPaymentData = () => {
+  return {
     cardNumber: cardNumber.value.replace(/\s/g, ""),
     cardName: cardName.value,
     expiryDate: expiryDate.value,
     cvv: cvv.value,
-  });
+  };
 };
+
+defineExpose({
+  getPaymentData,
+});
 </script>
 
 <template>
