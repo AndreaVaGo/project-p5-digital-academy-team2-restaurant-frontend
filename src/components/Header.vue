@@ -1,62 +1,70 @@
 <script setup>
-import { ref, nextTick } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import logo from '../assets/images/branding/logo-Goxu.png'
-import userIcon from '../assets/images/home/login.png'
-import cartIcon from '../assets/images/home/carrito.png'
+import { ref, nextTick } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import logo from "../assets/images/branding/logo-Goxu.png";
+import userIcon from "../assets/images/home/login.png";
+import cartIcon from "../assets/images/home/carrito.png";
+
+import { useAuth } from "../composables/useAuth";
 
 const links = [
-  { label: 'Inicio', to: '/' },
-  { label: 'Carta', to: '/carta' },
+  { label: "Inicio", to: "/" },
+  { label: "Carta", to: "/carta" },
   //{ label: 'Reservas', to: '/reservation' },
- //{ label: 'Nosotros', to: null },
-  { label: 'Contacto', to: null, action: 'contact' },
-  { label: 'Ofertas', to: '/ofertas-eventos' },
-]
+  //{ label: 'Nosotros', to: null },
+  { label: "Contacto", to: null, action: "contact" },
+  { label: "Ofertas", to: "/ofertas-eventos" },
+];
 
-const route = useRoute()
-const router = useRouter()
-const menuOpen = ref(false)
+const route = useRoute();
+const router = useRouter();
+const menuOpen = ref(false);
 
 const linkClasses =
-  'inline-block font-ui text-sm font-semibold text-inverse-on-surface transition duration-300 hover:scale-105 hover:text-highlight'
+  "inline-block font-ui text-sm font-semibold text-inverse-on-surface transition duration-300 hover:scale-105 hover:text-highlight";
 
 const iconLinkClasses =
-  'flex h-10 w-10 items-center justify-center rounded-lg bg-transparent transition-colors duration-500 ease-in-out hover:bg-inverse-on-surface/15'
+  "flex h-10 w-10 items-center justify-center rounded-lg bg-transparent transition-colors duration-500 ease-in-out hover:bg-inverse-on-surface/15";
 
 function scrollToContact() {
-  document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  document
+    .getElementById("contacto")
+    ?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 async function goToContact() {
-  menuOpen.value = false
-  if (route.path === '/') {
-    scrollToContact()
-    return
+  menuOpen.value = false;
+  if (route.path === "/") {
+    scrollToContact();
+    return;
   }
-  await router.push('/')
-  await nextTick()
-  setTimeout(scrollToContact, 650)
+  await router.push("/");
+  await nextTick();
+  setTimeout(scrollToContact, 650);
+}
+
+const { loadUser } = useAuth();
+
+async function handleUserClick() {
+  try {
+    const currentUser = await loadUser();
+
+    if (currentUser) {
+      router.push("/account");
+      return;
+    }
+
+    router.push("/login");
+  } catch (error) {
+    router.push("/login");
+  }
 }
 </script>
 
 <template>
-  <header   class="
-    sticky
-    top-0
-    z-50
-    mx-4
-    rounded-2xl
-    border
-    border-white/15
-    bg-black/30
-    px-5
-    py-3
-    backdrop-blur-xl
-    shadow-lg
-    md:mx-8
-    md:px-8
-  ">
+  <header
+    class="sticky top-0 z-50 mx-4 rounded-2xl border border-white/15 bg-black/30 px-5 py-3 backdrop-blur-xl shadow-lg md:mx-8 md:px-8"
+  >
     <div class="flex items-center justify-between gap-6">
       <RouterLink to="/" class="shrink-0">
         <img :src="logo" alt="Goxu" class="h-16 w-auto" />
@@ -64,23 +72,43 @@ async function goToContact() {
 
       <nav class="hidden items-center gap-10 md:flex lg:gap-12">
         <template v-for="link in links" :key="link.label">
-          <RouterLink v-if="link.to" :to="link.to" :class="linkClasses" active-class="text-highlight">
+          <RouterLink
+            v-if="link.to"
+            :to="link.to"
+            :class="linkClasses"
+            active-class="text-highlight"
+          >
             {{ link.label }}
           </RouterLink>
-          <a v-else-if="link.action === 'contact'" href="#contacto" :class="linkClasses" @click.prevent="goToContact">
+          <a
+            v-else-if="link.action === 'contact'"
+            href="#contacto"
+            :class="linkClasses"
+            @click.prevent="goToContact"
+          >
             {{ link.label }}
           </a>
-          <span v-else class="font-ui text-sm font-semibold text-inverse-on-surface/50">{{ link.label }}</span>
+          <span
+            v-else
+            class="font-ui text-sm font-semibold text-inverse-on-surface/50"
+            >{{ link.label }}</span
+          >
         </template>
       </nav>
 
       <div class="flex items-center gap-4">
-        <RouterLink to="/account" :class="iconLinkClasses">
+        <button
+          type="button"
+          aria-label="Acceder a mi cuenta"
+          @click="handleUserClick"
+        >
           <img :src="userIcon" alt="Mi cuenta" class="h-12 w-12 shrink-0" />
-        </RouterLink>
+        </button>
         <RouterLink to="/cart" :class="[iconLinkClasses, 'relative']">
           <img :src="cartIcon" alt="Carrito" class="h-5 w-5 shrink-0" />
-          <span class="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-highlight"></span>
+          <span
+            class="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-highlight"
+          ></span>
         </RouterLink>
 
         <button
@@ -115,7 +143,11 @@ async function goToContact() {
         >
           {{ link.label }}
         </a>
-        <span v-else class="font-ui text-sm font-semibold text-inverse-on-surface/50">{{ link.label }}</span>
+        <span
+          v-else
+          class="font-ui text-sm font-semibold text-inverse-on-surface/50"
+          >{{ link.label }}</span
+        >
       </template>
     </nav>
   </header>
