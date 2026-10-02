@@ -1,23 +1,30 @@
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
+
 import PaymentMethodSelector from "../../components/payment/PaymentMethodSelector.vue";
 import PaymentCard from "../../components/payment/PaymentCard.vue";
 import PaymentSummary from "../../components/payment/PaymentSummary.vue";
 import PaymentAction from "../../components/payment/PaymentAction.vue";
 import { usePayment } from "../../composables/usePayment";
+import { getOrderById } from "../../services/orderService";
 import BaseModal from "../../components/BaseModal.vue";
 import PaymentErrorModal from "../../components/payment/PaymentErrorModal.vue";
 import PaymentRejectedModal from "../../components/payment/PaymentRejectedModal.vue";
 import PaymentMaxAttemptsModal from "../../components/payment/PaymentMaxAttemptsModal.vue";
 import PaymentCancelModal from "../../components/payment/PaymentCancelModal.vue";
+const route = useRoute();
 
 const paymentMethod = ref("card");
 const showCancelModal = ref(false);
 
-// Datos temporales mientras no conectemos useCart()
-const subtotal = ref(42);
-const tax = ref(4.2);
-const total = ref(46.2);
+const order = ref(null);
+const loadingOrder = ref(true);
+const orderError = ref(null);
+
+const subtotal = ref(0);
+const tax = ref(0);
+const total = ref(0);
 
 const {
   paymentStatus,
@@ -47,10 +54,39 @@ const openCancelModal = () => {
 const closeCancelModal = () => {
   showCancelModal.value = false;
 };
+
 const confirmCancel = () => {
   showCancelModal.value = false;
   cancelPayment();
 };
+
+const loadOrder = async () => {
+  const orderId = route.query.orderId;
+
+  if (!orderId) {
+    orderError.value = "No se ha encontrado el pedido.";
+    loadingOrder.value = false;
+    return;
+  }
+
+  try {
+    const orderData = await getOrderById(orderId);
+
+    order.value = orderData;
+    total.value = Number(orderData.total ?? 0);
+
+    console.log("Pedido cargado:", orderData);
+  } catch (error) {
+    console.error("No se pudo cargar el pedido:", error);
+    orderError.value = "No se ha podido cargar el pedido.";
+  } finally {
+    loadingOrder.value = false;
+  }
+};
+
+onMounted(() => {
+  loadOrder();
+});
 </script>
 
 <template>
