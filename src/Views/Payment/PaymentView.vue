@@ -6,16 +6,18 @@ import PaymentMethodSelector from "../../components/payment/PaymentMethodSelecto
 import PaymentCard from "../../components/payment/PaymentCard.vue";
 import PaymentSummary from "../../components/payment/PaymentSummary.vue";
 import PaymentAction from "../../components/payment/PaymentAction.vue";
-import { usePayment } from "../../composables/usePayment";
-import { getOrderById,payOrder } from "../../services/orderService";
-import BaseModal from "../../components/BaseModal.vue";
 import PaymentErrorModal from "../../components/payment/PaymentErrorModal.vue";
 import PaymentRejectedModal from "../../components/payment/PaymentRejectedModal.vue";
 import PaymentMaxAttemptsModal from "../../components/payment/PaymentMaxAttemptsModal.vue";
 import PaymentCancelModal from "../../components/payment/PaymentCancelModal.vue";
+import BaseModal from "../../components/BaseModal.vue";
+
+import { usePayment } from "../../composables/usePayment";
+import { getOrderById, payOrder } from "../../services/orderService";
 
 const route = useRoute();
 const paymentCard = ref(null);
+
 const paymentMethod = ref("card");
 const showCancelModal = ref(false);
 
@@ -31,11 +33,7 @@ const {
   paymentStatus,
   paymentAttempts,
   maxAttempts,
-  canRetry,
-  startPayment,
-  confirmPayment,
-  failPayment,
-  retryPayment,
+  processPayment,
   resetPayment,
   cancelPayment,
 } = usePayment();
@@ -53,7 +51,9 @@ const handlePayment = async () => {
   }
 
   try {
-    const paidOrder = await payOrder(orderId, paymentData);
+    const paidOrder = await processPayment(() =>
+      payOrder(orderId, paymentData)
+    );
 
     console.log("Pago realizado:", paidOrder);
   } catch (error) {
@@ -132,35 +132,6 @@ onMounted(() => {
 
           <PaymentAction @submit-payment="handlePayment" />
 
-          <!-- Simulaciones para probar el flujo de pago -->
-          <div
-            v-if="paymentStatus === 'processing'"
-            class="mt-4 rounded-2xl bg-[var(--color-surface-container)] px-4 py-4 text-center"
-          >
-            <p
-              class="font-ui text-sm font-semibold text-[var(--color-on-surface)]"
-            >
-              Procesando el pago...
-            </p>
-
-            <div class="mt-4 flex flex-wrap justify-center gap-3">
-              <button
-                type="button"
-                class="rounded-full border border-[var(--color-outline-variant)] px-4 py-2 font-ui text-xs font-semibold text-[var(--color-on-surface)]"
-                @click="confirmPayment"
-              >
-                Simular pago confirmado
-              </button>
-
-              <button
-                type="button"
-                class="rounded-full border border-[var(--color-outline-variant)] px-4 py-2 font-ui text-xs font-semibold text-[var(--color-on-surface)]"
-                @click="failPayment"
-              >
-                Simular pago fallido
-              </button>
-            </div>
-          </div>
         </section>
 
         <aside>
@@ -172,7 +143,7 @@ onMounted(() => {
 
   <PaymentErrorModal
     :open="paymentStatus === 'failed' && paymentAttempts === 1"
-    @retry="retryPayment"
+    @retry="handlePayment"
     @cancel="resetPayment"
   />
 
@@ -180,7 +151,7 @@ onMounted(() => {
     :open="paymentStatus === 'failed' && paymentAttempts > 1"
     :attempts="paymentAttempts"
     :max-attempts="maxAttempts"
-    @retry="retryPayment"
+    @retry="handlePayment"
     @change-method="resetPayment"
   />
 
