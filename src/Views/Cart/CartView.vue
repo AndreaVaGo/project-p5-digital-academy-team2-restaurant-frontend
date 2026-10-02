@@ -1,14 +1,21 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted } from "vue";
+import { useRouter } from "vue-router";
+
 import CartItem from "../../components/cart/CartItem.vue";
 import CartSummary from "../../components/cart/CartSummary.vue";
 import CartEmpty from "../../components/cart/CartEmpty.vue";
+
 import { useCart } from "../../composables/useCart";
 import { useOrder } from "../../composables/useOrder.js";
+import { useAuth } from "../../composables/useAuth";
+
+import { createOrder } from "../../services/orderService";
 
 import cachopoImage from "../../assets/images/menu/cachopo-tradicional.png";
-import tablaQuesosImage from "../../assets/images/eventos/chosco-evento.png"; //imagenes luego se cambian con la Api externa
+import tablaQuesosImage from "../../assets/images/eventos/chosco-evento.png";
 
+// Carrito
 const {
   cartItems,
   subtotal,
@@ -19,14 +26,21 @@ const {
   increaseQuantity,
   decreaseQuantity,
 } = useCart();
+
+// Datos del pedido
 const {
   orderType,
   scheduledOrder,
   orderItems,
-  order,
   updateOrderType,
   updateScheduledOrder,
 } = useOrder(cartItems);
+
+// Autenticación
+const { loadUser } = useAuth();
+
+// Router
+const router = useRouter();
 
 // Productos temporales para probar el carrito
 const demoProducts = [
@@ -53,6 +67,43 @@ onMounted(() => {
     addItem(demoProducts[1]);
   }
 });
+
+// Crea el pedido y continúa al pago
+const handleContinue = async () => {
+  try {
+    const currentUser = await loadUser();
+
+    if (!currentUser?.id) {
+      router.push({
+        name: "login",
+        query: {
+          redirect: "/cart",
+        },
+      });
+
+      return;
+    }
+
+    const payload = {
+      userId: currentUser.id,
+      tableNumber: null,
+      items: orderItems.value,
+    };
+
+    const createdOrder = await createOrder(payload);
+
+    console.log("Pedido creado:", createdOrder);
+
+    await router.push({
+      name: "payment",
+      query: {
+        orderId: createdOrder.id,
+      },
+    });
+  } catch (error) {
+    console.error("No se pudo crear el pedido:", error);
+  }
+};
 </script>
 
 <template>
