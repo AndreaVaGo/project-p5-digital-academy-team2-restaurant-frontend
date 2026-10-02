@@ -8,8 +8,8 @@ import cartIcon from '../assets/images/home/carrito.png'
 const links = [
   { label: 'Inicio', to: '/' },
   { label: 'Carta', to: '/carta' },
-  { label: 'Reservas', to: '/reservation' },
-  { label: 'Nosotros', to: null },
+  //{ label: 'Reservas', to: '/reservation' },
+ //{ label: 'Nosotros', to: null },
   { label: 'Contacto', to: null, action: 'contact' },
   { label: 'Ofertas', to: '/ofertas-eventos' },
 ]
@@ -41,13 +41,28 @@ async function goToContact() {
 </script>
 
 <template>
-  <header class="bg-inverse-surface px-5 py-4 md:px-16">
+  <header   class="
+    sticky
+    top-0
+    z-50
+    mx-4
+    rounded-2xl
+    border
+    border-white/15
+    bg-black/30
+    px-5
+    py-3
+    backdrop-blur-xl
+    shadow-lg
+    md:mx-8
+    md:px-8
+  ">
     <div class="flex items-center justify-between gap-6">
       <RouterLink to="/" class="shrink-0">
         <img :src="logo" alt="Goxu" class="h-16 w-auto" />
       </RouterLink>
 
-      <nav class="hidden items-center gap-6 md:flex">
+      <nav class="hidden items-center gap-10 md:flex lg:gap-12">
         <template v-for="link in links" :key="link.label">
           <RouterLink v-if="link.to" :to="link.to" :class="linkClasses" active-class="text-highlight">
             {{ link.label }}
