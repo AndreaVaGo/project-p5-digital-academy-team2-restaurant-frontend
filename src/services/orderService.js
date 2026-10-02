@@ -44,3 +44,16 @@ export async function payOrder(orderId, paymentData) {
 
   return handleResponse(response);
 }
+
+export async function getOrderById(orderId) {
+  const token = getToken();
+
+  const response = await fetch(`${API_URL}/orders/${orderId}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return handleResponse(response);
+}
