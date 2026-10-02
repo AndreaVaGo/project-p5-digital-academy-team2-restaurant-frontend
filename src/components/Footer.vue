@@ -1,7 +1,11 @@
 <script setup>
 import logo from "../assets/images/branding/logo-Goxu.png";
 
-const links = ["Carta", "Política de privacidad", "Aviso legal"];
+const links = [
+  { label: "Carta", to: "/carta" },
+  { label: "Política de privacidad", to: "/" },
+  { label: "Aviso legal", to: "/" },
+];
 
 const developers = [
   { name: "Ruddy", github: "https://github.com/ruddycruzc" },
@@ -37,22 +41,13 @@ const developers = [
         </h2>
 
         <ul class="mt-3 flex flex-col gap-2 font-body text-sm">
-          <li v-for="link in links" :key="link">
+          <li v-for="link in links" :key="link.label">
             <RouterLink
-              v-if="link === 'Carta'"
-              to="/carta"
-              class="inline-block origin-center transition duration-300 hover:scale-105 hover:text-highlight md:origin-left"
+              :to="link.to"
+              class="inline-block origin-center transition duration-300 hover:scale-105 md:origin-left"
             >
-              {{ link }}
+              {{ link.label }}
             </RouterLink>
-
-            <a
-              v-else
-              href="#"
-              class="inline-block origin-center transition duration-300 hover:scale-105 hover:text-highlight md:origin-left"
-            >
-              {{ link }}
-            </a>
           </li>
         </ul>
       </div>
