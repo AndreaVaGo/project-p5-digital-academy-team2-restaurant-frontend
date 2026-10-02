@@ -1,5 +1,4 @@
 <script setup>
-import { onMounted } from "vue";
 import { useRouter } from "vue-router";
 
 import CartItem from "../../components/cart/CartItem.vue";
@@ -12,8 +11,7 @@ import { useAuth } from "../../composables/useAuth";
 
 import { createOrder } from "../../services/orderService";
 
-import cachopoImage from "../../assets/images/menu/cachopo-tradicional.png";
-import tablaQuesosImage from "../../assets/images/eventos/chosco-evento.png";
+const router = useRouter();
 
 // Carrito
 const {
@@ -21,7 +19,6 @@ const {
   subtotal,
   tax,
   total,
-  addItem,
   removeItem,
   increaseQuantity,
   decreaseQuantity,
@@ -29,8 +26,6 @@ const {
 
 // Datos del pedido
 const {
-  orderType,
-  scheduledOrder,
   orderItems,
   updateOrderType,
   updateScheduledOrder,
@@ -38,35 +33,6 @@ const {
 
 // Autenticación
 const { loadUser } = useAuth();
-
-// Router
-const router = useRouter();
-
-// Productos temporales para probar el carrito
-const demoProducts = [
-  {
-    id: 1,
-    name: "Cachopo Tradicional",
-    description: "Con jamón ibérico y queso cabrales.",
-    price: 24,
-    image: cachopoImage,
-  },
-  {
-    id: 2,
-    name: "Tabla de quesos asturianos",
-    description: "Selección de quesos asturianos.",
-    price: 18,
-    image: tablaQuesosImage,
-  },
-];
-
-// Añade productos de prueba mientras no tengamos la API
-onMounted(() => {
-  if (cartItems.value.length === 0) {
-    addItem(demoProducts[0]);
-    addItem(demoProducts[1]);
-  }
-});
 
 // Crea el pedido y continúa al pago
 const handleContinue = async () => {
