@@ -6,6 +6,7 @@ import userIcon from "../assets/images/home/login.png";
 import cartIcon from "../assets/images/home/carrito.png";
 
 import { useAuth } from "../composables/useAuth";
+import { useCart } from "../composables/useCart";
 
 const links = [
   { label: "Inicio", to: "/" },
@@ -44,6 +45,7 @@ async function goToContact() {
 }
 
 const { loadUser } = useAuth();
+const { cartItems } = useCart();
 
 async function handleUserClick() {
   try {
@@ -106,7 +108,9 @@ async function handleUserClick() {
         </button>
         <RouterLink to="/cart" :class="[iconLinkClasses, 'relative']">
           <img :src="cartIcon" alt="Carrito" class="h-5 w-5 shrink-0" />
+
           <span
+            v-if="cartItems.length > 0"
             class="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-highlight"
           ></span>
         </RouterLink>
