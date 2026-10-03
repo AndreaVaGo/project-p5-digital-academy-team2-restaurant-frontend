@@ -52,7 +52,7 @@ const handlePayment = async () => {
 
   try {
     const paidOrder = await processPayment(() =>
-      payOrder(orderId, paymentData)
+      payOrder(orderId, paymentData),
     );
 
     console.log("Pago realizado:", paidOrder);
@@ -87,7 +87,12 @@ const loadOrder = async () => {
     const orderData = await getOrderById(orderId);
 
     order.value = orderData;
-    total.value = Number(orderData.total ?? 0);
+
+    const totalAmount = Number(orderData.total ?? 0);
+
+    total.value = Number(totalAmount.toFixed(2));
+    subtotal.value = Number((totalAmount / 1.1).toFixed(2));
+    tax.value = Number((totalAmount - subtotal.value).toFixed(2));
 
     console.log("Pedido cargado:", orderData);
   } catch (error) {
@@ -131,7 +136,6 @@ onMounted(() => {
           <PaymentCard v-if="paymentMethod === 'card'" ref="paymentCard" />
 
           <PaymentAction @submit-payment="handlePayment" />
-
         </section>
 
         <aside>
