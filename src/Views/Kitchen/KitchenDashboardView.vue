@@ -8,11 +8,20 @@ import {
   ShoppingBag,
   CheckSquare,
   Square,
+  LogOut,
 } from "lucide-vue-next";
 import {
   getKitchenOrdersByStatus,
   updateKitchenOrderStatus,
 } from "../../services/kitchenService";
+
+import { useAuth } from "../../composables/useAuth";
+
+const { logout } = useAuth();
+
+function handleLogout() {
+  logout();
+}
 
 const columns = [
   {
@@ -121,26 +130,29 @@ async function advanceStatus(order, nextStatus) {
 <template>
   <div class="min-h-screen bg-surface-container">
     <header
-  class="bg-on-surface text-surface-container-lowest px-4 md:px-6 py-4 flex items-center justify-between "
->
-  <div class="flex items-center gap-3">
-    <img
-      :src="goxiin"
-      alt="Goxín"
-      class="w-10 h-10 object-contain"
-    />
-
-    <span class="font-headline text-2xl md:text-5xl">
-      Goxu
-    </span>
-
-    <span
-      class="bg-primary text-on-primary font-ui text-xs font-semibold uppercase px-3 py-1 rounded-full absolute left-1/2 -translate-x-1/2"
+      class="relative bg-on-surface text-surface-container-lowest px-4 md:px-6 py-4 flex items-center justify-between"
     >
-      Dashboard de Cocina
-    </span>
-  </div>
-</header>
+      <div class="flex items-center gap-3">
+        <img :src="goxiin" alt="Goxín" class="w-10 h-10 object-contain" />
+
+        <span class="font-headline text-2xl md:text-5xl"> Goxu </span>
+
+        <span
+          class="bg-primary text-on-primary font-ui text-xs font-semibold uppercase px-3 py-1 rounded-full absolute left-1/2 -translate-x-1/2"
+        >
+          Dashboard de Cocina
+        </span>
+      </div>
+      <button
+        @click="handleLogout"
+        class="group mt-4 flex items-center gap-2 font-ui text-sm font-semibold text-highlight transition-colors duration-200 hover:text-highlight/80"
+      >
+        <LogOut
+          class="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5"
+        />
+        Log out
+      </button>
+    </header>
 
     <main class="p-4 md:p-6">
       <h1 class="sr-only">Dashboard de Cocina</h1>
@@ -194,7 +206,13 @@ async function advanceStatus(order, nextStatus) {
                   "
                 >
                   <component
-                    :is="order.type === 'mesa' ? Store : Bike"
+                    :is="
+                      order.type === 'mesa'
+                        ? Store
+                        : order.type === 'recogida'
+                          ? ShoppingBag
+                          : Bike
+                    "
                     class="w-3.5 h-3.5"
                     aria-hidden="true"
                   />
