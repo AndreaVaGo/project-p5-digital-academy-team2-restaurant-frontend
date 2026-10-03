@@ -1,6 +1,8 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import goxiin from "../../assets/images/branding/goxiin.png";
+
 import {
   Clock,
   Store,
@@ -10,6 +12,7 @@ import {
   Square,
   LogOut,
 } from "lucide-vue-next";
+
 import {
   getKitchenOrdersByStatus,
   updateKitchenOrderStatus,
@@ -17,10 +20,12 @@ import {
 
 import { useAuth } from "../../composables/useAuth";
 
+const router = useRouter();
 const { logout } = useAuth();
 
 function handleLogout() {
   logout();
+  router.push({ name: "login" });
 }
 
 const columns = [
