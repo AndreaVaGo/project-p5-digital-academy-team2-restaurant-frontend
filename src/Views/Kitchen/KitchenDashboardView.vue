@@ -4,6 +4,7 @@ import {
   Clock,
   Store,
   Bike,
+  ShoppingBag,
   CheckSquare,
   Square,
 } from "lucide-vue-next";
@@ -36,9 +37,7 @@ const error = ref(false);
 
 const ordersByColumn = computed(() => {
   return columns.reduce((acc, col) => {
-    acc[col.key] = orders.value.filter(
-      (order) => order.status === col.key,
-    );
+    acc[col.key] = orders.value.filter((order) => order.status === col.key);
 
     return acc;
   }, {});
@@ -48,16 +47,23 @@ function adaptOrder(order, status) {
   return {
     id: `#${String(order.id).padStart(3, "0")}`,
     backendId: order.id,
-    type: order.tableNumber ? "mesa" : "domicilio",
-    locationLabel: order.tableNumber
-      ? `Local - Mesa ${order.tableNumber}`
-      : "Domicilio",
+    type:
+      order.tableNumber === "0"
+        ? "recogida"
+        : order.tableNumber
+          ? "mesa"
+          : "domicilio",
+
+    locationLabel:
+      order.tableNumber === "0"
+        ? "Recogida en local"
+        : order.tableNumber
+          ? `Local - Mesa ${order.tableNumber}`
+          : "Domicilio",
     elapsedMin: Math.floor(
       (Date.now() - new Date(order.createdAt).getTime()) / 60000,
     ),
-    items: order.items.map(
-      (item) => `${item.quantity}x ${item.productName}`,
-    ),
+    items: order.items.map((item) => `${item.quantity}x ${item.productName}`),
     status,
   };
 }
@@ -69,22 +75,15 @@ async function loadOrders() {
   try {
     const responses = await Promise.all(
       columns.map(async (column) => {
-        const data = await getKitchenOrdersByStatus(
-          column.backendStatus,
-        );
+        const data = await getKitchenOrdersByStatus(column.backendStatus);
 
-        return data.map((order) =>
-          adaptOrder(order, column.key),
-        );
+        return data.map((order) => adaptOrder(order, column.key));
       }),
     );
 
     orders.value = responses.flat();
   } catch (err) {
-    console.error(
-      "No se pudieron cargar los pedidos de cocina:",
-      err,
-    );
+    console.error("No se pudieron cargar los pedidos de cocina:", err);
     error.value = true;
   } finally {
     loading.value = false;
@@ -109,17 +108,11 @@ function getVisualStatus(backendStatus) {
 
 async function advanceStatus(order, nextStatus) {
   try {
-    await updateKitchenOrderStatus(
-      order.backendId,
-      nextStatus,
-    );
+    await updateKitchenOrderStatus(order.backendId, nextStatus);
 
     order.status = getVisualStatus(nextStatus);
   } catch (error) {
-    console.error(
-      "No se pudo actualizar el estado del pedido:",
-      error,
-    );
+    console.error("No se pudo actualizar el estado del pedido:", error);
   }
 }
 </script>
@@ -130,9 +123,7 @@ async function advanceStatus(order, nextStatus) {
       class="bg-on-surface text-surface-container-lowest px-4 md:px-6 py-4 flex items-center justify-between"
     >
       <div class="flex items-center gap-3">
-        <span class="font-headline text-xl md:text-2xl">
-          Goxu
-        </span>
+        <span class="font-headline text-xl md:text-2xl"> Goxu </span>
 
         <span
           class="bg-primary text-on-primary font-ui text-xs font-semibold uppercase px-3 py-1 rounded-full"
@@ -204,9 +195,7 @@ async function advanceStatus(order, nextStatus) {
               </div>
 
               <template v-if="col.key === 'listos'">
-                <p class="font-body text-sm text-outline">
-                  Pedido preparado
-                </p>
+                <p class="font-body text-sm text-outline">Pedido preparado</p>
 
                 <p class="font-body text-xs text-outline">
                   Listo para continuar con el siguiente paso
@@ -217,18 +206,12 @@ async function advanceStatus(order, nextStatus) {
                 <span
                   class="flex items-center gap-1 font-ui text-xs text-outline"
                 >
-                  <Clock
-                    class="w-3.5 h-3.5"
-                    aria-hidden="true"
-                  />
+                  <Clock class="w-3.5 h-3.5" aria-hidden="true" />
 
                   {{ order.elapsedMin }} min
                 </span>
 
-                <ul
-                  v-if="order.items"
-                  class="flex flex-col gap-1"
-                >
+                <ul v-if="order.items" class="flex flex-col gap-1">
                   <li
                     v-for="item in order.items"
                     :key="item"
@@ -238,10 +221,7 @@ async function advanceStatus(order, nextStatus) {
                   </li>
                 </ul>
 
-                <ul
-                  v-if="order.checklist"
-                  class="flex flex-col gap-1"
-                >
+                <ul v-if="order.checklist" class="flex flex-col gap-1">
                   <li
                     v-for="item in order.checklist"
                     :key="item.name"
@@ -313,5 +293,4 @@ async function advanceStatus(order, nextStatus) {
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
