@@ -1,10 +1,19 @@
 <script setup>
+import { useRouter } from "vue-router";
+
 import CartItem from "../../components/cart/CartItem.vue";
 import CartSummary from "../../components/cart/CartSummary.vue";
 import CartEmpty from "../../components/cart/CartEmpty.vue";
+
 import { useCart } from "../../composables/useCart";
 import { useOrder } from "../../composables/useOrder.js";
+import { useAuth } from "../../composables/useAuth";
 
+import { createOrder } from "../../services/orderService";
+
+const router = useRouter();
+
+// Carrito
 const {
   cartItems,
   subtotal,
@@ -15,14 +24,52 @@ const {
   decreaseQuantity,
 } = useCart();
 
+// Datos del pedido
 const {
-  orderType,
-  scheduledOrder,
   orderItems,
-  order,
   updateOrderType,
   updateScheduledOrder,
 } = useOrder(cartItems);
+
+// Autenticación
+const { loadUser } = useAuth();
+
+// Crea el pedido y continúa al pago
+const handleContinue = async () => {
+  try {
+    const currentUser = await loadUser();
+
+    if (!currentUser?.id) {
+      router.push({
+        name: "login",
+        query: {
+          redirect: "/cart",
+        },
+      });
+
+      return;
+    }
+
+    const payload = {
+      userId: currentUser.id,
+      tableNumber: null,
+      items: orderItems.value,
+    };
+
+    const createdOrder = await createOrder(payload);
+
+    console.log("Pedido creado:", createdOrder);
+
+    await router.push({
+      name: "payment",
+      query: {
+        orderId: createdOrder.id,
+      },
+    });
+  } catch (error) {
+    console.error("No se pudo crear el pedido:", error);
+  }
+};
 </script>
 
 <template>
@@ -72,6 +119,7 @@ const {
           :total="total"
           @update-order-type="updateOrderType"
           @update-scheduled-order="updateScheduledOrder"
+          @continue="handleContinue"
         />
       </div>
     </section>
