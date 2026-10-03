@@ -23,6 +23,7 @@ import DeliveryLayout from "../layouts/DeliveryLayout.vue";
 import DeliveryDashboardView from "../Views/Delivery/DeliveryDashboardView.vue";
 import DeliveryOrdersView from "../Views/Delivery/DeliveryOrdersView.vue";
 import PublicLayout from "../layouts/PublicLayout.vue";
+import NotFoundView from "../Views/NotFound/NotFoundView.vue";
 
 const routes = [
   {
@@ -87,10 +88,21 @@ const routes = [
         name: "payment",
         component: PaymentView,
       },
-      {
+            {
         path: "reservation",
         name: "reservation",
         component: ReservationView,
+      },
+      {
+        /*
+          Ruta catch-all: atrapa cualquier dirección que no coincida con otra ruta.
+          Vue Router prioriza las rutas más específicas, así que esta solo se usa
+          cuando ninguna otra encaja. Al ser hija de PublicLayout, muestra cabecera y pie.
+          No lleva meta.roles, así que el guardia de navegación la deja pasar sin sesión.
+        */
+        path: ":pathMatch(.*)*",
+        name: "not-found",
+        component: NotFoundView,
       },
     ],
   },
