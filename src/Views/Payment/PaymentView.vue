@@ -15,7 +15,11 @@ import PaymentConfirmationModal from "../../components/payment/PaymentConfirmati
 import { usePayment } from "../../composables/usePayment";
 import { getOrderById, payOrder } from "../../services/orderService";
 
+import { useAuth } from "../../composables/useAuth";
+import { getCustomerProfile } from "../../services/ProfileService";
+
 const route = useRoute();
+const { user, loadUser } = useAuth();
 const paymentCard = ref(null);
 
 const paymentMethod = ref("card");
@@ -25,6 +29,7 @@ const order = ref(null);
 const loadingOrder = ref(true);
 const orderError = ref(null);
 const paymentResult = ref(null);
+const customerProfile = ref(null);
 const paymentLastFourDigits = ref("");
 
 const subtotal = ref(0);
@@ -84,6 +89,22 @@ const handleTracking = () => {
   console.log("Ver seguimiento del pedido:", paymentResult.value?.id);
 };
 
+const loadCustomerProfile = async () => {
+  try {
+    const currentUser = user.value || (await loadUser());
+
+    if (!currentUser?.id) {
+      throw new Error("No se ha podido identificar al usuario.");
+    }
+
+    customerProfile.value = await getCustomerProfile(currentUser.id);
+
+    console.log("Perfil del cliente cargado:", customerProfile.value);
+  } catch (error) {
+    console.error("No se pudo cargar el perfil del cliente:", error);
+  }
+};
+
 const loadOrder = async () => {
   const orderId = route.query.orderId;
 
@@ -115,6 +136,7 @@ const loadOrder = async () => {
 
 onMounted(() => {
   loadOrder();
+  loadCustomerProfile();
 });
 </script>
 
@@ -181,15 +203,24 @@ onMounted(() => {
     @continue="closeCancelModal"
     @close="closeCancelModal"
   />
-  <PaymentConfirmationModal
-    :open="paymentStatus === 'confirmed'"
-    :payment-method="paymentMethod"
-    :order="paymentResult || order"
-    :amount="Number(paymentResult?.total ?? total)"
-    :last-four-digits="paymentLastFourDigits"
-    @close="resetPayment"
-    @tracking="handleTracking"
-  />
+
+  <!--Queda pendiente que se muestre el nombre, y detalles del producto-->
+<PaymentConfirmationModal
+  :open="paymentStatus === 'confirmed'"
+  :payment-method="paymentMethod"
+  :amount="Number(paymentResult?.total ?? total)"
+  :order-id="paymentResult?.id ?? order?.id"
+  :last-four-digits="paymentLastFourDigits"
+  :customer-name="customerProfile?.name ?? order?.userName ?? ''"
+  :customer-surname="customerProfile?.surname ?? ''"
+  :address="customerProfile?.address ?? ''"
+  :postal-code="customerProfile?.postalCode ?? ''"
+  :city="customerProfile?.city ?? ''"
+  :items="paymentResult?.items ?? order?.items ?? []"
+  :status="paymentResult?.status ?? order?.status ?? 'PENDING'"
+  @close="resetPayment"
+  @tracking="handleTracking"
+/>
 </template>
 
 <style scoped></style>
