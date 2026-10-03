@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
+import goxiin from "../../assets/images/branding/goxiin.png";
 import {
   Clock,
   Store,
@@ -120,18 +121,26 @@ async function advanceStatus(order, nextStatus) {
 <template>
   <div class="min-h-screen bg-surface-container">
     <header
-      class="bg-on-surface text-surface-container-lowest px-4 md:px-6 py-4 flex items-center justify-between"
-    >
-      <div class="flex items-center gap-3">
-        <span class="font-headline text-xl md:text-2xl"> Goxu </span>
+  class="bg-on-surface text-surface-container-lowest px-4 md:px-6 py-4 flex items-center justify-between "
+>
+  <div class="flex items-center gap-3">
+    <img
+      :src="goxiin"
+      alt="Goxín"
+      class="w-10 h-10 object-contain"
+    />
 
-        <span
-          class="bg-primary text-on-primary font-ui text-xs font-semibold uppercase px-3 py-1 rounded-full"
-        >
-          Dashboard de Cocina
-        </span>
-      </div>
-    </header>
+    <span class="font-headline text-2xl md:text-5xl">
+      Goxu
+    </span>
+
+    <span
+      class="bg-primary text-on-primary font-ui text-xs font-semibold uppercase px-3 py-1 rounded-full absolute left-1/2 -translate-x-1/2"
+    >
+      Dashboard de Cocina
+    </span>
+  </div>
+</header>
 
     <main class="p-4 md:p-6">
       <h1 class="sr-only">Dashboard de Cocina</h1>
