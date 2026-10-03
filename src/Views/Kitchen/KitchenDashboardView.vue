@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import {
     Clock,
     Store,
@@ -8,86 +8,66 @@ import {
     CheckSquare,
     Square,
 } from "lucide-vue-next";
+import { getKitchenOrdersByStatus } from "../../services/kitchenService";
 
 const columns = [
-    { key: "nuevos", label: "Nuevos" },
-    { key: "en-curso", label: "En Curso" },
-    { key: "con-retraso", label: "Con Retraso" },
-    { key: "listos", label: "Listos" },
+    { key: "nuevos", label: "Nuevos", backendStatus: "PENDING" },
+    { key: "en-curso", label: "En Curso", backendStatus: "IN_KITCHEN" },
+    { key: "con-retraso", label: "Con Retraso", backendStatus: "DELAYED" },
+    { key: "listos", label: "Listos", backendStatus: "READY" },
 ];
 
-const orders = ref([
-    {
-        id: "#042",
-        type: "mesa",
-        locationLabel: "Local - Mesa 4",
-        elapsedMin: 2,
-        items: ["2x Cachopo Clásico", "1x Fabada Asturiana"],
-        status: "nuevos",
-    },
-    {
-        id: "#043",
-        type: "domicilio",
-        locationLabel: "Domicilio",
-        elapsedMin: 1,
-        items: ["1x Ensalada de Cecina", "2x Arroz con Leche"],
-        note: "Sin canela en el arroz con leche y aliño aparte para la ensalada",
-        status: "nuevos",
-    },
-    {
-        id: "#039",
-        type: "mesa",
-        locationLabel: "Local - Mesa 2",
-        elapsedMin: 12,
-        checklist: [
-            { name: "1x Tabla de Quesos", done: true },
-            { name: "1x Entrecot (Punto Menos)", done: false },
-        ],
-        status: "en-curso",
-    },
-    {
-        id: "#041",
-        type: "mesa",
-        locationLabel: "Local - Barra 1",
-        elapsedMin: 6,
-        checklist: [
-            { name: "2x Botellas Sidra Natural", done: true },
-            { name: "1x Tortos de Maíz con Picadillo", done: false },
-        ],
-        status: "en-curso",
-    },
-    {
-        id: "#037",
-        type: "mesa",
-        locationLabel: "Local - Mesa 6",
-        elapsedMin: 18,
-        items: ["1x Cachopo Tradicional", "1x Sidra Natural"],
-        status: "con-retraso",
-    },
-    {
-        id: "#038",
-        type: "mesa",
-        locationLabel: "Local - Mesa 4",
-        deliveredNote: "Entregado a camarero",
-        agoLabel: "Hace 2 min",
-        status: "listos",
-    },
-    {
-        id: "#036",
-        type: "domicilio",
-        locationLabel: "Domicilio",
-        deliveredNote: "Recogido por repartidor",
-        agoLabel: "Hace 8 min",
-        status: "listos",
-    },
-]);
+const orders = ref([]);
+const loading = ref(false);
+const error = ref(false);
 
 const ordersByColumn = computed(() => {
     return columns.reduce((acc, col) => {
-        acc[col.key] = orders.value.filter((o) => o.status === col.key);
+        acc[col.key] = orders.value.filter((order) => order.status === col.key);
+
         return acc;
     }, {});
 });
+
+function adaptOrder(order, status) {
+    return {
+        id: `#${String(order.id).padStart(3, "0")}`,
+        backendId: order.id,
+        type: order.tableNumber ? "mesa" : "domicilio",
+        locationLabel: order.tableNumber
+            ? `Local - Mesa ${order.tableNumber}`
+            : "Domicilio",
+        elapsedMin: Math.floor(
+            (Date.now() - new Date(order.createdAt).getTime()) / 60000,
+        ),
+        items: order.items.map((item) => `${item.quantity}x ${item.productName}`),
+        status,
+    };
+}
+
+async function loadOrders() {
+    loading.value = true;
+    error.value = false;
+
+    try {
+        const responses = await Promise.all(
+            columns.map(async (column) => {
+                const data = await getKitchenOrdersByStatus(column.backendStatus);
+
+                return data.map((order) => adaptOrder(order, column.key));
+            }),
+        );
+
+        orders.value = responses.flat();
+    } catch (err) {
+        console.error("No se pudieron cargar los pedidos de cocina:", err);
+        error.value = true;
+    } finally {
+        loading.value = false;
+    }
+}
+
+onMounted(loadOrders);
 
 function advanceStatus(order, nextStatus) {
     order.status = nextStatus;
@@ -135,8 +115,8 @@ function advanceStatus(order, nextStatus) {
                                 <span
                                     class="flex items-center gap-1 font-ui text-xs font-semibold px-2 py-1 rounded-full"
                                     :class="order.type === 'mesa'
-                                        ? 'bg-secondary-container text-secondary'
-                                        : 'bg-tertiary-container text-tertiary'
+                                            ? 'bg-secondary-container text-secondary'
+                                            : 'bg-tertiary-container text-tertiary'
                                         ">
                                     <component :is="order.type === 'mesa' ? Store : Bike" class="w-3.5 h-3.5"
                                         aria-hidden="true" />
@@ -168,11 +148,14 @@ function advanceStatus(order, nextStatus) {
 
                                 <ul v-if="order.checklist" class="flex flex-col gap-1">
                                     <li v-for="item in order.checklist" :key="item.name"
-                                        class="flex items-center gap-2 font-body text-sm"
-                                        :class="item.done ? 'text-outline line-through' : 'text-on-surface'">
+                                        class="flex items-center gap-2 font-body text-sm" :class="item.done
+                                                ? 'text-outline line-through'
+                                                : 'text-on-surface'
+                                            ">
                                         <component :is="item.done ? CheckSquare : Square" class="w-4 h-4 shrink-0"
                                             aria-hidden="true" />
-                                        <span class="sr-only">{{ item.done ? "Completado" : "Pendiente" }}: </span>
+                                        <span class="sr-only">{{ item.done ? "Completado" : "Pendiente" }}:
+                                        </span>
                                         {{ item.name }}
                                     </li>
                                 </ul>
