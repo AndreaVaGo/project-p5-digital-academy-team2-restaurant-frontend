@@ -10,7 +10,7 @@ import PaymentErrorModal from "../../components/payment/PaymentErrorModal.vue";
 import PaymentRejectedModal from "../../components/payment/PaymentRejectedModal.vue";
 import PaymentMaxAttemptsModal from "../../components/payment/PaymentMaxAttemptsModal.vue";
 import PaymentCancelModal from "../../components/payment/PaymentCancelModal.vue";
-import BaseModal from "../../components/BaseModal.vue";
+import PaymentConfirmationModal from "../../components/payment/PaymentConfirmationModal.vue";
 
 import { usePayment } from "../../composables/usePayment";
 import { getOrderById, payOrder } from "../../services/orderService";
@@ -24,6 +24,8 @@ const showCancelModal = ref(false);
 const order = ref(null);
 const loadingOrder = ref(true);
 const orderError = ref(null);
+const paymentResult = ref(null);
+const paymentLastFourDigits = ref("");
 
 const subtotal = ref(0);
 const tax = ref(0);
@@ -55,6 +57,10 @@ const handlePayment = async () => {
       payOrder(orderId, paymentData),
     );
 
+    paymentResult.value = paidOrder;
+
+    paymentLastFourDigits.value = paymentData.cardNumber.slice(-4);
+
     console.log("Pago realizado:", paidOrder);
   } catch (error) {
     console.error("No se pudo realizar el pago:", error);
@@ -72,6 +78,10 @@ const closeCancelModal = () => {
 const confirmCancel = () => {
   showCancelModal.value = false;
   cancelPayment();
+};
+
+const handleTracking = () => {
+  console.log("Ver seguimiento del pedido:", paymentResult.value?.id);
 };
 
 const loadOrder = async () => {
@@ -171,30 +181,15 @@ onMounted(() => {
     @continue="closeCancelModal"
     @close="closeCancelModal"
   />
-  <!-- confirmación provisional -->
-  <BaseModal :open="paymentStatus === 'confirmed'" @close="resetPayment">
-    <div class="text-center">
-      <h2
-        class="font-headline text-3xl font-semibold text-[var(--color-on-surface)]"
-      >
-        ¡Pago confirmado!
-      </h2>
-
-      <p
-        class="mt-3 font-body text-sm leading-6 text-[var(--color-on-surface-variant)]"
-      >
-        Tu pago se ha realizado correctamente.
-      </p>
-
-      <button
-        type="button"
-        class="mt-6 rounded-full bg-[var(--color-primary)] px-6 py-3 font-ui text-sm font-semibold text-[var(--color-on-primary)]"
-        @click="resetPayment"
-      >
-        Continuar
-      </button>
-    </div>
-  </BaseModal>
+  <PaymentConfirmationModal
+    :open="paymentStatus === 'confirmed'"
+    :payment-method="paymentMethod"
+    :order="paymentResult || order"
+    :amount="Number(paymentResult?.total ?? total)"
+    :last-four-digits="paymentLastFourDigits"
+    @close="resetPayment"
+    @tracking="handleTracking"
+  />
 </template>
 
 <style scoped></style>
