@@ -112,7 +112,7 @@ const emit = defineEmits(["close"]);
                     <p
                         class="font-body text-sm text-on-surface flex-1"
                     >
-                        {{ item.name }}
+                        {{ item.productName }}
                     </p>
 
                     <span
