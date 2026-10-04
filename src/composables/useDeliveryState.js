@@ -6,6 +6,7 @@ import {
   startDelivery,
   completeDelivery,
 } from "../services/deliveryService";
+import { getCustomerProfile } from "../services/profileService";
 
 export const currentService = ref(null);
 export const availableService = ref(null);
@@ -14,15 +15,43 @@ export const allOrders = ref([]);
 export const loading = ref(false);
 export const error = ref(null);
 
-function adaptOrder(order) {
+const profileCache = new Map();
+
+async function getProfile(userId) {
+  if (!userId) return null;
+
+  if (profileCache.has(userId)) {
+    return profileCache.get(userId);
+  }
+
+  try {
+    const profile = await getCustomerProfile(userId);
+
+    profileCache.set(userId, profile);
+
+    return profile;
+  } catch (err) {
+    console.error(`No se ha podido cargar el perfil ${userId}:`, err);
+    return null;
+  }
+}
+
+async function adaptOrder(order) {
+  const profile = await getProfile(order.userId);
+
   return {
     id: order.id,
     price: Number(order.total),
     customerName: order.userName,
+    customerAddress: profile?.address || "",
+    customerPostalCode: profile?.postalCode || "",
+    customerCity: profile?.city || "",
+    customerPhone: profile?.phone || "",
     status: order.status,
     paid: order.paid,
     createdAt: order.createdAt,
     tableNumber: order.tableNumber,
+    userId: order.userId,
     items: order.items ?? [],
   };
 }
@@ -40,14 +69,16 @@ export async function loadDeliveryState() {
       ]);
 
     availableService.value = readyOrders.length
-      ? adaptOrder(readyOrders[0])
+      ? await adaptOrder(readyOrders[0])
       : null;
 
     currentService.value = onTheWayOrders.length
-      ? adaptOrder(onTheWayOrders[0])
+      ? await adaptOrder(onTheWayOrders[0])
       : null;
 
-    allOrders.value = deliveredOrders.map(adaptOrder);
+    allOrders.value = await Promise.all(
+      deliveredOrders.map(adaptOrder),
+    );
   } catch (err) {
     error.value = err;
   } finally {
@@ -64,7 +95,7 @@ export async function acceptOrder() {
   try {
     const updatedOrder = await startDelivery(availableService.value.id);
 
-    currentService.value = adaptOrder(updatedOrder);
+    currentService.value = await adaptOrder(updatedOrder);
     availableService.value = null;
   } catch (err) {
     error.value = err;
@@ -82,7 +113,7 @@ export async function deliverOrder() {
   try {
     const updatedOrder = await completeDelivery(currentService.value.id);
 
-    const deliveredOrder = adaptOrder(updatedOrder);
+    const deliveredOrder = await adaptOrder(updatedOrder);
 
     allOrders.value.unshift(deliveredOrder);
     currentService.value = null;
