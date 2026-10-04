@@ -12,14 +12,17 @@ import {
 } from "lucide-vue-next";
 
 import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 import { useAuth } from "../../composables/useAuth";
 import { getCustomerProfile } from "../../services/profileService";
 
 const { user, loadUser } = useAuth();
+const router = useRouter();
 
 const profile = ref(null);
 const cargandoPerfil = ref(true);
 const errorPerfil = ref("");
+const pedidoActual = ref(null);
 
 async function cargarPerfil() {
   try {
@@ -40,6 +43,7 @@ async function cargarPerfil() {
     console.log("4. ANTES DE getCustomerProfile");
 
     profile.value = await getCustomerProfile(currentUser.id);
+    pedidoActual.value = profile.value.recentOrders?.[0] ?? null;
 
     console.log("5. PERFIL RECIBIDO:", profile.value);
   } catch (error) {
@@ -61,7 +65,16 @@ const trackerSteps = [
 ];
 
 function verSeguimiento() {
-  console.log("Ir a ver seguimiento del pedido actual");
+  if (!pedidoActual.value?.id) {
+    return;
+  }
+
+  router.push({
+    name: "order-tracking",
+    query: {
+      orderId: pedidoActual.value.id,
+    },
+  });
 }
 </script>
 
@@ -147,11 +160,13 @@ function verSeguimiento() {
           Sigue en tiempo real el estado de tu pedido actual desde nuestra
           cocina hasta tu puerta.
         </p>
-        <RouterLink
-          to="/rastreo"
-          class="font-ui font-semibold text-sm text-primary mt-2"
-          >Rastrear →</RouterLink
+        <button
+          type="button"
+          @click="verSeguimiento"
+          class="font-ui font-semibold text-sm text-primary mt-2 text-left"
         >
+          Rastrear →
+        </button>
       </article>
     </div>
 
@@ -295,11 +310,10 @@ function verSeguimiento() {
           <span class="font-ui text-xs font-semibold text-outline block mb-1"
             >DIRECCIÓN DE ENTREGA PRINCIPAL</span
           >
-          <span class="font-body text-sm text-on-surface"
-            >    {{ profile?.address || "No indicada" }}<br />
-    {{ profile?.postalCode }}, {{ profile?.city }}
-            </span
-          >
+          <span class="font-body text-sm text-on-surface">
+            {{ profile?.address || "No indicada" }}<br />
+            {{ profile?.postalCode }}, {{ profile?.city }}
+          </span>
         </div>
 
         <RouterLink
