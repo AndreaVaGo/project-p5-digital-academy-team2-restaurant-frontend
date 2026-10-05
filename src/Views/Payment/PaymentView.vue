@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 import PaymentMethodSelector from "../../components/payment/PaymentMethodSelector.vue";
 import PaymentCard from "../../components/payment/PaymentCard.vue";
@@ -19,7 +19,9 @@ import { useAuth } from "../../composables/useAuth";
 import { getCustomerProfile } from "../../services/ProfileService";
 
 const route = useRoute();
+const router = useRouter();
 const { user, loadUser } = useAuth();
+
 const paymentCard = ref(null);
 
 const paymentMethod = ref("card");
@@ -85,9 +87,20 @@ const confirmCancel = () => {
   cancelPayment();
 };
 
-const handleTracking = () => {
-  console.log("Ver seguimiento del pedido:", paymentResult.value?.id);
-};
+function handleTracking() {
+  const orderId = paymentResult.value?.id ?? order.value?.id;
+
+  if (!orderId) {
+    return;
+  }
+
+  router.push({
+    name: "order-tracking",
+    query: {
+      orderId,
+    },
+  });
+}
 
 const loadCustomerProfile = async () => {
   try {
