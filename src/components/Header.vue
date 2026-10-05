@@ -87,7 +87,7 @@ onBeforeUnmount(() => {
 
 <template>
   <header
-    class="sticky top-0 z-50 mx-4 rounded-2xl border border-white/15 bg-black/30 px-5 py-3 backdrop-blur-xl shadow-lg md:mx-8 md:px-8"
+    class="sticky top-0 z-50 w-full border-b border-white/15 bg-black/30 px-5 py-3 backdrop-blur-xl shadow-lg md:px-8"
   >
     <div class="flex items-center justify-between gap-6">
       <RouterLink to="/" class="shrink-0">
