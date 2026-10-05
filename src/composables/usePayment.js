@@ -62,7 +62,9 @@ export function usePayment() {
   const resetPayment = () => {
     paymentStatus.value = "idle";
   };
-
+  const cancelPayment = () => {
+    paymentStatus.value = "cancelled";
+  };
 
   return {
     paymentStatus,

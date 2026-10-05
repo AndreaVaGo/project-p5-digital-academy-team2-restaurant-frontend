@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { usePayment } from "./usePayment";
+import { usePayment } from "../../composables/usePayment";
 
 describe("usePayment", () => {
   it("empieza con el estado inicial correcto", () => {
