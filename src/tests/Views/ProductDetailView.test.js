@@ -66,23 +66,38 @@ beforeEach(() => {
 
 describe("ProductDetailView", () => {
   it("deshabilita el botón de añadir al pedido si el producto no está disponible", async () => {
-    router.push("/product/1");
-    await router.isReady();
-    const wrapper = mount(ProductDetailView, { global: { plugins: [router] } });
+    const router = await createTestRouter();
+
+    const wrapper = mount(ProductDetailView, {
+      global: {
+        plugins: [router],
+      },
+    });
+
     await flushPromises();
+
     wrapper.vm.product.available = false;
 
     await wrapper.vm.$nextTick();
+
     const boton = wrapper.find('[data-testid="add-to-order-button"]');
+
     expect(boton.attributes("disabled")).toBeDefined();
   });
 
   it("habilita el botón cuando el producto está disponible", async () => {
-    router.push("/product/1");
-    await router.isReady();
-    const wrapper = mount(ProductDetailView, { global: { plugins: [router] } });
+    const router = await createTestRouter();
+
+    const wrapper = mount(ProductDetailView, {
+      global: {
+        plugins: [router],
+      },
+    });
+
     await flushPromises();
+
     const boton = wrapper.find('[data-testid="add-to-order-button"]');
+
     expect(boton.attributes("disabled")).toBeUndefined();
   });
 });
