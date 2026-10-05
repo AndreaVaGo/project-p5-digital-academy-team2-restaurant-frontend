@@ -1,12 +1,6 @@
 <script setup>
 import logo from "../assets/images/branding/logo-Goxu.png";
 
-const links = [
-  { label: "Carta", to: "/carta" },
-  { label: "Política de privacidad", to: "/" },
-  { label: "Aviso legal", to: "/" },
-];
-
 const developers = [
   { name: "Ruddy", github: "https://github.com/ruddycruzc" },
   { name: "Gema", github: "https://github.com/gmp395" },
@@ -19,37 +13,13 @@ const developers = [
 
 <template>
   <footer
-    class="bg-inverse-surface px-5 py-8 text-inverse-on-surface md:px-16 md:py-10"
+    class="bg-inverse-surface px-5 py-6 text-inverse-on-surface md:px-16 md:py-8"
   >
     <div
-      class="mx-auto grid max-w-[1280px] grid-cols-1 gap-8 text-center md:grid-cols-3 md:gap-10 md:text-left"
+      class="mx-auto grid max-w-[1280px] grid-cols-1 gap-8 text-center md:grid-cols-2 md:gap-10 md:text-left"
     >
-      <div>
-        <img :src="logo" alt="Goxu" class="mx-auto block h-28 w-auto md:mx-0" />
-
-        <p class="mt-3 font-body text-sm text-inverse-on-surface/80">
-          Cocina asturiana con sabor, tradición y alma. Autenticidad
-          gastronómica en cada plato.
-        </p>
-      </div>
-
-      <div>
-        <h2
-          class="font-ui text-label-caps font-semibold uppercase tracking-caps text-highlight"
-        >
-          Enlaces
-        </h2>
-
-        <ul class="mt-3 flex flex-col gap-2 font-body text-sm">
-          <li v-for="link in links" :key="link.label">
-            <RouterLink
-              :to="link.to"
-              class="inline-block origin-center transition duration-300 hover:scale-105 md:origin-left"
-            >
-              {{ link.label }}
-            </RouterLink>
-          </li>
-        </ul>
+      <div class="flex items-center justify-center md:justify-start">
+        <img :src="logo" alt="Goxu" class="h-14 w-auto" />
       </div>
 
       <div>
@@ -87,7 +57,7 @@ const developers = [
     </div>
 
     <div
-      class="mx-auto mt-8 max-w-[1280px] border-t border-inverse-on-surface/20 pt-4"
+      class="mx-auto mt-6 max-w-[1280px] border-t border-inverse-on-surface/20 pt-4"
     >
       <p class="font-body text-xs text-inverse-on-surface/70">
         © 2026 Goxu. Todos los derechos reservados.
