@@ -14,6 +14,12 @@ describe("CustomerProfileView", () => {
 
   it("guarda correctamente cuando todos los campos obligatorios están rellenos", async () => {
     const wrapper = mount(CustomerProfileView);
+    wrapper.vm.form.nombre = "Ana";
+    wrapper.vm.form.apellidos = "García";
+    wrapper.vm.form.email = "ana@example.com";
+    wrapper.vm.form.direccion = "Calle Mayor 1";
+    wrapper.vm.form.codigoPostal = "33001";
+    wrapper.vm.form.ciudad = "Oviedo";
     await wrapper.find("form").trigger("submit.prevent");
     await wrapper.vm.$nextTick();
     expect(Object.keys(wrapper.vm.errores).length).toBe(0);

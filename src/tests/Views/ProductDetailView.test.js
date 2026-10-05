@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { mount } from "@vue/test-utils";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { mount, flushPromises } from "@vue/test-utils";
 import { createRouter, createWebHistory } from "vue-router";
 import ProductDetailView from "../../Views/Menu/ProductDetailView.vue";
 
@@ -14,17 +14,37 @@ const router = createRouter({
   ],
 });
 
+const sampleProduct = {
+  id: 1,
+  name: "Fabada asturiana",
+  description: "Plato tradicional asturiano con fabes, compango y alma.",
+  price: 18.5,
+  image: "https://example.com/fabada.jpg",
+  category: "Especialidades",
+  available: true,
+};
+
+beforeEach(() => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: async () => sampleProduct,
+      }),
+    ),
+  );
+});
+
 describe("ProductDetailView", () => {
   it("deshabilita el botón de añadir al pedido si el producto no está disponible", async () => {
     router.push("/product/1");
     await router.isReady();
     const wrapper = mount(ProductDetailView, { global: { plugins: [router] } });
-    await wrapper.vm.$nextTick();
+    await flushPromises();
     wrapper.vm.product.available = false;
     await wrapper.vm.$nextTick();
-    const boton = wrapper
-      .findAll("button")
-      .find((b) => b.text().includes("AÑADIR AL PEDIDO"));
+    const boton = wrapper.find('[data-testid="add-to-order-button"]');
     expect(boton.attributes("disabled")).toBeDefined();
   });
 
@@ -32,10 +52,8 @@ describe("ProductDetailView", () => {
     router.push("/product/1");
     await router.isReady();
     const wrapper = mount(ProductDetailView, { global: { plugins: [router] } });
-    await wrapper.vm.$nextTick();
-    const boton = wrapper
-      .findAll("button")
-      .find((b) => b.text().includes("AÑADIR AL PEDIDO"));
+    await flushPromises();
+    const boton = wrapper.find('[data-testid="add-to-order-button"]');
     expect(boton.attributes("disabled")).toBeUndefined();
   });
 });
