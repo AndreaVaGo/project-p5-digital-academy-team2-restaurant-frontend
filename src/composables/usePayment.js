@@ -63,9 +63,6 @@ export function usePayment() {
     paymentStatus.value = "idle";
   };
 
-  const cancelPayment = () => {
-    paymentStatus.value = "cancelled";
-  };
 
   return {
     paymentStatus,
