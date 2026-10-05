@@ -131,6 +131,9 @@ npm run dev
 
 # 6. Ejecutar los tests unitarios
 npm run test
+
+# 7. Ejecutar los tests con informe de cobertura
+npm run coverage
 ```
 
 El archivo `.env` define la URL de la API que usa el frontend:
@@ -138,6 +141,8 @@ El archivo `.env` define la URL de la API que usa el frontend:
 ```env
 VITE_API_URL=http://localhost:8080/api
 ```
+
+El informe de cobertura se genera en la carpeta `coverage/` (abre `coverage/index.html` en el navegador para verlo en detalle). Esta carpeta no se sube al repositorio.
 
 [Volver al índice](#-índice)
 
@@ -159,7 +164,9 @@ VITE_API_URL=http://localhost:8080/api
   - **`services/`** — llamadas a la API del backend (autenticación, productos, pedidos, seguimiento, cocina, reparto, facturación, dashboard de administración y perfil)
   - **`utils/`** — utilidades (almacenamiento del token de sesión y formateo de moneda)
   - **`Views/`** — vistas de la aplicación (cliente, cocina, repartidor, administración)
-  - **`tests/Views/`** — tests unitarios con Vitest de las vistas de pedidos y productos de administración, perfil de cliente y detalle de producto
+  - **`tests/`** — tests unitarios con Vitest
+    - **`Views/`** — vistas de pedidos y productos de administración, perfil de cliente y detalle de producto
+    - **`composables/`** — eventos, ofertas y reservas
 
 [Volver al índice](#-índice)
 
@@ -175,6 +182,7 @@ VITE_API_URL=http://localhost:8080/api
 - **[Leaflet](https://leafletjs.com/)** — Mapa para el panel de repartidor
 - **[Lucide](https://lucide.dev/)** — Iconos (`lucide-vue-next`)
 - **[Vitest](https://vitest.dev/)** / **[Vue Test Utils](https://test-utils.vuejs.org/)** — Tests unitarios
+- **[@vitest/coverage-v8](https://vitest.dev/guide/coverage)** — Informe de cobertura de tests
 - **[jsdom](https://github.com/jsdom/jsdom)** — Entorno DOM para los tests
 - **[Git](https://git-scm.com/)** / **[GitHub](https://github.com/)** — Control de versiones y alojamiento del proyecto
 
