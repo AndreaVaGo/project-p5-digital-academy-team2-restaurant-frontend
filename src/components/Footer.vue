@@ -2,7 +2,11 @@
 import logo from "../assets/images/branding/logo-Goxu.png";
 
 const links = [
-  { label: "Política de privacidad", to: "/" },
+  {
+    label: "Política de privacidad",
+    to: "https://factoriaf5.org/politica-de-privacidad/",
+    external: true,
+  },
   { label: "Aviso legal", to: "/" },
 ];
 
@@ -45,7 +49,18 @@ const developers = [
           class="mt-2 flex flex-col items-center gap-2 font-body text-sm md:items-start"
         >
           <li v-for="link in links" :key="link.label">
+            <a
+              v-if="link.external"
+              :href="link.to"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-block origin-center transition duration-300 hover:scale-105 md:origin-left"
+            >
+              {{ link.label }}
+            </a>
+
             <RouterLink
+              v-else
               :to="link.to"
               class="inline-block origin-center transition duration-300 hover:scale-105 md:origin-left"
             >
