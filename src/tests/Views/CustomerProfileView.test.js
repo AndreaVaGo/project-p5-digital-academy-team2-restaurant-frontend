@@ -19,16 +19,12 @@ describe("CustomerProfileView", () => {
 
   it("guarda correctamente cuando todos los campos obligatorios están rellenos", async () => {
     const wrapper = mount(CustomerProfileView);
-
-    await flushPromises();
-
-    wrapper.vm.form.nombre = "Ruddy";
-    wrapper.vm.form.apellidos = "Cruz";
-    wrapper.vm.form.email = "ruddy@example.com";
-    wrapper.vm.form.direccion = "Calle Asturias 10";
-    wrapper.vm.form.codigoPostal = "33201";
-    wrapper.vm.form.ciudad = "Gijón";
-
+    wrapper.vm.form.nombre = "Ana";
+    wrapper.vm.form.apellidos = "García";
+    wrapper.vm.form.email = "ana@example.com";
+    wrapper.vm.form.direccion = "Calle Mayor 1";
+    wrapper.vm.form.codigoPostal = "33001";
+    wrapper.vm.form.ciudad = "Oviedo";
     await wrapper.find("form").trigger("submit.prevent");
     await wrapper.vm.$nextTick();
 

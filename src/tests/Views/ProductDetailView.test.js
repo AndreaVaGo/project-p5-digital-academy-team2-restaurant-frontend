@@ -42,46 +42,47 @@ beforeEach(() => {
   );
 });
 
+const sampleProduct = {
+  id: 1,
+  name: "Fabada asturiana",
+  description: "Plato tradicional asturiano con fabes, compango y alma.",
+  price: 18.5,
+  image: "https://example.com/fabada.jpg",
+  category: "Especialidades",
+  available: true,
+};
+
+beforeEach(() => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: async () => sampleProduct,
+      }),
+    ),
+  );
+});
+
 describe("ProductDetailView", () => {
   it("deshabilita el botón de añadir al pedido si el producto no está disponible", async () => {
-    const router = await createTestRouter();
-
-    const wrapper = mount(ProductDetailView, {
-      global: {
-        plugins: [router],
-      },
-    });
-
+    router.push("/product/1");
+    await router.isReady();
+    const wrapper = mount(ProductDetailView, { global: { plugins: [router] } });
     await flushPromises();
-
     wrapper.vm.product.available = false;
 
     await wrapper.vm.$nextTick();
-
-    const boton = wrapper
-      .findAll("button")
-      .find((button) => button.text().includes("AGOTADO"));
-
-    expect(boton).toBeDefined();
+    const boton = wrapper.find('[data-testid="add-to-order-button"]');
     expect(boton.attributes("disabled")).toBeDefined();
   });
 
   it("habilita el botón cuando el producto está disponible", async () => {
-    const router = await createTestRouter();
-
-    const wrapper = mount(ProductDetailView, {
-      global: {
-        plugins: [router],
-      },
-    });
-
+    router.push("/product/1");
+    await router.isReady();
+    const wrapper = mount(ProductDetailView, { global: { plugins: [router] } });
     await flushPromises();
-
-    const boton = wrapper
-      .findAll("button")
-      .find((button) => button.text().includes("AÑADIR AL PEDIDO"));
-
-    expect(boton).toBeDefined();
+    const boton = wrapper.find('[data-testid="add-to-order-button"]');
     expect(boton.attributes("disabled")).toBeUndefined();
   });
 });
