@@ -24,6 +24,7 @@ import DeliveryDashboardView from "../Views/Delivery/DeliveryDashboardView.vue";
 import DeliveryOrdersView from "../Views/Delivery/DeliveryOrdersView.vue";
 import PublicLayout from "../layouts/PublicLayout.vue";
 import NotFoundView from "../Views/NotFound/NotFoundView.vue";
+import OrderTrackingView from "../Views/OrderTracking/OrderTrackingView.vue";
 
 const routes = [
   {
@@ -88,7 +89,13 @@ const routes = [
         name: "payment",
         component: PaymentView,
       },
-            {
+      {
+        path: "rastreo",
+        name: "order-tracking",
+        component: OrderTrackingView,
+        meta: { roles: ["CUSTOMER"] },
+      },
+      {
         path: "reservation",
         name: "reservation",
         component: ReservationView,
